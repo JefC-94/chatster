@@ -13,15 +13,16 @@ const groupconvs = async (req, res) => {
         const userConvs1 = await knex('user_conv').where('conv_id', singleGroupConv.id).select('id','user_id','created_at');
 
         for(userConv1 of userConvs1){
-            
             userConv1.user_id = await knex('users').where('id', userConv1.user_id).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();
-
         }
 
         singleGroupConv.user_conv = userConvs1;
         singleGroupConv.lastMessage = await knex('message').where('conv_id', singleGroupConv.id).orderBy('created_at', 'desc').first();
        
-        singleGroupConv.lastMessage.user_id = await knex('users').where('id', singleGroupConv.lastMessage.user_id).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();
+        //only if lastmessage exists -> get user
+        if(singleGroupConv.lastMessage){
+            singleGroupConv.lastMessage.user_id = await knex('users').where('id', singleGroupConv.lastMessage.user_id).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();
+        }
     }
 
     res.send(queryGroupConvs);
