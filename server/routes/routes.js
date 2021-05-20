@@ -3,6 +3,9 @@ const router = express.Router();
 const UserController = require('../controllers/UserController');
 const AuthController = require('../controllers/AuthController');
 const ContactController = require('../controllers/ContactController');
+const ConvController = require('../controllers/ConvController');
+const GroupConvController = require('../controllers/GroupConvController');
+const UserConvController = require('../controllers/UserConvController');
 
 //MIDDLEWARES
 
@@ -42,7 +45,7 @@ router.post('/login', jsonParser, AuthController.login);
 
 router.get('/logout', AuthController.logout);
 
-//PET ROUTES
+//CONTACT ROUTES
 
 //Example of an authenticated and secured route:
 // verifyToken checks the auth token header
@@ -50,5 +53,45 @@ router.get('/logout', AuthController.logout);
 router.get('/contacts/user_id=:user_id', verifyToken, authCheck, ContactController.contactsByUser);
 
 router.get('/contacts', ContactController.contacts);
+
+router.get('/contact/id=:id&user_id=:user_id', verifyToken, authCheck, ContactController.contact);
+
+router.get('/otherusers/user_id=:user_id', verifyToken, authCheck, ContactController.otherUsers);
+
+router.post('/contact/user_id=:user_id', verifyToken, authCheck, jsonParser, ContactController.createContact);
+
+router.delete('/contact/id=:id&user_id=:user_id', verifyToken, authCheck, ContactController.deleteContact);
+
+router.put('/contact/id=:id&user_id=:user_id', verifyToken, authCheck, jsonParser, ContactController.updateContact);
+
+//CONV ROUTES
+
+router.get('/convs/user_id=:user_id', verifyToken, authCheck, ConvController.convsByUser);
+
+router.get('/conv/id=:id&user_id=:user_id', verifyToken, authCheck, ConvController.conv);
+
+router.post('/conv/user_id=:user_id', verifyToken, authCheck, jsonParser, ConvController.createConv);
+
+router.delete('/conv/id=:id&user_id=:user_id', verifyToken, authCheck, ConvController.deleteConv);
+
+router.put('/conv/id=:id&user_id=:user_id', verifyToken, authCheck, jsonParser, ConvController.updateConv);
+
+//GROUPCONVS ROUTERS
+
+router.get('/groupconvs/user_id=:user_id', verifyToken, authCheck, GroupConvController.groupconvs)
+
+router.get('/groupconv/id=:id&user_id=:user_id', verifyToken, authCheck, GroupConvController.groupconv);
+
+//USERCONVS ROUTES
+
+router.post('/userconv/user_id=:user_id', verifyToken, authCheck, jsonParser, UserConvController.createUserConv);
+
+router.delete('/userconv/id=:id&user_id=:user_id', verifyToken, authCheck, UserConvController.deleteUserConv);
+
+//MESSAGES ROUTES
+
+router.get('/messages/conv_id=:conv_id&user_id=:user_id&page=:page&per_page=:per_page', verifyToken, authCheck, ConvController.messages);
+
+router.post('/sendmessage/user_id=:user_id', verifyToken, authCheck, jsonParser, ConvController.createMessage);
 
 module.exports = router;

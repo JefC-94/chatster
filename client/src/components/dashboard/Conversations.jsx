@@ -5,7 +5,8 @@ import {ConvContext} from '../../contexts/ConvContext';
 import {WindowContext} from '../../contexts/WindowContext';
 import Conversation from '../conversations/Conversation';
 import ConvList from '../conversations/ConvList';
-import {Axios, imgPath} from '../../Constants';
+import {imgPath} from '../../Constants';
+import axios from 'axios';
 import profilepic from '../../images/profile-blanc.svg';
 import profilespic from '../../images/profile-blanc.svg';
 import DashboardNav from '../ui/DashboardNav';
@@ -28,9 +29,6 @@ function Conversations({match}) {
     const {rootState} = useContext(UserContext);
     const {theUser} = rootState;
     
-    const loginToken = localStorage.getItem('loginToken');
-    Axios.defaults.headers.common['X-Authorization'] = 'bearer ' + loginToken;    
-
     //STATES
     //this is the current active conversation, defined here because it can be set by id as well as click function on convItems
     const [currentConv, setCurrentConv] = useState(); 
@@ -69,21 +67,11 @@ function Conversations({match}) {
 
         //user comes from contactmodule and has selected a conversation to see
         if(id){
-            const request = await Axios.get(`/conv.php?user_id=${theUser.id}&conv_id=${id}`);
-            const conv = request.data.records;
-            //conversation has a contact linked -> individual conv
-            if(conv.contact){
-                conv.otherUser = conv.contact.user_1.id === theUser.id ? conv.contact.user_2 : conv.contact.user_1;
-                conv.displayName = conv.otherUser.username;
-                conv.imageUrl = conv.otherUser.photo_url ? `${imgPath}/${conv.otherUser.photo_url}` : profilepic;
-            //account for group conversation possibility
-            } else {
-                conv.userNames = conv.user_conv //first get current user out of this array, afterwards map together to a set of spans
-                .filter(user => user.id !== theUser.id)
-                .map((user, index, array) => <span key={user.id}>{user.username + (index < array.length-1 ? ', ' : '')}</span>);
-                conv.displayName = conv.name ? conv.name : conv.userNames;
-                conv.imageUrl = conv.photo_url ? `${imgPath}/${conv.photo_url}` : profilespic;
-            }
+            const request = await axios.get(`/api/conv/id=${id}&user_id=${theUser.id}`);
+            const conv = request.data;
+            conv.otherUser = conv.contact.user_1.id === theUser.id ? conv.contact.user_2 : conv.contact.user_1;
+            conv.displayName = conv.otherUser.username;
+            conv.imageUrl = conv.otherUser.photo_url ? `${imgPath}/${conv.otherUser.photo_url}` : profilepic;
             setCurrentConv(conv);
         }
 

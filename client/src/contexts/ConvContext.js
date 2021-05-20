@@ -1,7 +1,8 @@
 import React, {useState, useEffect, useContext, createContext} from 'react';
 import useSWR, { mutate } from 'swr';
 import {UserContext} from '../contexts/UserContext';
-import {imgPath, Axios} from '../Constants';
+import {imgPath} from '../Constants';
+import axios from 'axios';
 import { ContactContext } from './ContactContext';
 import profilepic from '../images/profile-blanc.svg';
 import profilespic from '../images/profiles-blanc.svg';
@@ -28,14 +29,12 @@ function ConvContextProvider(props) {
     //SETUP SWR CONNECTION FOR INDIVIDUAL CONVS
 
     //const url = `/contact?join=conversation,contact,users&join=conversation,message&filter1=user_1,eq,${theUser.id}&filter2=user_2,eq,${theUser.id}&filter=status,eq,2`;
-    const url = `/convs.php?user_id=${theUser.id}`;
+    const url = `/api/convs/user_id=${theUser.id}`;
 
-    const loginToken = localStorage.getItem('loginToken');
-    Axios.defaults.headers.common['X-Authorization'] = 'bearer ' + loginToken;
-    
-    const fetcher = url => Axios.get(url).then(response => {
-        if(response.data.records){
-            return response.data.records;
+    const fetcher = url => axios.get(url).then(response => {
+        //console.log(response.data);
+        if(response.data){
+            return response.data;
         } else {
             return [];
         }
@@ -48,11 +47,12 @@ function ConvContextProvider(props) {
     //SETUP SWR CONNECTION FOR GROUP CONVS
 
     //const groupurl = `/user_conv?join=conversation,user_conv,users&join=conversation,message&filter1=user_id,eq,${theUser.id}`;
-    const groupurl = `/groupconvs.php?user_id=${theUser.id}`;
+    const groupurl = `/api/groupconvs/user_id=${theUser.id}`;
 
-    const groupfetcher = url => Axios.get(url).then(response => {
-        if(response.data.records){
-            return response.data.records;
+    const groupfetcher = url => axios.get(url).then(response => {
+        console.log(response.data);
+        if(response.data){
+            return response.data;
         } else {
             return [];
         }
@@ -93,8 +93,8 @@ function ConvContextProvider(props) {
         let conversations = [];
         groupdata.forEach(conv => {
             conv.userNames = conv.user_conv //first get current user out of this array, afterwards map together to a set of spans
-                .filter(user => user.id !== theUser.id)
-                .map((user, index, array) => <span key={user.id}>{user.username + (index < array.length-1 ? ', ' : '')}</span>);
+                .filter(user_conv => user_conv.user_id.id !== theUser.id)
+                .map((user_conv, index, array) => <span key={user_conv.user_id.id}>{user_conv.user_id.username + (index < array.length-1 ? ', ' : '')}</span>);
             conv.displayName = conv.name ? conv.name : conv.userNames;
             conv.imageUrl = conv.photo_url ? `${imgPath}/${conv.photo_url}` : profilespic;
             conversations.push(conv);

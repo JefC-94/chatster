@@ -23,7 +23,7 @@ function ConvItem({conv, currentConv, setCurrentConv}) {
                     <p className="username">{conv.displayName}</p>
                     {conv.lastMessage &&  
                         <p className="last-message">
-                            {conv.lastMessage.user_id === theUser.id ? "you: " : conv.otherUser ? "" : conv.lastMessage.user_name + ": "}
+                            {conv.lastMessage.user_id.id === theUser.id ? "you: " : conv.otherUser ? "" : conv.lastMessage.user_id.username + ": "}
                             {conv.lastMessage.body}
                         </p>}
                 </div>

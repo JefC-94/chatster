@@ -2,10 +2,10 @@
 const knex = require('knex')({
     client: 'mysql2',
     connection: {
-        host: 'ID348579_messagingapp.db.webhosting.be',
-        user: 'ID348579_messagingapp',
+        host: 'ID348579_messagingappdev.db.webhosting.be',
+        user: 'ID348579_messagingappdev',
         password: 'pur3r4nd0mn3ss',
-        database: 'ID348579_messagingapp',
+        database: 'ID348579_messagingappdev',
         port: 3306,
     }
 });

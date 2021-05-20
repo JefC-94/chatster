@@ -1,7 +1,6 @@
 import React, {useState, useEffect, useContext, createContext} from 'react';
 import {UserContext} from '../contexts/UserContext';
 import {ModalContext} from '../contexts/ModalContext';
-import {Axios} from '../Constants';
 import axios from 'axios';
 import useSWR, {mutate} from 'swr';
 import {v4 as uuid} from 'uuid';
@@ -27,9 +26,8 @@ function ContactContextProvider(props) {
     const url = `/api/contacts/user_id=${theUser.id}`;
 
     const fetcher = url => axios.get(url).then(response => {
-        //console.log(response.data.records)
-        if(response.data.records){
-            return response.data.records;
+        if(response.data){
+            return response.data;
         } else {
             return [];
         }
@@ -39,9 +37,9 @@ function ContactContextProvider(props) {
 
     //SETUP OTHER USERS SWR CONNECTION
 
-    const usersurl = `/otherusers.php?user_id=${theUser.id}`;
+    const usersurl = `/api/otherusers/user_id=${theUser.id}`;
 
-    const usersFetcher = url => Axios.get(url).then(response => response.data.records);
+    const usersFetcher = url => axios.get(url).then(response => response.data);
 
     const {data : usersdata, error: userserror} = useSWR(usersurl, usersFetcher);
 
@@ -112,7 +110,7 @@ function ContactContextProvider(props) {
         //MUTATE USERS
         mutate(usersurl, [...usersdata.filter(useritem => useritem.id !== user.id)], false);
         //SEND DATABASE REQUEST
-        const request = await Axios.post(`/crudcontacts.php?user_id=${theUser.id}`, {
+        const request = await axios.post(`/api/contact/user_id=${theUser.id}`, {
             user_1: theUser.id,
             user_2: user.id,
             created_at: null,
@@ -129,9 +127,8 @@ function ContactContextProvider(props) {
 
     //SEND IMMEDIATELY ACCEPTED REQUEST -> FOR PREVIEW PURPOSES (only one or two contacts should have this option!)
     async function sendAcceptedRequest(user){
-        console.log(user);
         const timestamp = Math.floor(new Date().getTime() / 1000 );
-        const request = await Axios.post(`crudconvs.php?user_id=${theUser.id}`, {
+        const request = await axios.post(`/api/conv/user_id=${theUser.id}`, {
             name: null,
             created_at : timestamp,
             created_by : theUser.id,
@@ -153,7 +150,7 @@ function ContactContextProvider(props) {
             ], false);
             //MUTATE USERS
             mutate(usersurl, [...usersdata.filter(useritem => useritem.id !== user.id)], false);
-            const request2 = await Axios.post(`/crudcontacts.php?user_id=${theUser.id}`, {
+            const request2 = await axios.post(`/api/contact/user_id=${theUser.id}`, {
                 user_1: theUser.id,
                 user_2: user.id,
                 created_at: timestamp,
@@ -171,7 +168,7 @@ function ContactContextProvider(props) {
 
     async function acceptRequest(id){
         const timestamp = Math.floor(new Date().getTime() / 1000 );
-        const request = await Axios.post(`crudconvs.php?user_id=${theUser.id}`, {
+        const request = await axios.post(`/api/conv/user_id=${theUser.id}`, {
             name: null,
             created_at : timestamp,
             created_by : theUser.id,
@@ -193,7 +190,7 @@ function ContactContextProvider(props) {
                 }
             })], false);
             //DB UPDATE
-            const request2 = await Axios.put(`/crudcontacts.php?id=${id}&user_id=${theUser.id}`, {
+            const request2 = await axios.put(`/api/contact/id=${id}&user_id=${theUser.id}`, {
                 created_at: timestamp,
                 status: 2,
                 conv_id: conv_id
@@ -217,7 +214,7 @@ function ContactContextProvider(props) {
                 return contact;
             }
         })], false);
-        const request = await Axios.put(`/crudcontacts.php?id=${id}&user_id=${theUser.id}`, {
+        const request = await axios.put(`/api/contact/id=${id}&user_id=${theUser.id}`, {
             status: 3
         });
         if(request.status === 200){
@@ -237,8 +234,8 @@ function ContactContextProvider(props) {
             }
         ], false) */
         //Request to db
-        const request = await Axios.delete(`/crudcontacts.php?id=${id}&user_id=${theUser.id}`);
-        if(request.status === 200){
+        const request = await axios.delete(`/api/contact/id=${id}&user_id=${theUser.id}`);
+        if(request.data.message === 1){
             console.log("request cancelled");
             mutate(url);
             mutate(usersurl);
@@ -255,16 +252,14 @@ function ContactContextProvider(props) {
             id: uuid()
         }], false); */
         //Request to db
-        const request = await Axios.delete(`/crudcontacts.php?id=${id}&user_id=${theUser.id}`);
-        if(request.status === 200){
-            const request2 = await Axios.delete(`crudconvs.php?id=${conv_id}&user_id=${theUser.id}`);
-            console.log(request2.status);
-            console.log("contact removed");
-            if(request2.status === 200){
-                mutate(url);
-                mutate(usersurl);
-                setSnackBar({open: true, message: 'Contact has been deleted'});
-            }
+        const request2 = await axios.delete(`/api/conv/id=${conv_id}&user_id=${theUser.id}`);
+        const request = await axios.delete(`/api/contact/id=${id}&user_id=${theUser.id}`);
+        if(request.status === 200 && request2.status === 200){
+            console.log("requests confirmed");
+            mutate(usersurl);
+            mutate(url);
+            console.log("mutated");
+            setSnackBar({open: true, message: 'Contact has been deleted'});
         }
     }
 
@@ -281,8 +276,8 @@ function ContactContextProvider(props) {
                 return contact;
             }
         })], false)
-        await Axios.delete(`crudconvs.php?id=${conv_id}&user_id=${theUser.id}`);
-        const request2 = await Axios.put(`/crudcontacts.php?id=${id}&user_id=${theUser.id}`, {
+        await axios.delete(`/api/conv/id=${conv_id}&user_id=${theUser.id}`);
+        const request2 = await axios.put(`/api/contact/id=${id}&user_id=${theUser.id}`, {
             status: 3,
             conv_id: null,
         });
@@ -315,21 +310,3 @@ function ContactContextProvider(props) {
 }
 
 export default ContactContextProvider;
-
-//let request = await axiosObject(`/contact?join=users&filter1=user_1,eq,${theUser.id}&filter2=user_2,eq,${theUser.id}`);
-
-//KEEP this as a backup just in case: get other users
-/* async function getUsers(){
-
-    let request = await axiosObject(`/contact?join=users&filter1=user_1,eq,${theUser.id}&filter2=user_2,eq,${theUser.id}`);
-    let request2 = await axiosObject(`/users?filter=id,neq,${theUser.id}`);
-
-    const contactIds = request.data.records.map(contact => contact.user_1.id === theUser.id ? contact.user_2.id : contact.user_1.id);
-    const allUsers = request2.data.records;
-    const otherUsers = allUsers.filter(user => !contactIds.includes(user.id));
-    
-    setUsers(prevValue => [...prevValue,
-        ...otherUsers]
-    );
-    //setUsers(usersdata);
-} */

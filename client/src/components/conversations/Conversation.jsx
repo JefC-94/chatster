@@ -7,7 +7,7 @@ import {ModalContext} from '../../contexts/ModalContext';
 //import {SocketContext} from '../../contexts/SocketContext';
 import Message from './Message';
 import ConvForm from './ConvForm';
-import {Axios} from '../../Constants';
+import axios from 'axios';
 import {useSWRInfinite, mutate} from 'swr';
 import { FaChevronLeft } from 'react-icons/fa';
 
@@ -23,22 +23,20 @@ function Conversation({conv, setCurrentConv, getCurrentConv, basePath}) {
     const {rootState} = useContext(UserContext);
     const {theUser} = rootState;
 
-    const loginToken = localStorage.getItem('loginToken');
-    Axios.defaults.headers.common['X-Authorization'] = 'bearer ' + loginToken;
-
     //REFS
     const messagesRef = useRef();
 
     //USE SWR INFINITE
     //Get a paginated set of messages, with load more functionality
-    const fetcher = url => Axios.get(url).then(response => {
+    const fetcher = url => axios.get(url).then(response => {
         //console.log(url)
         return response.data
     });
         
     const {data, mutate: messMutate , size, setSize, error} = useSWRInfinite(
         //index => `/message?join=users&filter=conv_id,eq,${conv.id}&order=created_at,desc&page=${index + 1},20`,
-        index => `messages.php?conv_id=${conv.id}&user_id=${theUser.id}&page=${index + 1}&per_page=20`,
+        //index => `messages.php?conv_id=${conv.id}&user_id=${theUser.id}&page=${index + 1}&per_page=20`,
+        index => `/api/messages/conv_id=${conv.id}&user_id=${theUser.id}&page=${index + 1}&per_page=20`,
         fetcher
     );
 
@@ -72,7 +70,7 @@ function Conversation({conv, setCurrentConv, getCurrentConv, basePath}) {
     //add the different arrays/pages of data into the messages array + set Total Count!
     useEffect(() => {
         if(data){
-            //console.log(data);
+            console.log(data);
             setMessages(data.reduce((acc, val) => acc.concat(val.records), []));
             data[0].results ? setTotalCount(data[0].results) : setTotalCount(0);
         }
@@ -82,6 +80,7 @@ function Conversation({conv, setCurrentConv, getCurrentConv, basePath}) {
     //when messages is updated, update the alteredMessages + check if there actually are messages
     useEffect(() => {
         if(messages.length){
+            //STILL AN ERROR ON SET ENDBLOCK ON UNDEFINED!!
             setPropertiesForMessages();
         } else {
             setAlteredMessages([]);
@@ -177,15 +176,18 @@ function Conversation({conv, setCurrentConv, getCurrentConv, basePath}) {
 
     //FUNCTIE VERPLAATSEN NAAR CONVCONTEXT?
     async function deleteUserFromGroup(){
-        if(conv.user_conv.length > 3){
-            const request = await Axios.delete(`cruduserconv.php?conv_id=${conv.id}&to_delete=${theUser.id}&user_id=${theUser.id}`);
+        //aanpassen dat een user altijd een groep kan verlaten -> conversatie verwijdert zich als er maar twee over zijn?
+        //if(conv.user_conv.length > 3){
+            const user_conv_id = conv.user_conv.filter(user_conv => user_conv.user_id.id === theUser.id)[0];
+            console.log(user_conv_id.id);
+            const request = await axios.delete(`/api/userconv/id=${user_conv_id.id}&user_id=${theUser.id}`);
             console.log(request.data.message);
             if(request.status === 200){
                 mutate(groupurl);
                 setCurrentConv();
                 setSnackBar({open: true, message: 'You have left the group chat'});
             }
-        }
+        //}
     }
 
     return (

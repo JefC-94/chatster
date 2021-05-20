@@ -3,7 +3,8 @@ import {Link} from 'react-router-dom';
 import {UserContext} from '../../contexts/UserContext';
 import {ContactContext} from '../../contexts/ContactContext';
 import Accept from './Accept';
-import {Axios, imgPath} from '../../Constants';
+import {imgPath} from '../../Constants';
+import axios from 'axios';
 import {timeSinceSignup, timeSinceRel} from '../helpers/TimeSince';
 import profilepic from '../../images/profile-blanc.svg';
 import {FaTimes} from 'react-icons/fa';
@@ -13,9 +14,6 @@ function Accepts({id, basePath}) {
     //USER
     const {rootState} = useContext(UserContext);
     const {theUser} = rootState;
-
-    const loginToken = localStorage.getItem('loginToken');
-    Axios.defaults.headers.common['X-Authorization'] = 'bearer ' + loginToken;
 
     //CONTEXTS
     const {contacts} = useContext(ContactContext);
@@ -38,10 +36,10 @@ function Accepts({id, basePath}) {
 
     //FUNCTIONS
     
+    //ONLY CALLED VIA ID (USER COMES FROM INDIVIDUAL CONVERSATION)
     async function fetchContact(){
-        //let request = await axiosObject(`/contact?join=users&filter=id,eq,${id}`);
-        let request = await Axios(`/contact.php?id=${id}&user_id=${theUser.id}`);
-        const contact = request.data.records;
+        let request = await axios(`/api/contact/id=${id}&user_id=${theUser.id}`);
+        const contact = request.data;
         contact.otherUser = contact.user_1.id === theUser.id ? contact.user_2 : contact.user_1;
         setSelectedContact(contact);
     }

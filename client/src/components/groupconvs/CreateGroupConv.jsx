@@ -2,7 +2,8 @@ import React, {useState, useContext} from 'react';
 import {withRouter, Link} from 'react-router-dom';
 import {ContactContext} from '../../contexts/ContactContext';
 import {UserContext} from '../../contexts/UserContext';
-import {imgPath, Axios} from '../../Constants';
+import {imgPath} from '../../Constants';
+import axios from 'axios';
 import profilepic from '../../images/profile-blanc.svg';
 import { ConvContext } from '../../contexts/ConvContext';
 import { mutate } from 'swr';
@@ -50,7 +51,7 @@ function CreateGroupConv({match, history}) {
         if(formData.userids.length >= 2){
             //Create new conversation
             const timestamp = Math.floor(new Date().getTime() / 1000 );
-            const request = await Axios.post(`crudconvs.php?user_id=${theUser.id}`, {
+            const request = await axios.post(`/api/conv/user_id=${theUser.id}`, {
                 name: formData.name,
                 created_at : timestamp,
                 created_by : theUser.id,
@@ -60,7 +61,7 @@ function CreateGroupConv({match, history}) {
             const new_convid = request.data; 
             if(request.status === 200){
                 //Create user_conv row for the creating user
-                const request2 = await Axios.post(`cruduserconv.php?user_id=${theUser.id}`, {
+                const request2 = await axios.post(`/api/userconv/user_id=${theUser.id}`, {
                     user_id : theUser.id,
                     conv_id : new_convid,
                     created_at : timestamp,
@@ -68,7 +69,7 @@ function CreateGroupConv({match, history}) {
                 if(request2.status === 200){
                     //create user_conv row for every userid in formdata
                     formData.userids.forEach(async (userid) => {
-                        const request = await Axios.post(`cruduserconv.php?user_id=${theUser.id}`, {
+                        const request = await axios.post(`/api/userconv/user_id=${theUser.id}`, {
                             user_id : userid,
                             conv_id : new_convid,
                             created_at : timestamp,

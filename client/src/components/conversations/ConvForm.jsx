@@ -1,5 +1,5 @@
 import React, {useState, useContext} from 'react'
-import {Axios} from '../../Constants';
+import axios from 'axios';
 import {mutate} from 'swr';
 import {v4 as uuid} from 'uuid';
 import { MdSend } from 'react-icons/md';
@@ -14,9 +14,6 @@ function ConvForm({conv, size, data, messMutate, setMessEvent}) {
     //USER
     const {rootState} = useContext(UserContext);
     const {theUser} = rootState;
-
-    const loginToken = localStorage.getItem('loginToken');
-    Axios.defaults.headers.common['X-Authorization'] = 'bearer ' + loginToken;
 
     //STATES
     const [inputField, setInputField] = useState('');
@@ -64,7 +61,7 @@ function ConvForm({conv, size, data, messMutate, setMessEvent}) {
                 //we don't know if timestamp/fullday will be true, can't set it here
             }], false); */
             //Insert into database
-            const request = await Axios.post('/send-message.php', {
+            const request = await axios.post(`/api/sendmessage/user_id=${theUser.id}`, {
                 conv_id : conv.id, 
                 user_id: theUser.id, 
                 body: inputField, 

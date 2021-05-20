@@ -2,7 +2,7 @@ import React, {useState, useEffect, useContext} from 'react';
 import {withRouter, Link} from 'react-router-dom';
 import {ContactContext} from '../../contexts/ContactContext';
 import {UserContext} from '../../contexts/UserContext';
-import {imgPath, Axios} from '../../Constants';
+import {imgPath} from '../../Constants';
 import profilepic from '../../images/profile-blanc.svg';
 import profilespic from '../../images/profiles-blanc.svg';
 import axios from 'axios';
@@ -109,13 +109,15 @@ function UpdateGroupConv({match, history}) {
 
     async function getCurrentConv(){
         if(id){
-            const request = await Axios.get(`/conv.php?user_id=${theUser.id}&conv_id=${id}`);
-            const conv = request.data.records;
+            const request = await axios.get(`/api/groupconv/id=${id}&user_id=${theUser.id}`);
+            const conv = request.data;
             conv.displayName = conv.name;
             conv.imageUrl = conv.photo_url ? `${imgPath}/${conv.photo_url}` : profilespic;
-            conv.users = conv.user_conv //first get current user out of this array, afterwards map together to a set of spans
-                .filter(user => user.id !== theUser.id)
-                .map(user => user.id);
+            //get an array of just the ids for easier check which users are in convo
+            conv.users = conv.user_conv 
+                .filter(user_conv => user_conv.user_id.id !== theUser.id)
+                .map(user_conv => user_conv.user_id.id);
+            console.log(conv);
             setConv(conv);
         }
     }
@@ -143,15 +145,15 @@ function UpdateGroupConv({match, history}) {
         if(conv.name !== formData.name || formData.userids.length){
             //Update conversation
             const timestamp = Math.floor(new Date().getTime() / 1000 );
-            const request = await Axios.put(`crudconvs.php?id=${conv.id}&user_id=${theUser.id}`, {
+            const request = await axios.put(`/api/conv/id=${conv.id}&user_id=${theUser.id}`, {
                 name: formData.name,
                 photo_url : null
             });
-            console.log(request.data);
             if(request.status === 200){
                 //Create user_conv row for the newly added contacts
                 await Promise.all(formData.userids.map(async (userid) => {
-                    const request = await Axios.post(`cruduserconv.php?user_id=${theUser.id}`, {
+                    console.log(userid);
+                    const request = await axios.post(`/api/userconv/user_id=${theUser.id}`, {
                         user_id : userid,
                         conv_id : conv.id,
                         created_at : timestamp,
@@ -172,7 +174,7 @@ function UpdateGroupConv({match, history}) {
             console.log("not authorized!");
             return false;
         }
-        const request = await Axios.delete(`crudconvs.php?id=${conv.id}&user_id=${theUser.id}`);
+        const request = await axios.delete(`/api/conv/id=${conv.id}&user_id=${theUser.id}`);
         console.log(request.data);
         if(request.status === 200){
             mutate(groupurl);
@@ -182,11 +184,12 @@ function UpdateGroupConv({match, history}) {
     }
 
     //FUNCTIE VERPLAATSEN NAAR CONVCONTEXT?
-    async function deleteUserFromGroup(user_id){
+    async function deleteUserFromGroup(user_conv_id){
         if(conv.user_conv.length > 3){
-            const request = await Axios.delete(`cruduserconv.php?conv_id=${conv.id}&to_delete=${user_id}&user_id=${theUser.id}`);
+            const request = await axios.delete(`/api/userconv/id=${user_conv_id}&user_id=${theUser.id}`);
             console.log(request);
-            if(request.data.status === 201){
+            if(request.data === 1){
+                console.log("user deleted");
                 getCurrentConv();
                 mutate(groupurl);
                 setSnackBar({open: true, message: 'User removed from group'});
@@ -290,14 +293,14 @@ function UpdateGroupConv({match, history}) {
                     {openTab === 'members' && 
                         <>
                         <div className="form-control members">
-                            {conv.user_conv.filter(user => user.id !== theUser.id).map(user => {
+                            {conv.user_conv.filter(user_conv => user_conv.user_id.id !== theUser.id).map(user_conv => {
                                 return (
-                                    <div key={user.id} className="user-item member-item">
+                                    <div key={user_conv.user_id.id} className="user-item member-item">
                                         <div className="member-item-info">
-                                            <img src={user.photo_url ? `${imgPath}/${user.photo_url}` : profilepic} alt="profile-pic" />
-                                            <p>{user.username}</p>
+                                            <img src={user_conv.user_id.photo_url ? `${imgPath}/${user_conv.user_id.photo_url}` : profilepic} alt="profile-pic" />
+                                            <p>{user_conv.user_id.username}</p>
                                         </div>
-                                        <button type="button" className="button secondary" onClick={() => {deleteUserFromGroup(user.id)}}>Remove</button>
+                                        <button type="button" className="button secondary" onClick={() => {deleteUserFromGroup(user_conv.id)}}>{user_conv.id} Remove</button>
                                     </div>
                                 )
                             })}
