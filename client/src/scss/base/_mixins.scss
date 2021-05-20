@@ -1,0 +1,18 @@
+/* MIXINS bij OLD ROCKERS NEVER DIE */
+
+@mixin flex($direction, $justify-content, $align-items){
+    display: flex;
+    flex-direction: $direction;
+    justify-content: $justify-content;
+    align-items: $align-items;
+}
+
+@mixin profile-image($width, $height, $background){
+    border-radius:50%;
+    width:$width;
+    min-width:$width;
+    height:$height;
+    min-height:$height;
+    background-color:$background;
+    object-fit: cover;
+}

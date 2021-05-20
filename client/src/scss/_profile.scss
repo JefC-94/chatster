@@ -1,0 +1,116 @@
+
+.profile-wrap{
+    width:100%;
+    height:100%;
+    @include flex(row, center, flex-start);
+    position:relative;
+    overflow-y:auto;
+
+    .panel-profile{
+        margin:0;
+        width:100%;
+        text-align:center;
+        //max-height:500px;
+
+        h2{
+            font-size:22px;
+            margin:1em;
+        }
+
+        #cancelEditBtn{
+            position:absolute;
+            top: 1.5em;
+            right:1.5em;
+        }
+
+        //Image upload form -> general!
+
+        form#edit-form{
+            margin: 1.5em auto 0 auto;
+        }
+    }
+}
+
+//GENERAL PICTURE CHANGE FORM FOR PROFILE EDIT + GROUP CONV EDIT
+.form-profile-picture{
+    margin:1em auto 1em auto;
+    position:relative;
+    width:200px;
+
+    img{
+        margin:0 auto;
+        @include profile-image(120px, 120px, var(--imageBgColor));
+        z-index:0;
+        position:relative;
+    }
+
+    .profile-picture-change{
+        position:relative;
+        z-index:5;
+        margin-top:-2em;
+        width:100%;
+        overflow-x:hidden;
+        width:200px;
+        text-align:center;
+
+        input{
+            display:none;
+        }
+
+        label{
+            margin-left:2em;
+            display:block;
+            width:35px;
+            height:35px;
+            background-color:var(--accentColor);
+            border-radius:50%;
+            cursor:pointer;
+            font-weight:bold;
+            @include flex(row, center, center);
+
+            svg{
+                margin-right:0px;
+            }
+
+            &:hover{
+                background-color:var(--accentDarkColor);
+            }
+        }
+
+        p.filename{
+            font-size:14px;
+            margin:.5em 0;
+            white-space: nowrap;
+            overflow:hidden;
+            text-overflow: ellipsis;
+        }
+
+        p.success, p.error{
+            margin:.5em 0;
+            font-size:14px;
+        }
+    }
+}
+
+@media screen and (max-width:$smallscreen){
+
+    .profile-wrap{
+        width:100%;
+        height:100%;
+        @include flex(column, flex-start, center);
+
+        .panel-profile{
+
+            h2{
+                font-size:18px;
+                text-align:left;
+            }
+
+            #cancelEditBtn{
+                position:absolute;
+                top:1em;
+                right:1em; 
+            }
+        }
+    }
+}

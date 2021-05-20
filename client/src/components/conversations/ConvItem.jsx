@@ -1,0 +1,36 @@
+import React, {useContext} from 'react';
+import {Link} from 'react-router-dom';
+import {UserContext} from '../../contexts/UserContext';
+import {timeSinceConvs} from '../helpers/TimeSince';
+
+function ConvItem({conv, currentConv, setCurrentConv}) {
+
+    //USER
+    const {rootState} = useContext(UserContext);
+    const {theUser} = rootState;
+
+    //setup classes
+    let classes = "user-item convs-item";
+    if(currentConv){
+        classes += currentConv.id === conv.id ? " user-item-active" : "";
+    }
+    
+    return (
+        <Link to="/dashboard/conversations" onClick={(e) => {setCurrentConv(conv)}}>
+            <div key={conv.id} className={classes} >
+                <img src={conv.imageUrl} alt="profile" />
+                <div className="item-content">
+                    <p className="username">{conv.displayName}</p>
+                    {conv.lastMessage &&  
+                        <p className="last-message">
+                            {conv.lastMessage.user_id === theUser.id ? "you: " : conv.otherUser ? "" : conv.lastMessage.user_name + ": "}
+                            {conv.lastMessage.body}
+                        </p>}
+                </div>
+                <p className="timestamp">{conv.lastMessage ? timeSinceConvs(conv.lastMessage.created_at) : timeSinceConvs(conv.created_at)}</p>
+            </div>
+        </Link>
+    )
+}
+
+export default ConvItem

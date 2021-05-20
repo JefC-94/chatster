@@ -1,0 +1,45 @@
+
+main.about-main{
+    width:100vw;
+    @include flex(column, center, center);
+    flex:1;
+}
+
+.about-container{
+    width:600px;
+    margin:1em auto;
+    min-height:400px;
+
+    h1{
+        font-size:24px;
+        font-weight:500;
+        margin-bottom:1em;
+    }
+
+    div.about-block{
+        margin-bottom:2rem;
+        
+        p{
+            line-height:1.5;
+            margin-bottom:.8em;
+        }
+
+        ul{
+            list-style-type:circle;
+        }
+    }
+
+    div.back{
+        margin-top:3em;
+    }
+}
+
+@media screen and (max-width:600px){
+
+    .about-container{
+        font-size:14px;
+        width:100%;
+        padding:1em 1.5em;
+    }
+
+}

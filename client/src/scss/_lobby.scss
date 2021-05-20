@@ -1,0 +1,124 @@
+main.lobby-main{
+    width:100vw;
+    @include flex(column, space-between, center);
+    flex:1;
+}
+
+.lobby{
+    width:100%;
+    flex:1;
+    @include flex(row, center, center);
+}
+
+.lobby-panel{
+    text-align:center;
+    @include flex(row, space-around, center);
+    width:600px;
+    //height:100%;
+    padding:2em 0 1em 0;
+
+    .logo-wrap{
+        height:378px;
+        padding-right:1.5em;
+        @include flex(column, flex-start, center);
+        border-right:1px solid var(--secondaryBgColor);
+        width:200px;
+
+        svg.chatster-logo{height:70px;}
+
+        svg.chatster-name{height:50px;}
+    }
+
+    .panel-wrap{
+
+        .panel-login, .panel-register{   
+            max-width:300px;         
+            @include flex(column, center, center);
+
+            //Form styling general is included here
+            form{
+                margin-top:0.5em;
+                min-height:315px;
+            }
+
+            .below-form{
+
+            }
+        }
+    }
+}
+
+.disclaimer{
+    border-top:1px solid var(--secondaryBgColor);
+    padding:1em 0em;
+    max-width:800px;
+    margin:0 auto;
+    font-size:15px;
+    text-align:center;
+
+    .demo-wrap{
+
+        p{
+            margin:.4em;
+        }
+    }
+}
+
+@media screen and (max-width:$smallscreen){
+
+    .lobby-panel{
+        @include flex(column, flex-start, center);
+        
+        .logo-wrap{
+            border-right:none;
+            padding-right:0;
+            height:auto;
+            margin:1.5em 0;
+
+            svg.chatster-logo{height:50px;}
+    
+            svg.chatster-name{height:30px;}
+        }
+
+        .panel-wrap{
+            height:100%;
+            padding-bottom:1em;
+            @include flex(row, center, center);
+
+            .panel-login, .panel-register{
+
+                form{
+                    min-height:320px;
+                }
+            }
+        }
+    }
+
+    .disclaimer{
+        font-size:13px;
+        padding:1em 1em;
+    }
+}
+
+@media screen and (max-width:400px){
+
+    .lobby-panel{
+  
+        .logo-wrap{
+            position:absolute;
+            left:0em;
+            top:1em;
+            width:90px;
+            margin:0;
+
+            svg.chatster-logo{height:30px;}
+    
+            svg.chatster-name{height:20px;}
+        }
+
+        .panel-wrap{
+            padding-top:3em;
+            padding-bottom:0em;
+        }
+    }
+}

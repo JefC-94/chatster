@@ -1,0 +1,107 @@
+Scrum/agile bij Chatster
+
+Ik ben aan het werken aan een chat-applicatie, in de stijl van Whatsapp of Messenger.
+
+Iedereen kan een account aanmaken en zich op de applicatie inloggen. Het is dan mogelijk om andere gebruikers een invite te sturen (die zij 
+moeten bevestigen). Andere gebruikers kunnen jou ook uitnodigen, en zodra een contact toegevoegd is, is het mogelijk om met elkaar te converseren.
+
+Een van de grote uitdagingen aan dit project is de implementatie van realtime chatting - een ontvanger moet een bericht toegestuurd krijgen 
+dat door een zender op het moment zelf verzonden wordt. Dit houdt in dat elke ingelogde gebruiker/browser moet kunnen luisteren naar berichten 
+die toegevoegd worden door andere browsers. Hiervoor is een socket nodig. De implementatie daarvan is eigenlijk back-end en het was duidelijk 
+dat dit zeer veel opzoekwerk en zelfstudie zou inhouden, dus dit heb ik meteen ook achteraan op de backlog geplaatst, al deed ik wel af en toe
+research naar hoe dit juist zou werken.
+
+Ik heb tot nu toe het werk alsvolgt aangepakt.
+
+Eerst en vooral heb ik een overzicht gemaakt van wat er gebouwd moest worden. Ik kwam uit op vier grote blokken:
+ de database
+ de authentication (user signup, login)
+ de contactmodule (users kunnen contacten toevoegen, uitnodigen, accepteren, verwijderen)
+ de conversationmodule (users kunnen praten met de contacten die ze hebben)
+
+Het allereerste op de lijst was de database. Omdat dit de kern van de applicatie is, ben ik hiermee gestart in de eerste sprint. De database
+bepaalde ook meteen de relaties tussen contacten, conversaties en gebruikers, dus het was ook een manier om al na te denken en te bepalen
+hoe de app zelf zou werken. Ik had voorgenomen om op twee weken de database in orde te hebben, en dat is uiteindelijk ook gelukt.
+
+Omdat de authentication sowieso qua back-end een grote user story was, die veel tijd in beslag zou nemen, wou ik eerst de basis van de contact
+en conversation modules bouwen. Het leek me belangrijker om eerst te bekijken of de database goed opgebouwd was, en of mijn idee om contacten 
+te verbinden en conversations te voeren goed in elkaar zat. Als er dan nog wijzigingen moesten gebeuren, kon dat meteen gebeuren.
+
+Om wel vanuit een user te kunnen vertrekken, heb ik een "fake login" gemaakt, waardoor er permanent (hard gecodeerd) een user ingelogd was. 
+Hiervan kon ik vertrekken om de user stories te bouwen.
+
+Omdat conversaties voeren niet mogelijk is zonder contacten te hebben, was het logisch om in de volgende sprint de contactmodule op te bouwen.
+De backlog was dus alsvolgt:
+
+ - contactmodule (basis CRUD)
+ - conversationmodule (basis CRUD)
+ - authentication
+
+Ik heb dan ook besloten om eerst voor alles de basis functionaliteit te bouwen, zonder enige stijling of layout. Ook extra's, zoals bv. images
+en timing van berichten/contacten zou ik later aanpakken.
+
+Voor de contactmodule had ik volgende user stories in de sprint backlog:
+ user moet overzicht hebben van contacten, inkomende en uitgaande requests, andere users
+ user moet een andere user een request kunnen sturen
+ user moet een request van iemand anders kunnen accepteren + afwijzen
+ user moet een request kunnen annuleren
+ user moet een contact kunnen verwijderen/blokkeren
+
+Enkele items uit de backlog die voorlopig nog niet opgenomen werden
+ user moet contacten kunnen aanklikken en dan enkele details zien (foto groter, vrienden sinds) + kunnen wegklikken
+
+Hier rekende ik een week voor, en uiteindelijk was dit ongeveer in die tijd klaar. Uiteindelijk was het gewoon het bouwen van een CRUD met 
+telkens een iets andere fetch (post, put, delete).
+
+Dan heb ik de basis van de conversatiemodule gebouwd. Sprintlog:
+ user moet conversations van alle contacten kunnen zien
+ user moet tussen conversations kunnen switchen
+ user moet een bericht kunnen versturen en meteen zien dat dit verstuurd is
+
+Enkele items die nog niet essentieel waren: deze heb ik op de backlog gehouden
+ user moet conversations in volgorde zien van laatste activiteit (laatste verzonden of ontvangen bericht)
+ wanneer user bericht verstuurt, moeten de conversations opnieuw gesorteerd worden
+ user moet kunnen zien wanneer berichten verstuurd zijn, tenzij berichten binnen de vijf minuten van elkaar verstuurd zijn
+
+Zodra beide modules qua basis klaar waren heb ik hiervoor routes gebouwd en een navigatie om te kunnen switchen.
+
+Dan kwam de user authentication implementatie aan bod: hier opnieuw een sprint log:
+ user moet een account kunnen aanmaken
+ user moet zich kunnen inloggen 
+ user moet zich kunnen uitloggen
+ user moet wachtwoord, gebruikersnaam kunnen bewerken
+ user moet profielfoto kunnen bewerken (niet essentieel / images upload functionaliteit is nog niet gemaakt -> later bekijken)
+ ingelogde user moet naar een "dashboard" gestuurd worden
+
+Een van de grote belemmeringen hier was de routing. De contacts route en de converations route moesten als "nested routes" in de dashboard route 
+passen, maar tegelijkertijd moest het mogelijk zijn om van een contact rechtstreeks naar de juiste conversatie te springen (dus van route wijzigen 
++ meteen een conversatie selecteren).
+
+Omdat de nested routes lastiger bleken dan verwacht, besloot ik om dit apart uit te zoeken met testprojecten, en eerst aan de layout te beginnen.
+Nu, ik had in het app-project telkens snel-snel wat classnames bepaald en af en toe wat basic styling voorzien, maar deze wou ik niet definitief 
+gebruiken. Ik was nog volop zaken aan het uitproberen, en ik wou liever niet teveel bewerkingen doen in deze code.
+
+Daarom besloot ik om de stijling apart te houden van de functionele app (wel in JSX). Daar kon ik, met hard gecodeerde namen (en dus zonder data), 
+de app op het gemak opbouwen qua layout en stijling, en de definitieve classnames bepalen.
+Voor de layout rekende ik een sprint van twee weken. Dit was min of meer realistisch, het heeft uiteindelijk iets langer geduurd omdat ik 
+tegelijkertijd ook in de functionele app af en toe aan de routes aan het sleutelen was.
+
+Bij de layout werkte ik met volgende sprintlog:
+ dark mode implementeren (niet essentieel, maar alle text en achtergronden zijn hier wel afhankelijk, dus toch al eerste geplaatst)
+ basic layout voor dasbhoard en lobby
+ kleurenthema kiezen + buttons, fonts, colors
+ contactmodule layout: opdelen in drie kolommen
+ user items stijlen + varianten (buttons bij requests om te accepteren/afwijzen)
+ conversationmodule layout: twee kolommen
+ contact/conversation module responsive -> switchen naar één kolom op mobile
+ lobby layout + loginform and logoutform ( + editform in dashboard)
+
+Dit project heb ik dan later gebruikt om, als de app qua basis functionaliteit goed in elkaar stak en alle routes juist op elkaar afgestemd waren, 
+de JSX code te kopiëren naar de functionele app, en de tekst te vervangen door de variabelen uit de functionele app.
+
+Hierna heb voor elk van de drie modules nogmaals een sprint gedaan, voor de extra functionaliteiten die nog niet geïmplementeerd waren. Bij deze 
+sprints lag de nadruk op timings (wanneer zijn berichten verstuurd, hoe lang zijn we al vrienden, conversations sorteren op laatste berichten). 
+Daarnaast heb ik de image upload functionaliteit ingebouwd, zodat users een profielfoto konden uploaden en wijzigen.
+
+De laatste uitdaging zou nu zijn om een PHP-socket te installeren, en ervoor te zorgen dat de app realtime chat ondersteunt. Voorlopig is dit nog 
+niet het geval, maar als ik dat eerst had willen doen had ik nu nog niets gehad.

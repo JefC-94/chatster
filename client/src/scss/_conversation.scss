@@ -1,0 +1,244 @@
+// DIFFERENT LAYOUTS FOR CONVS (small - widescreen)
+
+//widescreen
+
+.conv-left{
+    width:300px;
+    @include flex(column, space-between, flex-start);
+}
+
+.conv-right{
+    width:calc(100% - 300px);
+    max-height:100%;
+    @include flex(column, space-between, flex-start);
+    border-left:1px solid var(--secondaryBgColor);
+}
+
+//Smallscreen
+
+.conv-full{
+    width:100%;
+    @include flex(column, space-between, flex-start);
+}
+
+// OVERVIEW OF CONVS
+
+.convs-list{
+    width:100%;
+    flex:1;
+    overflow-y:auto;
+
+    //This item inherits general user-item styling
+    .convs-item{
+        //@include flex(row, space-between, center);
+        
+        img{@include profile-image(50px, 50px, var(--imageBgColor));}
+
+        .item-content{
+            margin:0 10px;
+            flex-grow: 1;
+            min-width:40%;
+            
+            p{
+                overflow:hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+
+            p.username{
+                //new message icon -> green
+                span.icon{color:var(--accentColor);}
+            }
+
+            p.last-message{
+                color:var(--secondaryTextColor);
+                font-size:12px;
+                margin-top:3px;
+            }
+        }
+        
+        p.timestamp{
+            min-width:20px;
+            text-align:right;
+            flex: 0 0 auto;
+            font-size:12px;
+            height:39px;
+            color:var(--secondaryTextColor);
+        }
+
+        //STATUS: NEW MESSAGE
+        &-new{
+            background:var(--newBgColor);
+
+            //should not be needed, but is;
+            &:hover{
+                background-color:var(--hoverBgColor);
+            }
+
+            .item-content{
+                p.last-message, p.username{
+                    font-weight:bold;
+                    color:var(--primaryTextColor);
+                }
+            }
+        }
+    }
+}
+
+// SINGLE CONVERSATION
+
+.conv-info{
+    width:100%;
+    height:60px;
+    padding:1em 1em;
+    @include flex(row, space-between, center);
+
+    .conv-info-profile{
+        @include flex(row, flex-start, center);
+        width:calc(100% - 150px);
+
+        img{
+            @include profile-image(40px, 40px, var(--imageBgColor));
+            margin:.5em;
+        }
+
+        .conv-names{
+            @include flex(column, flex-start, flex-start);
+            min-width: 0;
+
+            h2{
+                width:100%;
+                overflow:hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+
+            p{
+                width:100%;
+                font-size:14px;
+                color: var(--secondaryTextColor);
+                overflow:hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+        }
+
+        button{
+            padding:0;
+        }
+    }
+}
+
+.conv-messages-list{
+    @include flex(column, flex-start, flex-start);
+    padding:0.5em 1em 0 1em;
+    width:100%;
+    flex:1;
+    overflow-y:auto;
+    border-top: 1px solid var(--secondaryBgColor);
+    position:relative; 
+
+    button#loadmore{
+        margin:0 auto;
+    }
+
+    button#scrolltobottom{
+        position:fixed;
+        left:50%;
+        bottom:10em;
+    }
+
+    .scrollable-list{
+        width:100%;
+
+        .message-item{
+            width:100%;
+            padding-top:.4em;
+
+            &-above{
+                display:flex;
+                justify-content:center;
+                padding:0.6em 0 0.4em 0;
+
+                span{
+                    font-size:13px;
+                    color:var(--secondaryTextColor);
+                }
+            }
+
+            &-block{
+                display:flex;
+                align-items:flex-end;
+
+                &-image{
+                    width:20px;
+                    margin-right:5px;
+                    
+                    img{
+                        @include profile-image(20px, 20px,  var(--imageBgColor));
+                    }
+                }
+                
+                &-right{
+                    @include flex(column, flex-start, flex-start);
+                    max-width:65%;
+
+                    p.sentby{
+                        font-size:14px;
+                        margin-top:10px;
+                    }
+
+                    &-content{
+                        background:var(--secondaryBgColor);
+                        padding:0.3rem 0.7rem;
+                        border-radius:5px;
+                        //overflow-wrap: break-word;
+                        hyphens: auto;
+                    }
+                } 
+                
+                &.received{
+                    justify-content: flex-start;
+                }
+
+                &.sent{
+                    justify-content: flex-end;
+                }  
+            }
+        }
+    }
+}
+
+// SINGLE CONVERSATION: FORM!
+
+.message-form-wrap{
+    width:100%;
+
+    form#message-form{
+        width:100%;
+        padding:1em;
+        @include flex(row, space-between, center);
+
+        input{
+            min-height:40px;
+            flex:1;
+            border-radius:5px;
+            background: var(--primaryBgColor);
+            border:1px solid var(--secondaryBgColor);
+            color:var(--primaryTextColor);
+            outline:none;
+            padding-left:1em;
+            font-size:15px;
+            margin-right:.5em;
+        }
+
+        button{
+            border-radius:5px;
+            padding:0 1em;
+            height: 38px;
+            font-size:14px;
+            font-weight:bold;
+            @include flex(row, center, center);
+        }
+    }
+}

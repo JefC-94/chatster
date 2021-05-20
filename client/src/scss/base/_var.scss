@@ -1,0 +1,63 @@
+/*! Variabelen bij PLATFORM BASE */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap');
+
+//HOOFDKLEUREN LICHT EN DONKER + DARKMODE
+
+html{
+    --primaryBgColor: #fff;
+    --primaryTextColor: #111;
+    
+    --secondaryBgColor:#e0e0e0;
+    --secondaryDarkBgColor:#c5c5c5;
+    --secondaryTextColor:#666;
+
+    --imageBgColor:#cecece;
+    
+    --hoverBgColor:#f5f5f5;
+
+    --activeBgColor:#eeeeee;
+
+    --accentColor:#46ac46;
+    --accentDarkColor:#2f7a2f;
+
+    --errorColor:rgb(185, 19, 19);
+    --errorDarkColor:rgb(105, 11, 11) ;
+
+    --otherColor:#1e4351;
+
+}
+
+html.dark{
+    --primaryBgColor:#222222;
+    --primaryTextColor: #e8e8e8;
+    
+    --secondaryBgColor:#3d3d3d;
+    --secondaryDarkBgColor:#4d4d4d;
+    --secondaryTextColor:#888;
+
+    --activeBgColor:#333333;
+
+    --imageBgColor:#777;
+
+    --hoverBgColor: #2b2b2b;
+}
+
+//KLEUREN VOOR OP SITE
+
+$accentkleur:#193d66;
+$accentkleur-2:#193d66;
+
+//DARK MODE SETUP
+
+//FONTS
+
+$hoofdfont: 'Nunito', sans-serif;
+
+//PATH FOR IMAGES
+
+$imagePath : '/images';
+
+//SCHERMBREEDTES
+
+$mediumscreen: 1200px;
+$smallscreen: 800px;

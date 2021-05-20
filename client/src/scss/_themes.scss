@@ -1,0 +1,231 @@
+// TITLE STYLING
+
+h1, h2{
+    font-weight:600;
+}
+
+h1.lobby{
+    font-size:34px;
+}
+
+h1.dashboard{
+    font-size:26px;
+    margin:0 1rem;
+}
+
+h2{
+    font-size:18px;
+}
+
+h2.mg{
+    margin:1rem 1rem 0.5rem 1rem;
+}
+
+@media screen and (max-width:$smallscreen){
+
+    h1.dashboard{
+        font-size:18px;
+        line-height:1.1;
+    }
+
+    h1.lobby{
+        font-size:26px;
+    }
+
+    h2{
+        font-size:16px;
+    }
+}
+
+//PARAGRAPH STYLING
+
+p{
+    font-size:1em;
+    color:var(--primaryTextColor);
+}
+
+p.error{
+    color:rgb(185, 19, 19);
+}
+
+p.success{
+    font-weight:bold;
+    color:var(--accentColor);
+}
+
+//SOME BUTTON AND INPUT STYLING
+
+a, button{
+    font-family: $hoofdfont, sans-serif;
+    font: $hoofdfont;
+    color:var(--primaryTextColor);
+}
+
+a.button, button.button{
+    height:35px;
+    display:inline-block;
+    border-radius:3px;
+    font-weight:600;
+    min-width:80px;
+    padding:0 1em;
+    text-align:center;
+    font-size:14px;
+    line-height:35px;
+    transition:background-color .2s ease;
+    cursor:pointer;
+}
+
+button.button{
+    line-height:1;
+}
+
+button.flex{
+    @include flex(row, center, center);
+}
+
+a.circle, button.circle{
+    width:35px;
+    height:35px;
+    border-radius:50%;
+    transition:background-color .2s ease;
+}
+
+a.primary, button.primary{
+    background-color:var(--accentColor);
+    color:white;
+    transition:background-color .2s ease;
+
+    &:hover{
+        background-color:var(--accentDarkColor);
+    }
+}
+
+a.secondary, button.secondary{
+    background-color:var(--secondaryBgColor);
+    color:var(--primaryTextColor);
+
+    &:hover{
+        background-color:var(--secondaryDarkBgColor);
+    }
+}
+
+a.error, button.error{
+    background-color:var(--errorColor);
+    color:white;
+
+    &:hover{
+        background-color:var(--errorDarkColor);
+    }
+}
+
+a.link, button.link{
+    text-decoration:underline;
+    background:none;
+    font-size:1em;
+    color:var(--primaryTextColor);
+
+    &:hover{
+        color:var(--accentColor);
+    }
+}
+
+@media screen and (max-width:$smallscreen){
+
+    button.button, a.button{
+        min-width:80px;
+    }
+}
+
+//INPUTS
+
+input.form-input{
+    min-height:40px;
+    border:none;
+    max-width:300px;
+    border-radius:3px;
+    background: var(--primaryBgColor);
+    border:1px solid var(--secondaryBgColor);
+    color:var(--primaryTextColor);
+    outline:none;
+    padding-left:1em;
+    font-size:16px;
+}
+
+// GENERAL FORM STYLING
+
+form{
+    display:flex;
+    flex-direction: column;
+    width: 300px;
+
+    .form-control{
+        margin:.5em 0;
+
+        input{
+            //width:300px;
+            width:100%;
+        }
+
+        label{
+            display:block;
+            text-align:left;
+            font-weight:500;
+            margin-bottom:.3em;
+        }
+
+        .error{
+            text-align:left;
+            margin-top:.2em;
+        }
+    }
+}
+
+@media screen and (max-width:400px){
+
+    form{
+        width: 250px;
+        
+        .form-control{
+            width:250px;
+
+            input{
+                width:inherit;
+            }
+        }
+    }
+
+}
+
+
+// GENERAL USER ITEM STYLING
+
+.user-item{
+    height:75px;
+    padding:1em .5em 1em 1em;
+    @include flex(row, flex-start, center);
+    cursor:pointer;
+    position: relative;
+    transition:background-color .1s ease;
+
+    &:hover{
+        background-color:var(--hoverBgColor);
+    }
+
+    img{
+        @include profile-image(50px, 50px, var(--imageBgColor));
+    }
+
+    .item-content{
+        margin-left:1em;
+        font-size:16px;
+    }
+
+    //STATUS ACTIVE
+    &-active{
+        background:var(--activeBgColor);
+
+        &:hover{
+            background:var(--activeBgColor);
+        }
+    }
+}

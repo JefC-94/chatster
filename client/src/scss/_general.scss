@@ -1,0 +1,234 @@
+
+//GENERAL PAGE SETUP
+
+html, body{
+    max-height:100vh;
+    width:100vw;
+    overflow-x:hidden;
+    overflow-y:hidden;
+}
+
+div#root{
+    font: normal 100%/1.4 $hoofdfont, sans-serif;
+    @include flex(column, flex-start, flex-start);
+    height:100vh;
+    width:100vw;
+    background:var(--primaryBgColor);
+    color:var(--primaryTextColor);
+}
+
+.container{
+    position:relative;
+    max-width:1100px;
+    margin: 0 auto;
+}
+
+//FOOTER
+
+footer.mainfooter{
+    width:100%;
+    min-height:50px;
+    @include flex(row, center, center);
+    background:var(--primaryBgColor);
+    
+    p, a{
+        font-size:13px;
+    }
+
+    a{
+        margin-left:1em;
+        text-decoration:underline;
+
+        &.active{
+            font-weight: 500;
+            text-decoration:none;
+
+            &:hover{
+                color:var(--primaryTextColor);
+            }
+        }
+    }
+}
+
+@media screen and (max-width:$smallscreen){
+
+    footer.mainfooter{
+        min-height:60px;
+    }
+}
+
+
+//DARK MODE TOGGLE BUTTON
+
+.darktoggle-container{
+    z-index:100;
+    position:absolute;
+    right:2em;
+    top:0;
+    height:60px;
+    @include flex(row, center, center);
+}
+
+@media screen and (max-width:$smallscreen){
+    .darktoggle-container{
+        right:1em;
+    }
+}
+
+#darkToggleBtn{
+    z-index:100;
+    background-color:var(--primaryTextColor);
+    color:var(--primaryBgColor);
+
+    &:hover{
+        background-color:#555;
+    }
+
+    &.dark{
+        &:hover{
+            background-color:#999;
+        }
+    }
+}
+
+// NAVIGATION BOX
+
+.navigation{
+    width:100%;
+    height:60px;
+}
+
+.navigation-center{
+    @include flex(row, center, center);
+}
+
+.navigation-space{
+    @include flex(row, space-around, center);
+}
+
+.navigation-bg{
+    background-color:var(--secondaryBgColor);
+}
+
+.navigation-border-top{
+    border-top:1px solid var(--secondaryBgColor);
+}
+
+
+// NO RESULTS & ERROR HANDLING
+
+div.no-results{
+    padding:.5em 1em;
+    font-size:15px;
+    text-align:left;
+}
+
+div.convs-tab{
+    padding:2em 1em;
+    text-align:center;
+}
+
+//ERROR HANDLING!
+
+//GENERAL ERROR MESSAGE FOR API ERRORS:
+div.error-message{
+    color:var(--errorColor);
+    margin:2em auto;
+    font-weight:bold;
+}
+
+
+// CUSTOM CONFIRM DIALOGUE BOX
+
+.dialog-overlay{
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    width:100%;
+    height:100%;
+    background-color:rgba(0,0,0,0.4);
+    z-index:100;
+}
+
+.dialog-wrapper{
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:80%;
+    max-width:500px;
+    margin:0 auto;
+    background:var(--primaryBgColor);
+    transform:translate(-50%,-50%);
+    border-radius:3px;
+    z-index:110;
+    padding:1em;
+
+    .dialog-title{
+        h2{
+            font-size:24px;
+        }
+    }
+
+    .dialog-content{
+        margin:1em 0;
+    }
+
+    .dialog-actions{
+        @include flex(row, center, center);
+
+        button{
+            margin:0 2em;
+        }
+    }
+}
+
+// CUSTOM SNACKBAR
+
+.snackbar-wrapper {
+    position: absolute;
+    left:10px;
+    bottom: 70px;
+    background:var(--accentColor);
+    box-shadow: 0 0 4px 1px rgba(0,0,0,0.2);
+    transition: all .4s;
+    width: 50%;
+    max-width:300px;
+    margin:0 auto;
+    border-radius: 3px;
+    z-index:100;
+}
+
+.snackbar-content {
+    padding: 10px 15px;
+    @include flex(row, space-between, center);
+    
+    p{
+        color:var(--primaryBgColor);
+    }
+
+    button.close-snackbar-btn{
+        background:none;
+        color:var(--primaryBgColor);
+    }
+}
+
+
+// GENERAL SCROLLBAR STYLING
+
+::-webkit-scrollbar {
+    width: 1em;
+}
+
+::-webkit-scrollbar-track {
+    //border: solid 3px var(--primaryBgColor);
+    width:1em;
+}
+
+::-webkit-scrollbar-thumb {
+    width:.6em;
+    background-color: var(--secondaryBgColor);
+    border-radius:5px;
+    border:4px solid var(--primaryBgColor);
+}

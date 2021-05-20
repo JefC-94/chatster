@@ -1,0 +1,103 @@
+
+.groupconv-main{
+    @include flex(column, flex-start, flex-start);
+    padding:1em;
+    overflow-y:auto;
+} 
+
+.groupconvs-header{
+    width:400px;
+    @include flex(row, space-between, center);
+    margin:0.5em auto;
+}
+
+.groupconvs-wrap{
+    width:400px;
+    margin:0 auto;
+    flex:1;
+    @include flex(column, space-between, flex-start);
+    
+    form{
+        width:100%;
+        height:calc(100% - 50px);
+        @include flex(column, flex-start, flex-start);
+
+        .form-control{
+            width:100%;
+            margin:0.8em 0;
+        }
+
+        .actions{
+            @include flex(row, space-between, center);
+        }
+
+        nav{
+            margin:1.5em 0 0 0;
+            width:100%;
+            @include flex (row, space-around, center);
+            height:30px;
+
+            button.activeLink{
+                font-weight:800;
+            }
+        }
+
+        .members, .select-contacts-wrap{
+            max-width:400px;
+            flex:1;
+            overflow-y:auto;
+            min-height:155px;
+            border-top:1px solid var(--secondaryBgColor);
+            border-bottom:1px solid var(--secondaryBgColor);
+        }
+
+        .members{
+
+            .member-item{
+                @include flex(row, space-between, center);
+                padding:1em;
+
+                .member-item-info{
+                    @include flex(row, flex-start, center);
+
+                    img{
+                        @include profile-image(50px, 50px, var(--imageBgColor));
+                        margin:.5em;
+                    }
+                }
+            }
+
+        }
+
+        .select-contacts-wrap{
+    
+            label.select-item{
+                margin:0;
+                @include flex(row, space-between, center);
+
+                .select-item-info{
+                    @include flex(row, flex-start, center);
+
+                    img{
+                        @include profile-image(50px, 50px, var(--imageBgColor));
+                        margin:.5em;
+                    }
+                }
+
+                input[type=checkbox]{
+                    width: 1.3em; 
+                    height: 1.3em;
+                    border-radius:50%;
+                    outline: none;
+                }
+            }
+        }       
+    }
+}
+
+@media screen and (max-width:400px){
+
+    .groupconvs-header, .groupconvs-wrap{
+        width:100%;
+    }
+}

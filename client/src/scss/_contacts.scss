@@ -1,0 +1,227 @@
+
+/* ------ PAGE LAYOUTS - THREE DIFFERENT SETUPS ------- */
+
+//WIDESCREEN (900+)
+
+.contacts-column{
+    width:33%;
+    @include flex(column, space-between, flex-start);
+}
+
+.contacts-left{
+    min-width:320px;
+}
+
+.contacts-middle{
+    flex:1;
+    min-width:300px;
+    border-left:1px solid var(--secondaryBgColor);
+    border-right:1px solid var(--secondaryBgColor);
+}
+
+.contacts-right{
+    min-width:300px;
+}
+
+
+//IN BETWEEN SCREEN (600 - 900)
+
+@media screen and (max-width:900px){
+
+    .contacts-right{
+        width:40%;
+    }
+
+    .contacts-left{
+        border-right:1px solid var(--secondaryBgColor);
+        width:60%;
+
+        .left-column-break{
+            width:100%;
+            @include flex(row, center, center);
+            padding:1em 0 1em 0;
+            border-top:1px solid var(--secondaryBgColor);
+            border-bottom:1px solid var(--secondaryBgColor);
+
+            button{
+                span{
+                    margin-right:10px;
+                }
+            }
+        }
+    }
+}
+
+
+//SMALLSCREEN (600-)
+
+.contacts-full{
+    width:100%;
+    @include flex(column, space-between, flex-start);
+
+    .contact-navigation{
+        width:100%;
+        height:40px;
+        @include flex(row, space-around, center);
+        border-bottom:1px solid var(--secondaryBgColor);
+
+        button{
+            background-color:var(--primaryBgColor);
+            font-size:14px;
+            width:25%;
+            text-align:center;
+            line-height:1;
+
+            &:not(:last-of-type){
+                border-right: 1px solid var(--secondaryBgColor);
+            }
+
+            &.activeLink{
+                font-weight:600;
+            }
+        }
+    }
+}
+
+
+/* ------ ITEMS ------- */
+
+//CONTACT ITEM-LISTS
+//Set styling for all lists to fill container but scroll if too big
+
+.contact-items-list{
+    width:100%;
+    flex:1;
+    overflow-y:auto;
+}
+
+//CONTACT ITEM
+
+//These items inherit styling from user-item (see general)
+//Set styling for all items on the contact page
+
+.contact-item{
+    height:90px;
+
+    img{
+        @include profile-image(60px, 60px, var(--imageBgColor));
+    }
+
+    .item-content{
+        font-weight:600;
+    }
+
+    .item-options{
+        margin-top:3px;
+
+        button:first-of-type{
+            margin-right:10px;
+        }
+    }
+}
+
+
+/*-- CONTACT CATEGORIES --*/
+//-- list and item inherit styling from above
+
+//ACCEPTS
+
+.accepts-list{
+    
+    .accept-item{
+        height:80px;
+        padding:1em 1em 1em 1em;
+        justify-content:space-between;
+        
+        .item-content{
+            font-weight:normal;
+            flex:1;
+        }
+    }
+}
+
+//REQUESTS AND PENDINGS HAVE A WRAPPING DIV FOR STACKING PURPOSE || not necessary on smallscreen
+
+.requests-wrap, .pendings-wrap{
+    height:50%;
+    width:100%;
+    @include flex(column, flex-start, flex-start);
+}
+
+@media screen and (max-width:$smallscreen){
+
+    .pendings-wrap, .requests-wrap{
+        flex:1;
+        border-bottom:none;
+    }
+}
+
+//REQUESTS
+
+.requests-wrap{
+    border-bottom:1px solid var(--secondaryBgColor);
+
+    .requests-list{
+        position:static;
+        
+        //.request-item{
+            //Style specific request item
+            //padding:0 0.5em 0 1em;
+        //}
+    }
+}
+
+//PENDINGS
+
+.pendings-wrap{
+
+    .pendings-list{
+        position:static;
+
+        //.pending-item{
+            //Use for specific styling:
+            //.item-content
+        //}
+    }
+}
+
+//OTHERUSERS
+.otherusers-list{
+    
+    .otheruser-item{
+        position:static;
+    }
+}
+
+//CONTACT DETAIL
+
+.contact-detail-wrap{
+    width:100%;
+    padding:1em;
+    border-top:1px solid var(--secondaryBgColor);
+
+    .contact-detail{ 
+        position:relative;
+        @include flex(column, center, center);
+
+        button{
+            position:absolute;
+            top:0em;
+            right:0em;
+        }
+
+        img{
+            margin-top:.5em;
+            @include profile-image(100px, 100px, var(--imageBgColor))
+        }
+
+        h2{
+            font-size:18px;
+            margin:1rem 0;
+        }
+
+        a, p{
+            margin:.3em 0;
+        }
+    }
+}
