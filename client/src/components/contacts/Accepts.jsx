@@ -4,7 +4,6 @@ import {UserContext} from '../../contexts/UserContext';
 import {ContactContext} from '../../contexts/ContactContext';
 import Accept from './Accept';
 import {imgPath} from '../../Constants';
-import axios from 'axios';
 import {timeSinceSignup, timeSinceRel} from '../helpers/TimeSince';
 import profilepic from '../../images/profile-blanc.svg';
 import {FaTimes} from 'react-icons/fa';
@@ -16,7 +15,7 @@ function Accepts({id, basePath}) {
     const {theUser} = rootState;
 
     //CONTEXTS
-    const {contacts} = useContext(ContactContext);
+    const {contacts, getSingleContact} = useContext(ContactContext);
     const {accepts} = contacts;
 
     //STATES
@@ -38,9 +37,7 @@ function Accepts({id, basePath}) {
     
     //ONLY CALLED VIA ID (USER COMES FROM INDIVIDUAL CONVERSATION)
     async function fetchContact(){
-        let request = await axios(`/api/contact/id=${id}&user_id=${theUser.id}`);
-        const contact = request.data;
-        contact.otherUser = contact.user_1.id === theUser.id ? contact.user_2 : contact.user_1;
+        const contact = await getSingleContact(id);
         setSelectedContact(contact);
     }
 

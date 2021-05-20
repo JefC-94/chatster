@@ -61,7 +61,7 @@ function ConvForm({conv, size, data, messMutate, setMessEvent}) {
                 //we don't know if timestamp/fullday will be true, can't set it here
             }], false); */
             //Insert into database
-            const request = await axios.post(`/api/sendmessage/user_id=${theUser.id}`, {
+            const request = await axios.post(`/api/messages/user_id=${theUser.id}`, {
                 conv_id : conv.id, 
                 user_id: theUser.id, 
                 body: inputField, 

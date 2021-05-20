@@ -6,7 +6,6 @@ import {WindowContext} from '../../contexts/WindowContext';
 import Conversation from '../conversations/Conversation';
 import ConvList from '../conversations/ConvList';
 import {imgPath} from '../../Constants';
-import axios from 'axios';
 import profilepic from '../../images/profile-blanc.svg';
 import profilespic from '../../images/profile-blanc.svg';
 import DashboardNav from '../ui/DashboardNav';
@@ -23,7 +22,7 @@ function Conversations({match}) {
 
     //CONTEXTS
     const {windowWidth} = useContext(WindowContext);
-    const {convserror, grouperror, convs} = useContext(ConvContext);
+    const {convserror, grouperror, convs, getSingleConv} = useContext(ConvContext);
 
     //USER
     const {rootState} = useContext(UserContext);
@@ -67,11 +66,7 @@ function Conversations({match}) {
 
         //user comes from contactmodule and has selected a conversation to see
         if(id){
-            const request = await axios.get(`/api/conv/id=${id}&user_id=${theUser.id}`);
-            const conv = request.data;
-            conv.otherUser = conv.contact.user_1.id === theUser.id ? conv.contact.user_2 : conv.contact.user_1;
-            conv.displayName = conv.otherUser.username;
-            conv.imageUrl = conv.otherUser.photo_url ? `${imgPath}/${conv.otherUser.photo_url}` : profilepic;
+            const conv = await getSingleConv(id);
             setCurrentConv(conv);
         }
 

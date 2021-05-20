@@ -37,7 +37,7 @@ function ContactContextProvider(props) {
 
     //SETUP OTHER USERS SWR CONNECTION
 
-    const usersurl = `/api/otherusers/user_id=${theUser.id}`;
+    const usersurl = `/api/contacts/otherusers/user_id=${theUser.id}`;
 
     const usersFetcher = url => axios.get(url).then(response => response.data);
 
@@ -93,6 +93,13 @@ function ContactContextProvider(props) {
         });
     }
 
+    async function getSingleContact(id){
+        let request = await axios(`/api/contacts/id=${id}&user_id=${theUser.id}`);
+        const contact = request.data;
+        contact.otherUser = contact.user_1.id === theUser.id ? contact.user_2 : contact.user_1;
+        return contact;
+    }
+
     // CRUD FUNCTIONS FOR ADDING, DELETING AND ACCEPTING/INVITING USERS
 
     async function sendRequest(user){ // need user_id + username for cache
@@ -110,7 +117,7 @@ function ContactContextProvider(props) {
         //MUTATE USERS
         mutate(usersurl, [...usersdata.filter(useritem => useritem.id !== user.id)], false);
         //SEND DATABASE REQUEST
-        const request = await axios.post(`/api/contact/user_id=${theUser.id}`, {
+        const request = await axios.post(`/api/contacts/user_id=${theUser.id}`, {
             user_1: theUser.id,
             user_2: user.id,
             created_at: null,
@@ -128,7 +135,7 @@ function ContactContextProvider(props) {
     //SEND IMMEDIATELY ACCEPTED REQUEST -> FOR PREVIEW PURPOSES (only one or two contacts should have this option!)
     async function sendAcceptedRequest(user){
         const timestamp = Math.floor(new Date().getTime() / 1000 );
-        const request = await axios.post(`/api/conv/user_id=${theUser.id}`, {
+        const request = await axios.post(`/api/convs/user_id=${theUser.id}`, {
             name: null,
             created_at : timestamp,
             created_by : theUser.id,
@@ -150,7 +157,7 @@ function ContactContextProvider(props) {
             ], false);
             //MUTATE USERS
             mutate(usersurl, [...usersdata.filter(useritem => useritem.id !== user.id)], false);
-            const request2 = await axios.post(`/api/contact/user_id=${theUser.id}`, {
+            const request2 = await axios.post(`/api/contacts/user_id=${theUser.id}`, {
                 user_1: theUser.id,
                 user_2: user.id,
                 created_at: timestamp,
@@ -168,7 +175,7 @@ function ContactContextProvider(props) {
 
     async function acceptRequest(id){
         const timestamp = Math.floor(new Date().getTime() / 1000 );
-        const request = await axios.post(`/api/conv/user_id=${theUser.id}`, {
+        const request = await axios.post(`/api/convs/user_id=${theUser.id}`, {
             name: null,
             created_at : timestamp,
             created_by : theUser.id,
@@ -190,7 +197,7 @@ function ContactContextProvider(props) {
                 }
             })], false);
             //DB UPDATE
-            const request2 = await axios.put(`/api/contact/id=${id}&user_id=${theUser.id}`, {
+            const request2 = await axios.put(`/api/contacts/id=${id}&user_id=${theUser.id}`, {
                 created_at: timestamp,
                 status: 2,
                 conv_id: conv_id
@@ -214,7 +221,7 @@ function ContactContextProvider(props) {
                 return contact;
             }
         })], false);
-        const request = await axios.put(`/api/contact/id=${id}&user_id=${theUser.id}`, {
+        const request = await axios.put(`/api/contacts/id=${id}&user_id=${theUser.id}`, {
             status: 3
         });
         if(request.status === 200){
@@ -234,7 +241,7 @@ function ContactContextProvider(props) {
             }
         ], false) */
         //Request to db
-        const request = await axios.delete(`/api/contact/id=${id}&user_id=${theUser.id}`);
+        const request = await axios.delete(`/api/contacts/id=${id}&user_id=${theUser.id}`);
         if(request.data.message === 1){
             console.log("request cancelled");
             mutate(url);
@@ -252,8 +259,8 @@ function ContactContextProvider(props) {
             id: uuid()
         }], false); */
         //Request to db
-        const request2 = await axios.delete(`/api/conv/id=${conv_id}&user_id=${theUser.id}`);
-        const request = await axios.delete(`/api/contact/id=${id}&user_id=${theUser.id}`);
+        const request2 = await axios.delete(`/api/convs/id=${conv_id}&user_id=${theUser.id}`);
+        const request = await axios.delete(`/api/contacts/id=${id}&user_id=${theUser.id}`);
         if(request.status === 200 && request2.status === 200){
             console.log("requests confirmed");
             mutate(usersurl);
@@ -276,8 +283,8 @@ function ContactContextProvider(props) {
                 return contact;
             }
         })], false)
-        await axios.delete(`/api/conv/id=${conv_id}&user_id=${theUser.id}`);
-        const request2 = await axios.put(`/api/contact/id=${id}&user_id=${theUser.id}`, {
+        await axios.delete(`/api/convs/id=${conv_id}&user_id=${theUser.id}`);
+        const request2 = await axios.put(`/api/contacts/id=${id}&user_id=${theUser.id}`, {
             status: 3,
             conv_id: null,
         });
@@ -296,6 +303,7 @@ function ContactContextProvider(props) {
             contacts,
             users: usersdata,
             userserror: userserror,
+            getSingleContact,
             acceptRequest,
             rejectRequest,
             deleteContact,

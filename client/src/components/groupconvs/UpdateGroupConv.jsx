@@ -109,7 +109,7 @@ function UpdateGroupConv({match, history}) {
 
     async function getCurrentConv(){
         if(id){
-            const request = await axios.get(`/api/groupconv/id=${id}&user_id=${theUser.id}`);
+            const request = await axios.get(`/api/groupconvs/id=${id}&user_id=${theUser.id}`);
             const conv = request.data;
             conv.displayName = conv.name;
             conv.imageUrl = conv.photo_url ? `${imgPath}/${conv.photo_url}` : profilespic;
@@ -145,7 +145,7 @@ function UpdateGroupConv({match, history}) {
         if(conv.name !== formData.name || formData.userids.length){
             //Update conversation
             const timestamp = Math.floor(new Date().getTime() / 1000 );
-            const request = await axios.put(`/api/conv/id=${conv.id}&user_id=${theUser.id}`, {
+            const request = await axios.put(`/api/convs/id=${conv.id}&user_id=${theUser.id}`, {
                 name: formData.name,
                 photo_url : null
             });
@@ -153,7 +153,7 @@ function UpdateGroupConv({match, history}) {
                 //Create user_conv row for the newly added contacts
                 await Promise.all(formData.userids.map(async (userid) => {
                     console.log(userid);
-                    const request = await axios.post(`/api/userconv/user_id=${theUser.id}`, {
+                    const request = await axios.post(`/api/userconvs/user_id=${theUser.id}`, {
                         user_id : userid,
                         conv_id : conv.id,
                         created_at : timestamp,
@@ -174,7 +174,7 @@ function UpdateGroupConv({match, history}) {
             console.log("not authorized!");
             return false;
         }
-        const request = await axios.delete(`/api/conv/id=${conv.id}&user_id=${theUser.id}`);
+        const request = await axios.delete(`/api/convs/id=${conv.id}&user_id=${theUser.id}`);
         console.log(request.data);
         if(request.status === 200){
             mutate(groupurl);
@@ -186,7 +186,7 @@ function UpdateGroupConv({match, history}) {
     //FUNCTIE VERPLAATSEN NAAR CONVCONTEXT?
     async function deleteUserFromGroup(user_conv_id){
         if(conv.user_conv.length > 3){
-            const request = await axios.delete(`/api/userconv/id=${user_conv_id}&user_id=${theUser.id}`);
+            const request = await axios.delete(`/api/userconvs/id=${user_conv_id}&user_id=${theUser.id}`);
             console.log(request);
             if(request.data === 1){
                 console.log("user deleted");

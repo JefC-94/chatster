@@ -51,7 +51,7 @@ function CreateGroupConv({match, history}) {
         if(formData.userids.length >= 2){
             //Create new conversation
             const timestamp = Math.floor(new Date().getTime() / 1000 );
-            const request = await axios.post(`/api/conv/user_id=${theUser.id}`, {
+            const request = await axios.post(`/api/convs/user_id=${theUser.id}`, {
                 name: formData.name,
                 created_at : timestamp,
                 created_by : theUser.id,
@@ -61,7 +61,7 @@ function CreateGroupConv({match, history}) {
             const new_convid = request.data; 
             if(request.status === 200){
                 //Create user_conv row for the creating user
-                const request2 = await axios.post(`/api/userconv/user_id=${theUser.id}`, {
+                const request2 = await axios.post(`/api/userconvs/user_id=${theUser.id}`, {
                     user_id : theUser.id,
                     conv_id : new_convid,
                     created_at : timestamp,
@@ -69,7 +69,7 @@ function CreateGroupConv({match, history}) {
                 if(request2.status === 200){
                     //create user_conv row for every userid in formdata
                     formData.userids.forEach(async (userid) => {
-                        const request = await axios.post(`/api/userconv/user_id=${theUser.id}`, {
+                        const request = await axios.post(`/api/userconvs/user_id=${theUser.id}`, {
                             user_id : userid,
                             conv_id : new_convid,
                             created_at : timestamp,
