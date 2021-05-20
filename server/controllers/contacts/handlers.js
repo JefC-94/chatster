@@ -1,4 +1,4 @@
-const knex = require('../db');
+const knex = require('../../db');
 
 const contacts = async (req, res) => {
 
@@ -112,10 +112,12 @@ const updateContact = async (req, res) => {
     }
 }
 
-module.exports.contacts = contacts;
-module.exports.contactsByUser = contactsByUser;
-module.exports.contact = contact;
-module.exports.otherUsers = otherUsers;
-module.exports.createContact = createContact;
-module.exports.deleteContact = deleteContact;
-module.exports.updateContact = updateContact;
+module.exports = {
+    contacts,
+    contactsByUser,
+    contact,
+    otherUsers,
+    createContact,
+    deleteContact,
+    updateContact
+}

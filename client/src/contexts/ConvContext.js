@@ -32,7 +32,6 @@ function ConvContextProvider(props) {
     const url = `/api/convs/user_id=${theUser.id}`;
 
     const fetcher = url => axios.get(url).then(response => {
-        //console.log(response.data);
         if(response.data){
             return response.data;
         } else {
@@ -50,7 +49,6 @@ function ConvContextProvider(props) {
     const groupurl = `/api/groupconvs/user_id=${theUser.id}`;
 
     const groupfetcher = url => axios.get(url).then(response => {
-        console.log(response.data);
         if(response.data){
             return response.data;
         } else {

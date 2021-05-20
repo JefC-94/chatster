@@ -1,4 +1,4 @@
-const knex = require('../db');
+const knex = require('../../db');
 
 const groupconvs = async (req, res) => {
 
@@ -52,5 +52,7 @@ const groupconv = async (req, res) => {
 }
 
 
-module.exports.groupconvs = groupconvs;
-module.exports.groupconv = groupconv;
+module.exports = {
+    groupconvs,
+    groupconv
+}

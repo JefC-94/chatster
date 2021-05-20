@@ -1,4 +1,4 @@
-const knex = require('../db');
+const knex = require('../../db');
 
 const convsByUser = async (req, res) => {
 
@@ -31,8 +31,6 @@ const conv = async (req, res) => {
     queryConv.contact.user_1 = await knex('users').where('id', queryConv.contact.user_1).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();
     queryConv.contact.user_2 = await knex('users').where('id', queryConv.contact.user_2).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();
     queryConv.lastMessage = await knex('message').where('conv_id', queryConv.id).orderBy('created_at', 'desc').first();
-
-    console.log(queryConv);
     
     res.send(queryConv);
 
@@ -72,53 +70,10 @@ const updateConv = async (req, res) => {
     res.json(updateConvQuery[0]);
 }
 
-
-const messages = async (req, res) => {
-
-    const offset = (req.params.page - 1) * req.params.per_page;
-
-    const all = await knex('message')
-    .where('conv_id', req.params.conv_id);
-
-    const count = all.length;
-
-    const messagesQuery = await knex('message')
-    .join('users', 'message.user_id', '=', 'users.id')
-    .orderBy('message.created_at', 'desc')
-    .limit(req.params.per_page).offset(offset)
-    .where('conv_id', req.params.conv_id)
-    .select('message.*');
-
-    for(singleMessage of messagesQuery){
-        singleMessage.user_id = await knex('users').where('id', singleMessage.user_id).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();
-    }
-
-    res.json({records: messagesQuery, results: count});
-
+module.exports = {
+    convsByUser,
+    conv,
+    createConv,
+    updateConv,
+    deleteConv
 }
-
-const createMessage = async (req, res) => {
-
-    const createMessageQuery = await knex('message').insert({
-        conv_id : req.body.conv_id, 
-        user_id: req.body.user_id, 
-        body: req.body.body, 
-        created_at: req.body.created_at
-    });
-
-    res.send(createMessageQuery);
-
-}
-
-
-
-
-module.exports.convsByUser = convsByUser;
-module.exports.createConv = createConv;
-module.exports.deleteConv = deleteConv;
-module.exports.updateConv = updateConv;
-
-module.exports.conv = conv;
-
-module.exports.messages = messages;
-module.exports.createMessage = createMessage;

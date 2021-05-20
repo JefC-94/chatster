@@ -2,6 +2,8 @@ const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 
+const mainRouter = require("./controllers");
+
 const app = express();
 
 const path = require('path');
@@ -19,9 +21,11 @@ app.use(cors({origin: 'http://localhost:3000'}));
 app.use(express.static(path.resolve(__dirname, '../client/build')));
 
 // Require Route
-const api = require('./routes/routes');
+/* const api = require('./routes/routes');
 // Configure app to use route
-app.use('/api/', api);
+app.use('/api/', api); */
+
+mainRouter(app); 
 
 app.get('*', function (req, res) {
     res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));

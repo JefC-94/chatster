@@ -16,7 +16,7 @@ function UserContextProvider(props) {
     }
 
     const registerUser = async (user) => {
-        const register = await axios.post('/api/register', {
+        const register = await axios.post('/api/auth/register', {
             username: user.username,
             email: user.email,
             password: user.password
@@ -26,7 +26,7 @@ function UserContextProvider(props) {
     }
 
     const loginUser = async (user) => {
-        const login = await axios.post('/api/login', {
+        const login = await axios.post('/api/auth/login', {
             email: user.email,
             password: user.password
         });
@@ -35,7 +35,7 @@ function UserContextProvider(props) {
     }
 
     const editUser = async (user) => {
-        const edit = await axios.put('/api/edit', {
+        const edit = await axios.put('/api/auth/edit', {
             id: user.id,
             username: user.username,
             oldPassword: user.oldPassword,
@@ -52,7 +52,7 @@ function UserContextProvider(props) {
             //Adding JWT token to axios default header
             axios.defaults.headers.common['x-access-token'] = loginToken;
 
-            const {data} = await axios.get('/api/me');
+            const {data} = await axios.get('/api/auth/me');
 
             console.log(data);
 

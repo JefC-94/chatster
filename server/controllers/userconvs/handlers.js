@@ -1,4 +1,4 @@
-const knex = require('../db');
+const knex = require('../../db');
 
 const createUserConv = async (req, res) => {
 
@@ -19,5 +19,7 @@ const deleteUserConv = async (req, res) => {
     res.json(deleteUserConvQuery);
 }
 
-module.exports.createUserConv = createUserConv;
-module.exports.deleteUserConv = deleteUserConv;
+module.exports = {
+    createUserConv,
+    deleteUserConv
+}

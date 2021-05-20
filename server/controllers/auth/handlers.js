@@ -1,8 +1,7 @@
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
-var config = require('../config');
-const knex = require('../db');
-
+var config = require('../../config');
+const knex = require('../../db');
 
 const register = async (req, res) => {
 
@@ -98,7 +97,9 @@ const logout = async (req, res) => {
 }
 
 
-module.exports.register = register;
-module.exports.me = me;
-module.exports.login = login;
-module.exports.logout = logout;
+module.exports = {
+    register,
+    me,
+    login,
+    logout
+}

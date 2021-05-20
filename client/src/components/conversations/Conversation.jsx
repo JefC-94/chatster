@@ -70,7 +70,6 @@ function Conversation({conv, setCurrentConv, getCurrentConv, basePath}) {
     //add the different arrays/pages of data into the messages array + set Total Count!
     useEffect(() => {
         if(data){
-            console.log(data);
             setMessages(data.reduce((acc, val) => acc.concat(val.records), []));
             data[0].results ? setTotalCount(data[0].results) : setTotalCount(0);
         }
@@ -180,7 +179,7 @@ function Conversation({conv, setCurrentConv, getCurrentConv, basePath}) {
         //if(conv.user_conv.length > 3){
             const user_conv_id = conv.user_conv.filter(user_conv => user_conv.user_id.id === theUser.id)[0];
             console.log(user_conv_id.id);
-            const request = await axios.delete(`/api/userconv/id=${user_conv_id.id}&user_id=${theUser.id}`);
+            const request = await axios.delete(`/api/userconvs/id=${user_conv_id.id}&user_id=${theUser.id}`);
             console.log(request.data.message);
             if(request.status === 200){
                 mutate(groupurl);
