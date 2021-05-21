@@ -23,7 +23,7 @@ const bodyParser = require('body-parser');
 
 const jsonParser = bodyParser.json()
 
-//CONV ROUTES
+//CONVS ROUTES
 
 router.get('/user_id=:user_id', verifyToken, authCheck, convsByUser);
 

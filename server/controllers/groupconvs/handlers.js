@@ -38,12 +38,19 @@ const groupconv = async (req, res) => {
     .select('conversation.*')
     .first();
 
+    //Get the other users in this conversation
     const userConvs2 = await knex('user_conv').where('conv_id', queryGroupConv.id).select('id','user_id','created_at');
 
-        for(userConv of userConvs2){
-            const queryUser = await knex('users').where('id', +userConv.user_id).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();
-            userConv.user_id = queryUser;
-        }
+    //CHECK Auth: user should be one of the user_ids in the userConvs: if not, he's unauthorized
+    const checkUsers = userConvs2.filter(userConv => userConv.user_id === req.user_id)[0];
+    if(!checkUsers){
+        return res.json({success:0, status:401 ,message:'Not allowed to see group conversations from other users'});
+    }
+
+    for(userConv of userConvs2){
+        const queryUser = await knex('users').where('id', +userConv.user_id).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();
+        userConv.user_id = queryUser;
+    }
 
     queryGroupConv.user_conv = userConvs2;
 

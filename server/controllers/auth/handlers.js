@@ -162,11 +162,8 @@ const edit = async (req, res) => {
                 res.json({success: 1, status: 200, message: updateUserQuery});
 
             }
-
         }
-
     });
-
 }
 
 const logout = async (req, res) => {

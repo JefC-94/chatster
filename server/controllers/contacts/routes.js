@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 
 const {
-    contacts,
     contactsByUser,
     contact,
     otherUsers,
@@ -33,7 +32,8 @@ const jsonParser = bodyParser.json()
 // authCheck compares with route param user_id
 router.get('/user_id=:user_id', verifyToken, authCheck, contactsByUser);
 
-router.get('/', contacts);
+//Route to get all contacts -> disable
+router.get('/', (req, res) => {res.send('route not activated')});
 
 router.get('/id=:id&user_id=:user_id', verifyToken, authCheck, contact);
 
