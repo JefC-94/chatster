@@ -112,24 +112,25 @@ function Profile({match}) {
     async function onFileUpload(){
         setImgError(false);
         const formData = new FormData();
-        const url = process.env.NODE_ENV === 'development' ? 'http://localhost:8080/messaging-app/server' : 'https://chatster.be/server';
-
+        
         if(selectedFile){
             formData.append('fileToUpload', selectedFile,
                 selectedFile.name, 
             );
         }
-        formData.append('id', theUser.id);
+        //formData.append('id', theUser.id);
         
-        const request = await axios.post(`${url}/upload.php`, formData, {
+        const request = await axios.post(`/api/fileupload/profile&user_id=${theUser.id}`, formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
             }
         });
         console.log(request.data);
-        if(request.data.status === 201){
+        if(request.data.success){
             setImgUpdated(true);
             setImgError(false);
+            setTimeout(() => setImgUpdated(false), 800);
+            setTimeout(() => setSelectedFile(), 800);
             isLoggedIn();
             setSnackBar({open: true, message: "Profile picture updated"});
         } else {
@@ -158,7 +159,7 @@ function Profile({match}) {
                                 {theUser.photo_url && imgUpdated && <FaCheck />}
                                 
                             </label>
-                            <input type="file" id="profile-pic" onChange={onFileChange} />
+                            <input type="file" name="fileToUpload" id="profile-pic" onChange={onFileChange} />
                             {selectedFile &&
                             <>
                             <p className="filename">{selectedFile.name}</p>

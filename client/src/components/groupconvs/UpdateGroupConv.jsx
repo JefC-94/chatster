@@ -216,26 +216,26 @@ function UpdateGroupConv({match, history}) {
             return false;
         }
         const formData = new FormData();
-        const url = process.env.NODE_ENV === 'development' ? 'http://localhost:8080/messaging-app/server' : 'https://chatster.be/server';
-
+        
         if(selectedFile){
-            formData.append('fileToUpload', selectedFile,
-                selectedFile.name, 
+            formData.append('fileToUpload', selectedFile
             );
         }
-        formData.append('id', conv.id);
         
-        const request = await axios.post(`${url}/conv_img_upload.php`, formData, {
+        const request = await axios.post(`/api/fileupload/conv-img&id=${conv.id}`, formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
             }
         });
         console.log(request.data);
-        if(request.data.status === 201){
+        if(request.data.success){
             setImgUpdated(true);
             setImgError(false);
-            setSnackBar({open: true, message: "Group picture updated"});
+            getCurrentConv();
             mutate(groupurl);
+            setTimeout(() => setImgUpdated(false), 800);
+            setTimeout(() => setSelectedFile(), 800);
+            setSnackBar({open: true, message: "Group picture updated"});
         } else {
             setImgUpdated(false);
             setSelectedFile();
@@ -247,24 +247,29 @@ function UpdateGroupConv({match, history}) {
     return (
         <main className="dashboard-main groupconv-main container">
             <div className="groupconvs-header">
-                <h2>Update Group Chat</h2>
-                <button className="button secondary" onClick={() => {setShowImageForm(prevVal => !prevVal)}}>Edit picture</button>
-                <Dialog
-                    title="Delete Conversation"
-                    open={dialOpen}
-                    setOpen={setDialOpen}
-                    onConfirm={deleteGroupConv}
-                >
-                    Are you sure you want to delete this group chat?
-                </Dialog>
+                <div className="groupconvs-header-center">
+                    <h2>Update Group Chat</h2>
+                    <Dialog
+                        title="Delete Conversation"
+                        open={dialOpen}
+                        setOpen={setDialOpen}
+                        onConfirm={deleteGroupConv}
+                    >
+                        Are you sure you want to delete this group chat?
+                    </Dialog>
+                </div>
+                <Link to={`/${basePath}/conversations`} id="cancelEditBtn" className="button secondary">Back</Link>
+            </div>
+            <div className="groupconvs-below-header">
+            <button className="button secondary" onClick={() => {setShowImageForm(prevVal => !prevVal)}}>Edit picture</button>
             </div>
             {conv && showImageForm && <div className="form-profile-picture">
                 <img src={selectedUrl} alt="profilespic" />
                 <div className="profile-picture-change flex">
                     <label htmlFor="profile-pic">
-                        {!theUser.photo_url && !selectedFile && <FaPlus />}
-                        {theUser.photo_url && !selectedFile && <AiOutlineReload />}
-                        {theUser.photo_url && imgUpdated && <FaCheck />}
+                        {!conv.photo_url && !selectedFile && <FaPlus />}
+                        {conv.photo_url && !selectedFile && <AiOutlineReload />}
+                        {conv.photo_url && imgUpdated && <FaCheck />}
                     </label>
                     <input type="file" id="profile-pic" onChange={onFileChange} />
                     {selectedFile &&
@@ -344,7 +349,7 @@ function UpdateGroupConv({match, history}) {
                 </form>
                 </div>}
             <div className="navigation navigation-center">
-                <Link to={`/${basePath}/conversations`} className="button secondary">Back</Link>
+                
             </div>
         </main>
     )

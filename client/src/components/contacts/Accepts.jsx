@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {Link} from 'react-router-dom';
-import {UserContext} from '../../contexts/UserContext';
 import {ContactContext} from '../../contexts/ContactContext';
 import Accept from './Accept';
 import {imgPath} from '../../Constants';
@@ -10,10 +9,6 @@ import {FaTimes} from 'react-icons/fa';
 
 function Accepts({id, basePath}) {
    
-    //USER
-    const {rootState} = useContext(UserContext);
-    const {theUser} = rootState;
-
     //CONTEXTS
     const {contacts, getSingleContact} = useContext(ContactContext);
     const {accepts} = contacts;

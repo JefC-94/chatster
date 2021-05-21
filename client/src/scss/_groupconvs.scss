@@ -6,9 +6,27 @@
 } 
 
 .groupconvs-header{
-    width:400px;
+    width:100%;
     @include flex(row, space-between, center);
     margin:0.5em auto;
+
+    #cancelEditBtn{
+        position:absolute;
+        top: 1.5em;
+        right:1.5em;
+    }
+
+    .groupconvs-header-center{
+        width:400px;
+        @include flex(row, center, center);
+        margin:0 auto;
+    }
+}
+
+.groupconvs-below-header{
+    width:400px;
+    @include flex(row, space-between, center);
+    margin:1em auto;
 }
 
 .groupconvs-wrap{
@@ -92,6 +110,13 @@
                 }
             }
         }       
+    }
+}
+
+@media screen and (max-width:$smallscreen){
+
+    .groupconvs-header-center{
+        margin-right:100px;
     }
 }
 

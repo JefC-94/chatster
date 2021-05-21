@@ -5,7 +5,7 @@ import {UserContext} from '../../contexts/UserContext';
 function Register({setShowLogin}){
     
     //USER
-    const {rootState, registerUser, loginUser, isLoggedIn} = useContext(UserContext);
+    const {rootState, registerUser, isLoggedIn} = useContext(UserContext);
     const {isAuth} = rootState;
 
     //STATES

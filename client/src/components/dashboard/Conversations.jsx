@@ -1,13 +1,9 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {useParams, Link} from 'react-router-dom';
-import {UserContext} from '../../contexts/UserContext';
 import {ConvContext} from '../../contexts/ConvContext';
 import {WindowContext} from '../../contexts/WindowContext';
 import Conversation from '../conversations/Conversation';
 import ConvList from '../conversations/ConvList';
-import {imgPath} from '../../Constants';
-import profilepic from '../../images/profile-blanc.svg';
-import profilespic from '../../images/profile-blanc.svg';
 import DashboardNav from '../ui/DashboardNav';
 
 function Conversations({match}) {
@@ -23,10 +19,6 @@ function Conversations({match}) {
     //CONTEXTS
     const {windowWidth} = useContext(WindowContext);
     const {convserror, grouperror, convs, getSingleConv} = useContext(ConvContext);
-
-    //USER
-    const {rootState} = useContext(UserContext);
-    const {theUser} = rootState;
     
     //STATES
     //this is the current active conversation, defined here because it can be set by id as well as click function on convItems

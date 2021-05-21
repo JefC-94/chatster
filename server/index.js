@@ -20,10 +20,7 @@ app.use(cors({origin: 'http://localhost:3000'}));
 
 app.use(express.static(path.resolve(__dirname, '../client/build')));
 
-// Require Route
-/* const api = require('./routes/routes');
-// Configure app to use route
-app.use('/api/', api); */
+app.use('/server/uploads', express.static(process.cwd() + '/server/uploads'));
 
 mainRouter(app); 
 
