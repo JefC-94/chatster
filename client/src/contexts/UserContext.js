@@ -16,10 +16,12 @@ function UserContextProvider(props) {
     }
 
     const registerUser = async (user) => {
+        const timestamp = Math.floor(new Date().getTime() / 1000 );
         const register = await axios.post('/api/auth/register', {
             username: user.username,
             email: user.email,
-            password: user.password
+            password: user.password,
+            created_at: timestamp
         });
         
         return register.data;
@@ -35,11 +37,13 @@ function UserContextProvider(props) {
     }
 
     const editUser = async (user) => {
+        const timestamp = Math.floor(new Date().getTime() / 1000 );
         const edit = await axios.put('/api/auth/edit', {
             id: user.id,
             username: user.username,
             oldPassword: user.oldPassword,
-            newPassword: user.newPassword
+            newPassword: user.newPassword,
+            updated_at: timestamp
         });
         return edit.data;
     }

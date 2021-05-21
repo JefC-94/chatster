@@ -70,21 +70,17 @@ function Profile({match}) {
         e.preventDefault();
 
         if(!userInfo.username){
-            setError({
-                type:"username",
-                message:"Please fill in a new username.",
-            });
+            setError({ type:"username", message:"Please fill in a new username."});
             return;
         }
         if(!userInfo.oldPassword){
-            setError({
-                type: "old-password",
-                message: "Please fill in your current password."
-            });
+            setError({ type: "old-password", message: "Please fill in your current password."});
             return;
         }
         setError(false);
+
         const data = await editUser(userInfo);
+        
         if(data.success){
             isLoggedIn();
             setUserInfo({
@@ -93,11 +89,12 @@ function Profile({match}) {
                 newPassword: ''
             });
             setSnackBar({open: true, message: 'You have successfully updated your profile'});
+            setChangePassword(false);
         }
-        else{
+        else {
             setError({
-                type: JSON.parse(data.message).type,
-                message: JSON.parse(data.message).message
+                type: data.message.type,
+                message: data.message.message
             });
         }
     }

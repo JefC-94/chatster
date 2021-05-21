@@ -300,7 +300,7 @@ function UpdateGroupConv({match, history}) {
                                             <img src={user_conv.user_id.photo_url ? `${imgPath}/${user_conv.user_id.photo_url}` : profilepic} alt="profile-pic" />
                                             <p>{user_conv.user_id.username}</p>
                                         </div>
-                                        <button type="button" className="button secondary" onClick={() => {deleteUserFromGroup(user_conv.id)}}>{user_conv.id} Remove</button>
+                                        <button type="button" className="button secondary" onClick={() => {deleteUserFromGroup(user_conv.id)}}>Remove</button>
                                     </div>
                                 )
                             })}

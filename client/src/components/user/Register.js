@@ -24,44 +24,31 @@ function Register({setShowLogin}){
     const submitForm = async (event) => {
         event.preventDefault();
         if(!userInfo.username){
-            setError({
-                type: "username",
-                message:'Whoops! Please fill in a username.'
-            });
+            setError({ type: "username", message:'Please fill in a username'});
             return;
         }
         if(!userInfo.email){
-            setError({
-                type: "email",
-                message: 'Please fill in an email.'
-            });
+            setError({ type: "email", message: 'Please fill in an email'});
             return;
         }
         if(!userInfo.password){
-            setError({
-                type: "password",
-                message: "Please fill in a password."
-            });
+            setError({ type: "password", message: "Please fill in a password"});
             return;
         }
         setError(false);
+        
         const data = await registerUser(userInfo);
-        if(data.success){
-            //setUserInfo({...initialState});
-            console.log(data.message);
-            const login = await loginUser(userInfo);
-            if(login.success && login.token){
-                //setUserInfo({...initialState});
-                localStorage.setItem('loginToken', login.token);
-                await isLoggedIn();
-            }
+        
+        if(data.success && data.token){
+            setUserInfo({...initialState});
+            localStorage.setItem('loginToken', data.token);
+            await isLoggedIn();
         }
-        else{
+        else {
             setError({
-                type: JSON.parse(data.message).type,
-                message: JSON.parse(data.message).message
+                type: data.message.type,
+                message: data.message.message
             });
-            console.log(data);
         }
     }
 

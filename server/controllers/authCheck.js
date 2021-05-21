@@ -7,7 +7,7 @@
 
 function authCheck(req, res, next){
 
-    //Check both parameters to see if we still get the right types and values
+    //Small console printout to check both parameters to see if we still get the right types and values
     //console.log({auth: req.user_id, param: +req.params.user_id});
 
     if(req.user_id !== +req.params.user_id){

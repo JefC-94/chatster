@@ -259,8 +259,15 @@ function ContactContextProvider(props) {
             id: uuid()
         }], false); */
         //Request to db
-        const request2 = await axios.delete(`/api/convs/id=${conv_id}&user_id=${theUser.id}`);
         const request = await axios.delete(`/api/contacts/id=${id}&user_id=${theUser.id}`);
+        const request2 = await axios.delete(`/api/convs/id=${conv_id}&user_id=${theUser.id}`);
+
+        //after request is sent, check statuscode: example for david!
+        /* if(request.status === 401){
+            //he never does this part of the code!
+            console.log(request.data.message);
+        } */
+
         if(request.status === 200 && request2.status === 200){
             console.log("requests confirmed");
             mutate(usersurl);

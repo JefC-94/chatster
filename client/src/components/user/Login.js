@@ -33,22 +33,17 @@ function Login({setShowLogin}){
         event.preventDefault();
         
         if(!userInfo.email){
-            setError({
-                type: "email",
-                message: 'Please fill in your email.'
-            });
+            setError({ type: "email", message: 'Please fill in your email.' });
             return;
         }
         if(!userInfo.password){
-            setError({
-                type: "password",
-                message: "Please fill in your password."
-            });
+            setError({type: "password", message: "Please fill in your password." });
             return;
         }
         setError(false);
         
         const data = await loginUser(userInfo);
+
         if(data.success && data.token){
             setUserInfo({...initialState});
             localStorage.setItem('loginToken', data.token);
@@ -56,8 +51,8 @@ function Login({setShowLogin}){
         }
         else{
             setError({
-                type: JSON.parse(data.message).type,
-                message: JSON.parse(data.message).message
+                type: data.message.type,
+                message: data.message.message
             });
         }
     }

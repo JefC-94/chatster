@@ -64,7 +64,7 @@ const createContact = async (req, res) => {
             status: req.body.status
         });
     
-        res.json(createContactQuery[0]);
+        res.json(createContactQuery);
     
     } else {
 
@@ -76,12 +76,15 @@ const createContact = async (req, res) => {
 const deleteContact = async (req, res) => {
 
     //Check if one of the contact users is the current user -> query first!
-    const queryContact = await knex('contact').where('id', req.params.id);
+    const queryContact = await knex('contact').where('id', req.params.id).first();
 
-    if(queryContact[0].user_1 === req.user_id || queryContact[0].user_2 === req.user_id){
+    if(queryContact.user_1 === req.user_id || queryContact.user_2 === req.user_id){
         
         const deleteContactQuery = await knex('contact').where('id', req.params.id).del();
-        res.json({success: 1, status: 200, message: deleteContactQuery});
+        //res.json({success: 1, status: 200, message: deleteContactQuery});
+        
+        res.status(401).json({success: 0, message: 'Wrong password'});
+
 
     } else {
 
@@ -93,9 +96,9 @@ const deleteContact = async (req, res) => {
 const updateContact = async (req, res) => {
 
     //Check if one of the contact users is the current user -> query first!
-    const queryContact = await knex('contact').where('id', req.params.id);
+    const queryContact = await knex('contact').where('id', req.params.id).first();
 
-    if(queryContact[0].user_1 === req.user_id || queryContact[0].user_2 === req.user_id){
+    if(queryContact.user_1 === req.user_id || queryContact.user_2 === req.user_id){
        
         const updateContactQuery = await knex('contact').where('id', req.params.id)
         .update({
@@ -104,7 +107,7 @@ const updateContact = async (req, res) => {
             status: req.body.status
         });
 
-        res.json(updateContactQuery[0]);
+        res.json(updateContactQuery);
 
     } else {
 
