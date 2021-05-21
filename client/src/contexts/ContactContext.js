@@ -125,7 +125,7 @@ function ContactContextProvider(props) {
             status: 1
         });
         if(request.status === 200){
-            console.log("request sent");
+            console.log(request.data);
             mutate(url);
             mutate(usersurl);
             setSnackBar({open: true, message: 'Request has been sent'});

@@ -66,10 +66,12 @@ const createContact = async (req, res) => {
     //REAL WORLD ENVIRONMENT: Not possible to create contact with status "2" -> allow this for examplary "add to contacts" button
 
     //Check if conv_id is already used in another contact
-    const checkForConvId = await knex('contact').where('conv_id', req.body.conv_id).first();
-    if(checkForConvId){
-        return res.json({success:0,status:401,message:'This conversation id is not valid to use'});
-    }
+    if(req.body.conv_id !== null){
+        const checkForConvId = await knex('contact').where('conv_id', req.body.conv_id).first();
+        if(checkForConvId){
+            return res.json({success:0,status:401,message:'This conversation id is not valid to use'});
+        }
+    }    
 
     const createContactQuery = await knex('contact').insert({
         user_1: req.body.user_1,
