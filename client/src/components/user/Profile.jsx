@@ -79,22 +79,17 @@ function Profile({match}) {
         }
         setError(false);
 
-        const data = await editUser(userInfo);
-        
-        if(data.success){
+        try{
+            const data = await editUser(userInfo);
             isLoggedIn();
-            setUserInfo({
-                ...userInfo,
-                oldPassword: '',
-                newPassword: ''
-            });
+            setUserInfo(initialState);
             setSnackBar({open: true, message: 'You have successfully updated your profile'});
             setChangePassword(false);
-        }
-        else {
+        } catch(error){
+            console.log(error.response.data.message);
             setError({
-                type: data.message.type,
-                message: data.message.message
+                type: error.response.data.type,
+                message: error.response.data.message
             });
         }
     }

@@ -42,17 +42,16 @@ function Login({setShowLogin}){
         }
         setError(false);
         
-        const data = await loginUser(userInfo);
-
-        if(data.success && data.token){
+        try{
+            const data = await loginUser(userInfo);
             setUserInfo({...initialState});
             localStorage.setItem('loginToken', data.token);
             await isLoggedIn();
-        }
-        else{
+        }catch(error){
+            console.log(error.response.data.message);
             setError({
-                type: data.message.type,
-                message: data.message.message
+                type: error.response.data.type,
+                message: error.response.data.message
             });
         }
     }

@@ -117,18 +117,22 @@ function ContactContextProvider(props) {
         //MUTATE USERS
         mutate(usersurl, [...usersdata.filter(useritem => useritem.id !== user.id)], false);
         //SEND DATABASE REQUEST
-        const request = await axios.post(`/api/contacts/user_id=${theUser.id}`, {
-            user_1: theUser.id,
-            user_2: user.id,
-            created_at: null,
-            conv_id: null,
-            status: 1
-        });
-        if(request.status === 200){
-            console.log(request.data);
+        //New style of request handling: try and catch block!!
+        try{
+            const request = await axios.post(`/api/contacts/user_id=${theUser.id}`, {
+                user_1: theUser.id,
+                user_2: user.id,
+                created_at: null,
+                conv_id: null,
+                status: 1
+            });
+            console.log(request.data.message); // ID of new contact
+            console.log('request sent');
             mutate(url);
             mutate(usersurl);
             setSnackBar({open: true, message: 'Request has been sent'});
+        } catch(error) {
+            console.log(error.response.data.message);
         }
     }
 

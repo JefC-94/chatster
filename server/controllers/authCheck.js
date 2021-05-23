@@ -11,7 +11,7 @@ function authCheck(req, res, next){
     //console.log({auth: req.user_id, param: +req.params.user_id});
 
     if(req.user_id !== +req.params.user_id){
-        return res.send({success: 0, status: 401, message:'Unauthorized: not allowed to get, update or delete info of other users!'});
+        return res.status(401).send({message: 'Unauthorized: not allowed to get, update or delete info of other users!'});
     }
 
     next();
