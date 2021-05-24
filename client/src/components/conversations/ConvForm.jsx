@@ -5,11 +5,13 @@ import {v4 as uuid} from 'uuid';
 import { MdSend } from 'react-icons/md';
 import { ConvContext } from '../../contexts/ConvContext';
 import { UserContext } from '../../contexts/UserContext';
+import {SocketContext} from '../../contexts/SocketContext';
 
 function ConvForm({conv, size, data, messMutate, setMessEvent}) {
 
     //CONTEXTS
     const {convsdata, convsurl, groupdata, groupurl} = useContext(ConvContext);
+    const socket = useContext(SocketContext);
 
     //USER
     const {rootState} = useContext(UserContext);
@@ -72,12 +74,12 @@ function ConvForm({conv, size, data, messMutate, setMessEvent}) {
                 setInputField('');
                 messMutate();
                 conv.otherUser ? mutate(convsurl) : mutate(groupurl);
-                /* socket.emit("message", {
+                socket.emit("chat-message", {
                     user_id: theUser.id, 
                     body: inputField,
                     conv_id : conv.id,
-                    datetime: datetime
-                }); */
+                    datetime: timestamp
+                });
             } catch(error){
                 console.log(error.response.data.message);
             }

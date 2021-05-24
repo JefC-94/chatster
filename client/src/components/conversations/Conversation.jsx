@@ -4,7 +4,7 @@ import {UserContext} from '../../contexts/UserContext';
 import {WindowContext} from '../../contexts/WindowContext';
 import {ConvContext} from '../../contexts/ConvContext';
 import {ModalContext} from '../../contexts/ModalContext';
-//import {SocketContext} from '../../contexts/SocketContext';
+import {SocketContext} from '../../contexts/SocketContext';
 import Message from './Message';
 import ConvForm from './ConvForm';
 import axios from 'axios';
@@ -155,23 +155,22 @@ function Conversation({conv, setCurrentConv, getCurrentConv, basePath}) {
         })]);
     }
 
-    //const socket = useContext(SocketContext);
-    /* useEffect(() => {
+    const socket = useContext(SocketContext);
+    useEffect(() => {
         if(socket === null){
             return;
         }
-        socket.on('message', addMessageToConv);
+        socket.on('chat-message', addMessageToConv);
         return () => socket.off('message');
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [socket]); */
+    }, [socket]);
 
-    /* function addMessageToConv(data){   
-        console.log("time to add message");
-        console.log(conv);
-        if(data.conv_id === conv.id){
-            fetchMessages();
+    function addMessageToConv(data){   
+        if(data.conv_id === conv.id && data.user_id !== theUser.id){
+            console.log("new message");
+            messMutate();
         }
-    } */
+    }
 
     //FUNCTIE VERPLAATSEN NAAR CONVCONTEXT?
     async function deleteUserFromGroup(){
