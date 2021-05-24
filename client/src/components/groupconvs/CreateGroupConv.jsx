@@ -50,6 +50,7 @@ function CreateGroupConv({match, history}) {
     async function onHandleFormSubmit(){
         if(formData.userids.length >= 2){
             //Create new conversation
+            try {
             const timestamp = Math.floor(new Date().getTime() / 1000 );
             const request = await axios.post(`/api/convs/user_id=${theUser.id}`, {
                 name: formData.name,
@@ -57,29 +58,39 @@ function CreateGroupConv({match, history}) {
                 created_by : theUser.id,
                 photo_url : null
             });
-            console.log(request.data);
-            const new_convid = request.data; 
-            if(request.status === 200){
-                //Create user_conv row for the creating user
-                const request2 = await axios.post(`/api/userconvs/user_id=${theUser.id}`, {
-                    user_id : theUser.id,
-                    conv_id : new_convid,
-                    created_at : timestamp,
-                });
-                if(request2.status === 200){
-                    //create user_conv row for every userid in formdata
-                    formData.userids.forEach(async (userid) => {
-                        const request = await axios.post(`/api/userconvs/user_id=${theUser.id}`, {
-                            user_id : userid,
-                            conv_id : new_convid,
-                            created_at : timestamp,
-                        });
-                        console.log(request.data);
+            console.log(request.data.message);
+            const new_convid = request.data.message;
+            
+                try{
+                    //Create user_conv row for the creating user
+                    const request2 = await axios.post(`/api/userconvs/user_id=${theUser.id}`, {
+                        user_id : theUser.id,
+                        conv_id : new_convid,
+                        created_at : timestamp,
                     });
-                    mutate(groupurl);
-                    setSnackBar({open: true, message: "Group chat created"});
-                    history.push('/dashboard/conversations');
+                    console.log(request2.data.message);
+
+                    try {
+                        //create user_conv row for every userid in formdata
+                        formData.userids.forEach(async (userid) => {
+                            const request = await axios.post(`/api/userconvs/user_id=${theUser.id}`, {
+                                user_id : userid,
+                                conv_id : new_convid,
+                                created_at : timestamp,
+                            });
+                            console.log(request.data.message);
+                        });
+                        mutate(groupurl);
+                        setSnackBar({open: true, message: "Group chat created"});
+                        history.push('/dashboard/conversations');
+                    } catch(error){
+                        console.log(error.response.data.message);
+                    }
+                } catch(error){
+                    console.log(error.response.data.message);
                 }
+            } catch(error){
+                console.log(error.response.data.message);
             }
         } else {
             setError(true);

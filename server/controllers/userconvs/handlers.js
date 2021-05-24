@@ -8,7 +8,7 @@ const createUserConv = async (req, res) => {
         created_at: req.body.created_at,
     });
 
-    res.json(createUserConvQuery[0]);
+    res.status(200).send({message: createUserConvQuery[0]});
 
 }
 
@@ -16,7 +16,7 @@ const deleteUserConv = async (req, res) => {
 
     const deleteUserConvQuery = await knex('user_conv').where('id', req.params.id).del();
 
-    res.json(deleteUserConvQuery);
+    res.status(200).send({message: deleteUserConvQuery});
 }
 
 module.exports = {

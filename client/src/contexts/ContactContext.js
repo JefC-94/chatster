@@ -4,6 +4,7 @@ import {ModalContext} from '../contexts/ModalContext';
 import axios from 'axios';
 import useSWR, {mutate} from 'swr';
 import {v4 as uuid} from 'uuid';
+import {now} from '../components/helpers/TimeSince';
 
 export const ContactContext = createContext();
 
@@ -94,10 +95,14 @@ function ContactContextProvider(props) {
     }
 
     async function getSingleContact(id){
-        let request = await axios(`/api/contacts/id=${id}&user_id=${theUser.id}`);
-        const contact = request.data;
-        contact.otherUser = contact.user_1.id === theUser.id ? contact.user_2 : contact.user_1;
-        return contact;
+        try {
+            let request = await axios(`/api/contacts/id=${id}&user_id=${theUser.id}`);
+            const contact = request.data;
+            contact.otherUser = contact.user_1.id === theUser.id ? contact.user_2 : contact.user_1;
+            return contact;
+        } catch(error){
+            console.log(error.response.data.message)
+        }
     }
 
     // CRUD FUNCTIONS FOR ADDING, DELETING AND ACCEPTING/INVITING USERS
@@ -138,61 +143,66 @@ function ContactContextProvider(props) {
 
     //SEND IMMEDIATELY ACCEPTED REQUEST -> FOR PREVIEW PURPOSES (only one or two contacts should have this option!)
     async function sendAcceptedRequest(user){
-        const timestamp = Math.floor(new Date().getTime() / 1000 );
-        const request = await axios.post(`/api/convs/user_id=${theUser.id}`, {
-            name: null,
-            created_at : timestamp,
-            created_by : theUser.id,
-            photo_url : null
-        });
-        if(request.status === 200){
-            const conv_id = request.data;
+        try {
+            //POST CONVERSATION AND RETURN NEW ID
+            const request = await axios.post(`/api/convs/user_id=${theUser.id}`, {
+                name: null,
+                created_at : now(),
+                created_by : theUser.id,
+                photo_url : null
+            });
+            const conv_id = request.data.message;
             console.log(conv_id);
-            //MUTATE CONTACTS
+            // Now MUTATE CONTACTS
             mutate(url, [...data, 
                 {
                     id: uuid(),
                     user_1: theUser,
                     user_2: user,
-                    created_at: timestamp,
+                    created_at: now(),
                     conv_id: conv_id,
                     status: 2 
                 }
             ], false);
             //MUTATE USERS
             mutate(usersurl, [...usersdata.filter(useritem => useritem.id !== user.id)], false);
-            const request2 = await axios.post(`/api/contacts/user_id=${theUser.id}`, {
-                user_1: theUser.id,
-                user_2: user.id,
-                created_at: timestamp,
-                conv_id: conv_id,
-                status: 2
-            });
-            if(request2.status === 200){
-                console.log("request sent and immediately accepted");
+            //CONTACT CREATION IN DATABASE
+            try {
+                const request2 = await axios.post(`/api/contacts/user_id=${theUser.id}`, {
+                    user_1: theUser.id,
+                    user_2: user.id,
+                    created_at: now(),
+                    conv_id: conv_id,
+                    status: 2
+                });
+                console.log(request2.data.message);
                 mutate(url);
                 mutate(usersurl);
                 setSnackBar({open: true, message: 'Contact has been added'});
+            } catch(error){
+                console.log(error.response.data.message);
             }
+        } catch(error){
+            console.log(error.response.data.message);
         }
     }
 
     async function acceptRequest(id){
-        const timestamp = Math.floor(new Date().getTime() / 1000 );
-        const request = await axios.post(`/api/convs/user_id=${theUser.id}`, {
-            name: null,
-            created_at : timestamp,
-            created_by : theUser.id,
-            photo_url : null
-        });
-        if(request.status === 200){
-            const conv_id = request.data;
+        try{
+            //Create CONV and return ID
+            const request = await axios.post(`/api/convs/user_id=${theUser.id}`, {
+                name: null,
+                created_at : now(),
+                created_by : theUser.id,
+                photo_url : null
+            });
+            const conv_id = request.data.message;
             //FAKE: update local cache!
             mutate(url, [...data.map(contact => {
                 if(contact.id === id){
                     return {
                         ...contact,
-                        created_at : timestamp,
+                        created_at : now(),
                         conv_id : conv_id,
                         status: 2 
                     }
@@ -200,16 +210,21 @@ function ContactContextProvider(props) {
                     return contact;
                 }
             })], false);
-            //DB UPDATE
-            const request2 = await axios.put(`/api/contacts/id=${id}&user_id=${theUser.id}`, {
-                created_at: timestamp,
-                status: 2,
-                conv_id: conv_id
-            });
-            if(request2.status === 200){
+            //CHANGE CONTACT STATUS IN DB
+            try {
+                const request2 = await axios.put(`/api/contacts/id=${id}&user_id=${theUser.id}`, {
+                    created_at: now(),
+                    status: 2,
+                    conv_id: conv_id
+                });
+                console.log(request2.data.message);
                 mutate(url);
                 setSnackBar({open: true, message: 'User added as contact'});
+            } catch(error){
+                console.log(error.response.data.message)
             }
+        } catch(error){
+            console.log(error.response.data.message)
         }
     }
 
@@ -225,13 +240,15 @@ function ContactContextProvider(props) {
                 return contact;
             }
         })], false);
-        const request = await axios.put(`/api/contacts/id=${id}&user_id=${theUser.id}`, {
-            status: 3
-        });
-        if(request.status === 200){
-            console.log("request rejected");
+        try {
+            const request = await axios.put(`/api/contacts/id=${id}&user_id=${theUser.id}`, {
+                status: 3
+            });
+            console.log(request.data.message);
             setSnackBar({open: true, message: 'User request has been blocked'});
             mutate(url);
+        } catch(error){
+            console.log(error.response.data.message)
         }
     }
 
@@ -245,45 +262,49 @@ function ContactContextProvider(props) {
             }
         ], false) */
         //Request to db
-        const request = await axios.delete(`/api/contacts/id=${id}&user_id=${theUser.id}`);
-        if(request.data.message === 1){
-            console.log("request cancelled");
+        try {
+            const request = await axios.delete(`/api/contacts/id=${id}&user_id=${theUser.id}`);
+            console.log(request.data.message);
             mutate(url);
             mutate(usersurl);
             setSnackBar({open: true, message: 'User invite has been cancelled'});
+        } catch(error){
+            console.log(error.response.data.message);
         }
     }
     
     async function deleteContact(id, conv_id, otherUser){
         //Mutate contacts
-        mutate(url, [...data.filter(contact => contact.id !== id)], false);
-        //Mutate users: same reason as above: don't do this!
+        //ERROR: the mutate function here deletes the contact from the data, and
+        //for some reason in the end the getConvs() function calls the deleted conv_id with no contact_id
+        //mutate(url, [...data.filter(contact => contact.id !== id)], false);
+        
+        //Mutate users: don't do this, elements get added to bottom of array and then jump
         /* mutate(usersurl, [...usersdata, {
             username: otherUser.username,
             id: uuid()
         }], false); */
+        
         //Request to db
-        const request = await axios.delete(`/api/contacts/id=${id}&user_id=${theUser.id}`);
-        const request2 = await axios.delete(`/api/convs/id=${conv_id}&user_id=${theUser.id}`);
-
-        //after request is sent, check statuscode: example for david!
-        /* if(request.status === 401){
-            //he never does this part of the code!
+        try {
+            const request = await axios.delete(`/api/convs/id=${conv_id}&user_id=${theUser.id}`);
             console.log(request.data.message);
-        } */
-
-        if(request.status === 200 && request2.status === 200){
-            console.log("requests confirmed");
-            mutate(usersurl);
-            mutate(url);
-            console.log("mutated");
-            setSnackBar({open: true, message: 'Contact has been deleted'});
+            try {
+                const request2 = await axios.delete(`/api/contacts/id=${id}&user_id=${theUser.id}`);
+                console.log(request2.data.message);
+                mutate(url);
+                mutate(usersurl);
+                setSnackBar({open: true, message: 'Contact has been deleted'});
+            } catch(error){
+                console.log(error.response.data.message);
+            }
+        } catch(error){
+            console.log(error.response.data.message);
         }
     }
 
-    // -> block = set status to 3 -> no reconnetion possible
     async function blockContact(id, conv_id){
-        mutate(url, [...data.map(contact => {
+        /* mutate(url, [...data.map(contact => {
             if(contact.id === id){
                 return {
                     ...contact,
@@ -293,16 +314,24 @@ function ContactContextProvider(props) {
             } else {
                 return contact;
             }
-        })], false)
-        await axios.delete(`/api/convs/id=${conv_id}&user_id=${theUser.id}`);
-        const request2 = await axios.put(`/api/contacts/id=${id}&user_id=${theUser.id}`, {
-            status: 3,
-            conv_id: null,
-        });
-        if(request2.status === 200){
-            console.log("contact blocked");
-            setSnackBar({open: true, message: 'Contact has been blocked'});
-            mutate(url);
+        })], false); */
+        //API Requests
+        try {
+            const request = await axios.delete(`/api/convs/id=${conv_id}&user_id=${theUser.id}`);
+            console.log(request.data.message);
+            try {
+                const request2 = await axios.put(`/api/contacts/id=${id}&user_id=${theUser.id}`, {
+                    status: 3,
+                    conv_id: null,
+                });
+                console.log(request2.data.message);
+                setSnackBar({open: true, message: 'Contact has been blocked'});
+                mutate(url);
+            } catch(error){
+                console.log(error.response.data.message);
+            }
+        } catch(error){
+            console.log(error.response.data.message);
         }
     }
 

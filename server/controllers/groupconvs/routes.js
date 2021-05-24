@@ -4,6 +4,8 @@ const router = express.Router();
 const {
     groupconvs,
     groupconv,
+    updateGroupConv,
+    deleteGroupConv,
 } = require('./handlers');
 
 //MIDDLEWARES
@@ -25,5 +27,9 @@ const jsonParser = bodyParser.json()
 router.get('/user_id=:user_id', verifyToken, authCheck, groupconvs)
 
 router.get('/id=:id&user_id=:user_id', verifyToken, authCheck, groupconv);
+
+router.put('/id=:id&user_id=:user_id', verifyToken, authCheck, jsonParser, updateGroupConv);
+
+router.delete('/id=:id&user_id=:user_id', verifyToken, authCheck, deleteGroupConv);
 
 module.exports = router;

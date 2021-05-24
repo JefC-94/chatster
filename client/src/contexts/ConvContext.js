@@ -103,12 +103,16 @@ function ConvContextProvider(props) {
     }
 
     async function getSingleConv(id){
-        const request = await axios.get(`/api/convs/id=${id}&user_id=${theUser.id}`);
-        const conv = request.data;
-        conv.otherUser = conv.contact.user_1.id === theUser.id ? conv.contact.user_2 : conv.contact.user_1;
-        conv.displayName = conv.otherUser.username;
-        conv.imageUrl = conv.otherUser.photo_url ? `${imgPath}/${conv.otherUser.photo_url}` : profilepic;
-        return conv;
+        try {
+            const request = await axios.get(`/api/convs/id=${id}&user_id=${theUser.id}`);
+            const conv = request.data;
+            conv.otherUser = conv.contact.user_1.id === theUser.id ? conv.contact.user_2 : conv.contact.user_1;
+            conv.displayName = conv.otherUser.username;
+            conv.imageUrl = conv.otherUser.photo_url ? `${imgPath}/${conv.otherUser.photo_url}` : profilepic;
+            return conv;
+        } catch(error){
+            console.log(error.response.data.message);
+        }
     }
 
     return (

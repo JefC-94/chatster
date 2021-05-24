@@ -127,3 +127,7 @@ export function timeSinceSignup(input){
         return day + " " + month + " " + year;
     }
 }
+
+export function now(){
+    return Math.floor(new Date().getTime() / 1000 );
+}

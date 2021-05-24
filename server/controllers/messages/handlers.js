@@ -8,7 +8,7 @@ const messages = async (req, res) => {
 
     //If both results are false -> unauthorized
     if(!checkIndConv && !checkGroupConv ){
-        return res.json({success:0,status:401,message:'Not authorized to view conversation between other users'});
+        return res.status(401).send({message:'Not authorized to view conversation between other users'});
     }
 
     //AFTER ALL AUTH CHECK: QUERY MESSAGES
@@ -31,7 +31,7 @@ const messages = async (req, res) => {
         singleMessage.user_id = await knex('users').where('id', singleMessage.user_id).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();
     }
 
-    res.json({records: messagesQuery, results: count});
+    res.status(200).send({records: messagesQuery, results: count});
 
 }
 
@@ -44,15 +44,15 @@ const createMessage = async (req, res) => {
 
     //If both results are false -> unauthorized
     if(!checkIndConv && !checkGroupConv ){
-        return res.json({success:0,status:401,message:'Not authorized to add to a conversation between other users'});
+        return res.status(401).send({message:'Not authorized to add to a conversation between other users'});
     }
 
     if(req.body.user_id !== req.user_id){
-        return res.json({success:0,status:401,message:'Not authorized to create message as another user'});
+        return res.status(401).send({message:'Not authorized to create message as another user'});
     }
 
     if(req.body.body === ""){
-        return res.json({success:0,status:401,message:'Cannot send empty message'});
+        return res.status(401).send({message:'Cannot send empty message'});
     }
 
     //Validate req.body.body!!
@@ -64,7 +64,7 @@ const createMessage = async (req, res) => {
         created_at: req.body.created_at
     });
 
-    res.send(createMessageQuery);
+    res.status(200).send({message: createMessageQuery[0]});
 
 }
 

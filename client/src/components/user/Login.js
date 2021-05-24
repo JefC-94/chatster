@@ -47,7 +47,7 @@ function Login({setShowLogin}){
             setUserInfo({...initialState});
             localStorage.setItem('loginToken', data.token);
             await isLoggedIn();
-        }catch(error){
+        } catch(error){
             console.log(error.response.data.message);
             setError({
                 type: error.response.data.type,

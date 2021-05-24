@@ -122,10 +122,12 @@ const updateContact = async (req, res) => {
         return res.status(401).send({message:'Cannot alter a blocked contact'});
     }
 
-    //Check if conv_id is already used in another contact
-    const checkForConvId = await knex('contact').where('conv_id', req.body.conv_id).first();
-    if(checkForConvId){
-        return res.status(401).send({message:'This conversation id is not valid to use'});
+    if(req.body.conv_id !== null){
+        //Check if conv_id is already used in another contact
+        const checkForConvId = await knex('contact').where('conv_id', req.body.conv_id).first();
+        if(checkForConvId){
+            return res.status(401).send({message:'This conversation id is not valid to use'});
+        }
     }
         
     const updateContactQuery = await knex('contact').where('id', req.params.id)

@@ -13,6 +13,7 @@ import Dialog from '../ui/Dialog';
 import { ModalContext } from '../../contexts/ModalContext';
 import {FaPlus, FaCheck} from 'react-icons/fa';
 import {AiOutlineReload} from 'react-icons/ai';
+import {now} from '../helpers/TimeSince';
 
 function UpdateGroupConv({match, history}) {
 
@@ -109,16 +110,19 @@ function UpdateGroupConv({match, history}) {
 
     async function getCurrentConv(){
         if(id){
-            const request = await axios.get(`/api/groupconvs/id=${id}&user_id=${theUser.id}`);
-            const conv = request.data;
-            conv.displayName = conv.name;
-            conv.imageUrl = conv.photo_url ? `${imgPath}/${conv.photo_url}` : profilespic;
-            //get an array of just the ids for easier check which users are in convo
-            conv.users = conv.user_conv 
-                .filter(user_conv => user_conv.user_id.id !== theUser.id)
-                .map(user_conv => user_conv.user_id.id);
-            console.log(conv);
-            setConv(conv);
+            try {
+                const request = await axios.get(`/api/groupconvs/id=${id}&user_id=${theUser.id}`);
+                const conv = request.data;
+                conv.displayName = conv.name;
+                conv.imageUrl = conv.photo_url ? `${imgPath}/${conv.photo_url}` : profilespic;
+                //get an array of just the ids for easier check which users are in convo
+                conv.users = conv.user_conv 
+                    .filter(user_conv => user_conv.user_id.id !== theUser.id)
+                    .map(user_conv => user_conv.user_id.id);
+                setConv(conv);
+            } catch(error){
+                console.log(error.response.data.message);
+            }
         }
     }
     
@@ -144,26 +148,31 @@ function UpdateGroupConv({match, history}) {
         //check if user has made changes, either changed name or adds users
         if(conv.name !== formData.name || formData.userids.length){
             //Update conversation
-            const timestamp = Math.floor(new Date().getTime() / 1000 );
-            const request = await axios.put(`/api/convs/id=${conv.id}&user_id=${theUser.id}`, {
-                name: formData.name,
-                photo_url : null
-            });
-            if(request.status === 200){
-                //Create user_conv row for the newly added contacts
+            try {
+                const request = await axios.put(`/api/groupconvs/id=${conv.id}&user_id=${theUser.id}`, {
+                    name: formData.name,
+                    photo_url : null
+                });
+                console.log(request.data.message);
+
                 await Promise.all(formData.userids.map(async (userid) => {
-                    console.log(userid);
-                    const request = await axios.post(`/api/userconvs/user_id=${theUser.id}`, {
-                        user_id : userid,
-                        conv_id : conv.id,
-                        created_at : timestamp,
-                    });
-                    console.log(request.data);
+                    try {
+                        const request = await axios.post(`/api/userconvs/user_id=${theUser.id}`, {
+                            user_id : userid,
+                            conv_id : conv.id,
+                            created_at : now(),
+                        });
+                        console.log(request.data.message);
+                    } catch(error){
+                        console.log(error.response.data.message);
+                    }
                 }));
                 mutate(groupurl);
                 getCurrentConv();
                 setSnackBar({open: true, message: 'Group chat updated'});
                 //history.push(`/dashboard/conversations/${conv.id}`);
+            } catch(error){
+                console.log(error.response.data.message);
             }
         }
     }
@@ -174,25 +183,28 @@ function UpdateGroupConv({match, history}) {
             console.log("not authorized!");
             return false;
         }
-        const request = await axios.delete(`/api/convs/id=${conv.id}&user_id=${theUser.id}`);
-        console.log(request.data);
-        if(request.status === 200){
+        try{
+            const request = await axios.delete(`/api/groupconvs/id=${conv.id}&user_id=${theUser.id}`);
+            console.log(request.data.message);
             mutate(groupurl);
             setSnackBar({open: true, message: "Group chat deleted"});
             history.push(`/dashboard/conversations`);
+        } catch(error){
+            console.log(error.response.data.message);
         }
     }
 
     //FUNCTIE VERPLAATSEN NAAR CONVCONTEXT?
     async function deleteUserFromGroup(user_conv_id){
         if(conv.user_conv.length > 3){
-            const request = await axios.delete(`/api/userconvs/id=${user_conv_id}&user_id=${theUser.id}`);
-            console.log(request);
-            if(request.data === 1){
-                console.log("user deleted");
+            try{
+                const request = await axios.delete(`/api/userconvs/id=${user_conv_id}&user_id=${theUser.id}`);
+                console.log(request.data.message);
                 getCurrentConv();
                 mutate(groupurl);
                 setSnackBar({open: true, message: 'User removed from group'});
+            } catch(error){
+                console.log(error.response.data.message);
             }
         } else {
             setError(true);

@@ -81,6 +81,7 @@ function Profile({match}) {
 
         try{
             const data = await editUser(userInfo);
+            console.log(data.message);
             isLoggedIn();
             setUserInfo(initialState);
             setSnackBar({open: true, message: 'You have successfully updated your profile'});
@@ -113,8 +114,7 @@ function Profile({match}) {
                 selectedFile.name, 
             );
         }
-        //formData.append('id', theUser.id);
-        
+        //Only request that is for now not with try/catch
         const request = await axios.post(`/api/fileupload/profile&user_id=${theUser.id}`, formData, {
             headers: {
               'Content-Type': 'multipart/form-data'

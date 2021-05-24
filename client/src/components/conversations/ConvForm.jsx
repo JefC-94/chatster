@@ -61,13 +61,14 @@ function ConvForm({conv, size, data, messMutate, setMessEvent}) {
                 //we don't know if timestamp/fullday will be true, can't set it here
             }], false); */
             //Insert into database
-            const request = await axios.post(`/api/messages/user_id=${theUser.id}`, {
-                conv_id : conv.id, 
-                user_id: theUser.id, 
-                body: inputField, 
-                created_at: timestamp
-            });
-            if(request.status === 200){
+            try {
+                const request = await axios.post(`/api/messages/user_id=${theUser.id}`, {
+                    conv_id : conv.id, 
+                    user_id: theUser.id, 
+                    body: inputField, 
+                    created_at: timestamp
+                });
+                console.log(request.data.message);
                 setInputField('');
                 messMutate();
                 conv.otherUser ? mutate(convsurl) : mutate(groupurl);
@@ -77,6 +78,8 @@ function ConvForm({conv, size, data, messMutate, setMessEvent}) {
                     conv_id : conv.id,
                     datetime: datetime
                 }); */
+            } catch(error){
+                console.log(error.response.data.message);
             }
         }
     }
