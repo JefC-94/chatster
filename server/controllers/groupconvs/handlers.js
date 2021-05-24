@@ -31,6 +31,13 @@ const groupconvs = async (req, res) => {
 
 const groupconv = async (req, res) => {
 
+    const checkGroupConv = await userInGroupConversation(req.params.id, req.user_id);
+
+    //If both results are false -> unauthorized
+    if(!checkGroupConv ){
+        return res.status(401).send({message:'Not authorized to update to a conversation between other users'});
+    }
+
     const queryGroupConv = await knex('conversation')
     .join('user_conv', 'conversation.id', '=', 'user_conv.conv_id')
     .join('users', 'user_conv.user_id', 'users.id')
@@ -38,14 +45,7 @@ const groupconv = async (req, res) => {
     .select('conversation.*')
     .first();
 
-    //Get the other users in this conversation
     const userConvs2 = await knex('user_conv').where('conv_id', queryGroupConv.id).select('id','user_id','created_at');
-
-    //CHECK Auth: user should be one of the user_ids in the userConvs: if not, he's unauthorized
-    const checkUsers = userConvs2.filter(userConv => userConv.user_id === req.user_id)[0];
-    if(!checkUsers){
-        return res.status(401).send({message: 'Not allowed to see group conversations from other users'});
-    }
 
     for(userConv of userConvs2){
         const queryUser = await knex('users').where('id', +userConv.user_id).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();
@@ -60,20 +60,11 @@ const groupconv = async (req, res) => {
 
 const deleteGroupConv = async (req, res) => {
 
-    const queryGroupConv = await knex('conversation')
-    .join('user_conv', 'conversation.id', '=', 'user_conv.conv_id')
-    .join('users', 'user_conv.user_id', 'users.id')
-    .where('conversation.id', req.params.id)
-    .select('conversation.*')
-    .first();
+    const checkGroupConv = await userInGroupConversation(req.params.id, req.user_id);
 
-    //Get the other users in this conversation
-    const userConvs2 = await knex('user_conv').where('conv_id', queryGroupConv.id).select('id','user_id','created_at');
-
-    //CHECK Auth: user should be one of the user_ids in the userConvs: if not, he's unauthorized
-    const checkUsers = userConvs2.filter(userConv => userConv.user_id === req.user_id)[0];
-    if(!checkUsers){
-        return res.status(401).send({message: 'Not allowed to update group conversations from other users'});
+    //If it is false -> unauthorized
+    if(!checkGroupConv){
+        return res.status(401).send({message:'Not authorized to delete to a conversation between other users'});
     }
 
     const deleteGroupConvQuery = await knex('conversation').where('id', req.params.id).del();
@@ -84,20 +75,11 @@ const deleteGroupConv = async (req, res) => {
 
 const updateGroupConv = async (req, res) => {
 
-    const queryGroupConv = await knex('conversation')
-    .join('user_conv', 'conversation.id', '=', 'user_conv.conv_id')
-    .join('users', 'user_conv.user_id', 'users.id')
-    .where('conversation.id', req.params.id)
-    .select('conversation.*')
-    .first();
+    const checkGroupConv = await userInGroupConversation(req.params.id, req.user_id);
 
-    //Get the other users in this conversation
-    const userConvs2 = await knex('user_conv').where('conv_id', queryGroupConv.id).select('id','user_id','created_at');
-
-    //CHECK Auth: user should be one of the user_ids in the userConvs: if not, he's unauthorized
-    const checkUsers = userConvs2.filter(userConv => userConv.user_id === req.user_id)[0];
-    if(!checkUsers){
-        return res.status(401).send({message: 'Not allowed to update group conversations from other users'});
+    //If false -> unauthorized
+    if(!checkGroupConv ){
+        return res.status(401).send({message:'Not authorized to update to a conversation between other users'});
     }
 
 
@@ -112,6 +94,31 @@ const updateGroupConv = async (req, res) => {
 
 }
 
+
+async function userInGroupConversation(conv_id, user_id){
+
+    const queryConvGroup = await knex('conversation')
+    .join('user_conv', 'conversation.id', '=', 'user_conv.conv_id')
+    .select('conversation.*')
+    .where('conversation.id', conv_id)
+    .first();
+
+    if(queryConvGroup){
+
+        //Get the other users in this conversation
+        const userConvs2 = await knex('user_conv').where('conv_id', queryConvGroup.id).select('id','user_id','created_at');
+
+        //CHECK Auth: user should be one of the user_ids in the userConvs: if not, he's unauthorized
+        const checkUsers = userConvs2.filter(userConv => userConv.user_id === user_id)[0];
+        if(checkUsers){
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
+}
 
 module.exports = {
     groupconvs,
