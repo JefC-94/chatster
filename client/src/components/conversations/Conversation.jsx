@@ -4,14 +4,13 @@ import {UserContext} from '../../contexts/UserContext';
 import {WindowContext} from '../../contexts/WindowContext';
 import {ConvContext} from '../../contexts/ConvContext';
 import {ModalContext} from '../../contexts/ModalContext';
-//import {SocketContext} from '../../contexts/SocketContext';
 import Message from './Message';
 import ConvForm from './ConvForm';
 import axios from 'axios';
 import {useSWRInfinite, mutate} from 'swr';
 import { FaChevronLeft, FaCircle } from 'react-icons/fa';
 
-function Conversation({conv, setCurrentConv, getCurrentConv, basePath}) {
+function Conversation({conv, setCurrentConv, basePath}) {
 
     //CONTEXTS
     const {windowWidth} = useContext(WindowContext);
@@ -20,7 +19,7 @@ function Conversation({conv, setCurrentConv, getCurrentConv, basePath}) {
     const {setSnackBar} = useContext(ModalContext);
 
     //USER
-    const {rootState} = useContext(UserContext);
+    const {rootState, socket} = useContext(UserContext);
     const {theUser} = rootState;
 
     //REFS
@@ -28,14 +27,9 @@ function Conversation({conv, setCurrentConv, getCurrentConv, basePath}) {
 
     //USE SWR INFINITE
     //Get a paginated set of messages, with load more functionality
-    const fetcher = url => axios.get(url).then(response => {
-        //console.log(url)
-        return response.data
-    });
+    const fetcher = url => axios.get(url).then(response => response.data);
         
     const {data, mutate: messMutate , size, setSize, error} = useSWRInfinite(
-        //index => `/message?join=users&filter=conv_id,eq,${conv.id}&order=created_at,desc&page=${index + 1},20`,
-        //index => `messages.php?conv_id=${conv.id}&user_id=${theUser.id}&page=${index + 1}&per_page=20`,
         index => `/api/messages/conv_id=${conv.id}&user_id=${theUser.id}&page=${index + 1}&per_page=20`,
         fetcher
     );
@@ -49,13 +43,13 @@ function Conversation({conv, setCurrentConv, getCurrentConv, basePath}) {
 
     //USE EFFECTS
 
+    //SCROLL CONTROL
     useEffect(() => {
         //console.log(messEvent);
 
         //ONLY SCROLL TO BOTTOM ON FIRST RENDER (when just one array gets fetched)
         if(messEvent === "firstrender" || messEvent === "newmessage"){
             scrollToBottom();
-            //console.log("scrolled to bottom");
         }
         
         //KEEP SCROLL LEVEL ON RENDERS WHEN USER CLICKED THE BUTTON: total height of new div - previous height - constant value
@@ -91,6 +85,16 @@ function Conversation({conv, setCurrentConv, getCurrentConv, basePath}) {
     useEffect(() => {
         setMessEvent("firstrender");
     }, [conv]);
+
+    //SOCKET EVENT LISTENER
+    useEffect(() => {
+        socket.on('chat-message', () => {
+            console.log("new message received");
+            messMutate();
+        });
+        return () => socket.off('message');
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
 
     //FUNCTIONS
@@ -155,31 +159,20 @@ function Conversation({conv, setCurrentConv, getCurrentConv, basePath}) {
         })]);
     }
 
-    const {socket} = useContext(UserContext);
-    useEffect(() => {
-        socket.on('chat-message', addMessageToConv);
-        return () => socket.off('message');
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    function addMessageToConv(data){  
-        console.log("emit received");
-        console.log("new message");
-        messMutate();
-    }
-
     //FUNCTIE VERPLAATSEN NAAR CONVCONTEXT?
     async function deleteUserFromGroup(){
         //aanpassen dat een user altijd een groep kan verlaten -> conversatie verwijdert zich als er maar twee over zijn?
+        //ook niet goed, want dan kan de adminuser geen mensen meer toevoegen / vorige berichten niet meer zien!!
         //if(conv.user_conv.length > 3){
             const user_conv_id = conv.user_conv.filter(user_conv => user_conv.user_id.id === theUser.id)[0];
-            console.log(user_conv_id.id);
-            const request = await axios.delete(`/api/userconvs/id=${user_conv_id.id}&user_id=${theUser.id}`);
-            console.log(request.data.message);
-            if(request.status === 200){
+            try {
+                const request = await axios.delete(`/api/userconvs/id=${user_conv_id.id}&user_id=${theUser.id}`);
+                console.log(request.data.message);
                 mutate(groupurl);
                 setCurrentConv();
                 setSnackBar({open: true, message: 'You have left the group chat'});
+            } catch(error){
+                console.log(error.response.data.message);
             }
         //}
     }

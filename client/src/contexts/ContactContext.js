@@ -10,13 +10,12 @@ export const ContactContext = createContext();
 
 function ContactContextProvider(props) {
     
+    //CONTEXTS
     const {rootState, onlineUsers, socket} = useContext(UserContext);
     const {theUser} = rootState;
-
     const {setSnackBar} = useContext(ModalContext);
 
-    //SETUP CONTACT SWR CONNECTION
-
+    //STATES
     const [contacts, setContacts] = useState({
         accepts: [],
         pendings: [],
@@ -24,25 +23,18 @@ function ContactContextProvider(props) {
         requests: []
     });
 
+    //SETUP CONTACT SWR CONNECTION
     const url = `/api/contacts/user_id=${theUser.id}`;
-
-    const fetcher = url => axios.get(url).then(response => {
-        if(response.data){
-            return response.data;
-        } else {
-            return [];
-        }
-    });
-
+    const fetcher = url => axios.get(url).then(response => response.data);
     const {data, error} = useSWR(url, fetcher);
 
     //SETUP OTHER USERS SWR CONNECTION
-
     const usersurl = `/api/contacts/otherusers/user_id=${theUser.id}`;
-
     const usersFetcher = url => axios.get(url).then(response => response.data);
-
     const {data : usersdata, error: userserror} = useSWR(usersurl, usersFetcher);
+
+
+    //USE EFFECTS
 
     //When contact data changes, update contacts + also when onlineusers array changes
     useEffect(() => {
@@ -60,7 +52,6 @@ function ContactContextProvider(props) {
     useEffect(() => {
         if(data){
             socket.on('contact-update', (data) => {
-                console.log("event received");
                 console.log(data.message);
                 if(data.message){
                     setSnackBar({open: true, message: data.message});
@@ -69,8 +60,12 @@ function ContactContextProvider(props) {
                 mutate(usersurl);
             });
         }
-        return () => socket.off('message');
+        return () => socket.off('contact-update');
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, socket])
+
+
+    //FUNCTIONS FOR GETTING CONTACTS
 
     async function getContacts(){
         //Contact data gets divided over different categories
@@ -123,7 +118,7 @@ function ContactContextProvider(props) {
         }
     }
 
-    // CRUD FUNCTIONS FOR ADDING, DELETING AND ACCEPTING/INVITING USERS
+    // CRUD FUNCTIONS FOR ADDING, DELETING AND ACCEPTING/INVITING CONTACTS AND CONVERSATIONS
 
     async function sendRequest(user){ // need user_id + username for cache
         //MUTATE PENDINGS

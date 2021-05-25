@@ -8,9 +8,6 @@ const convsByUser = async (req, res) => {
     .orWhere('contact.user_2', req.params.user_id)
     .select('conversation.*');
 
-    //Not found
-    if(!queryConvs) return res.status(500).send({message:'No convs for this user'});
-
     for(singleConv of queryConvs){
         
         singleConv.contact = await knex('contact').where('conv_id', singleConv.id).first();
@@ -25,6 +22,11 @@ const convsByUser = async (req, res) => {
         singleConv.contact.user_2 = user_2;
 
         singleConv.lastMessage = await knex('message').where('conv_id', singleConv.id).orderBy('created_at', 'desc').first();
+
+        //only if lastmessage exists -> get user
+        if(singleConv.lastMessage){
+            singleConv.lastMessage.user_id = await knex('users').where('id', singleConv.lastMessage.user_id).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();
+        }
     }
 
     res.status(200).send(queryConvs);

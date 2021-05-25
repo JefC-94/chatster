@@ -35,6 +35,7 @@ function UserContextProvider(props) {
             newSocket.close();
             setSocket();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [rootState]);
 
     //Listen to socket event for other users going online and offline
@@ -45,6 +46,7 @@ function UserContextProvider(props) {
                 setOnlineUsers(users);
             });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [socket]);
 
     const logoutUser = () => {

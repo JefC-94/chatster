@@ -5,6 +5,8 @@ import {WindowContext} from '../../contexts/WindowContext';
 import Conversation from '../conversations/Conversation';
 import ConvList from '../conversations/ConvList';
 import DashboardNav from '../ui/DashboardNav';
+import {mutate} from 'swr';
+import { UserContext } from '../../contexts/UserContext';
 
 function Conversations({match}) {
     
@@ -18,11 +20,14 @@ function Conversations({match}) {
 
     //CONTEXTS
     const {windowWidth} = useContext(WindowContext);
-    const {convserror, grouperror, convs, getSingleConv} = useContext(ConvContext);
-    
+    const {convserror, grouperror, convs, convsurl, groupurl, getSingleConv} = useContext(ConvContext);
+    const {socket} = useContext(UserContext);
+
     //STATES
     //this is the current active conversation, defined here because it can be set by id as well as click function on convItems
-    const [currentConv, setCurrentConv] = useState(); 
+    const [currentConv, setCurrentConv] = useState();
+    
+    const [unreadConvs, setUnreadConvs] = useState([]); // array of ids
     
     //USE EFFECTS
 
@@ -46,6 +51,25 @@ function Conversations({match}) {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [windowWidth]);
+
+     //SOCKET EVENT LISTENER for new messages
+     useEffect(() => {
+        socket.on('chat-message', (message) => {
+            console.log("new message received");
+            
+            console.log(message.conv_id);
+            if(!currentConv || message.conv_id !== currentConv.id){
+                console.log("mark conv as unread");
+                //if(!unreadConvs.find(el => el === message.conv_id)){
+                    setUnreadConvs(prevVal => [...prevVal, message.conv_id]);
+                //}
+            }
+            mutate(convsurl);
+            mutate(groupurl);
+        });
+        return () => socket.off('message');
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
 
     // Keep this function independent from the convs -> separate refresh possible
@@ -82,7 +106,7 @@ function Conversations({match}) {
                         <>
                         {!currentConv && 
                             <>
-                            <ConvList convs={convs} currentConv={currentConv} setCurrentConv={setCurrentConv} />
+                            <ConvList convs={convs} currentConv={currentConv} setCurrentConv={setCurrentConv} unreadConvs={unreadConvs} setUnreadConvs={setUnreadConvs} />
                             </>
                         }
                         {currentConv && <Conversation conv={currentConv} setCurrentConv={setCurrentConv} getCurrentConv={getCurrentConv} basePath={basePath} />}
@@ -102,7 +126,7 @@ function Conversations({match}) {
                 {(!convserror && !grouperror && convs) &&
                     <>
                     <div className="conv-left">
-                        <ConvList convs={convs} currentConv={currentConv} setCurrentConv={setCurrentConv} getCurrentConv={getCurrentConv} />
+                        <ConvList convs={convs} currentConv={currentConv} setCurrentConv={setCurrentConv} getCurrentConv={getCurrentConv} unreadConvs={unreadConvs} setUnreadConvs={setUnreadConvs} />
                         <div className="navigation navigation-center navigation-border-top">    
                             <Link className="button primary" to={`/${basePath}/group/create`} >Start Group Chat</Link>
                         </div>

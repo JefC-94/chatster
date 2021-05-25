@@ -4,9 +4,6 @@ const contactsByUser = async (req, res) => {
     
     const queryContacts = await knex('contact').where('user_1', req.params.user_id).orWhere('user_2', req.params.user_id);
 
-    //Not found
-    if(!queryContacts) return res.status(500).send({message:'No contacts for this user'});
-
     for(singleContact of queryContacts){
         singleContact.user_1 = await knex('users').where('id', singleContact.user_1).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();
         singleContact.user_2 = await knex('users').where('id', singleContact.user_2).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();

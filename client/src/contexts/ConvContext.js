@@ -10,52 +10,41 @@ import profilespic from '../images/profiles-blanc.svg';
 export const ConvContext = createContext();
 
 function ConvContextProvider(props) {
+    
+    //CONTEXTS
     const {rootState, onlineUsers} = useContext(UserContext);
     const {theUser} = rootState;
 
     //Import contact-data: conversations should be re-rendered when contacts change!
     const {contactdata} = useContext(ContactContext);
 
-    //When user (in contactModule) adds a user, this should update the data here as well
-    useEffect(() => {
-        mutate(url);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [contactdata]);
-
-    //Setup state to add individual conversations / group conversations
+    //STATE
+    //Setup state to add individual conversations + group conversations
     const [convs, setConvs] = useState([]);
 
     //SETUP SWR CONNECTION FOR INDIVIDUAL CONVS
 
     //const url = `/contact?join=conversation,contact,users&join=conversation,message&filter1=user_1,eq,${theUser.id}&filter2=user_2,eq,${theUser.id}&filter=status,eq,2`;
     const url = `/api/convs/user_id=${theUser.id}`;
-
-    const fetcher = url => axios.get(url).then(response => {
-        if(response.data){
-            return response.data;
-        } else {
-            return [];
-        }
-    });
-
-    //DATA is the list of individual conversations
-    const {data, error} = useSWR(url, fetcher);
+    const fetcher = url => axios.get(url).then(response => response.data);
+    const {data, error} = useSWR(url, fetcher); //DATA is the list of individual conversations
 
     
     //SETUP SWR CONNECTION FOR GROUP CONVS
 
     //const groupurl = `/user_conv?join=conversation,user_conv,users&join=conversation,message&filter1=user_id,eq,${theUser.id}`;
     const groupurl = `/api/groupconvs/user_id=${theUser.id}`;
-
-    const groupfetcher = url => axios.get(url).then(response => {
-        if(response.data){
-            return response.data;
-        } else {
-            return [];
-        }
-    });
-
+    const groupfetcher = url => axios.get(url).then(response => response.data);
     const {data: groupdata, error: grouperror} = useSWR(groupurl, groupfetcher);
+
+
+    //USE EFFECTS
+
+    //When user (in contactModule) adds a user, this should update the data here as well
+    useEffect(() => {
+        mutate(url);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [contactdata]);
 
     //setup conversations when data updates -> cache & mutate
     //also, when onlineusers array changes -> check online status for every conversation
