@@ -15,8 +15,9 @@ function ConvItem({conv, currentConv, setCurrentConv, unreadConvs, setUnreadConv
     //setup classes
     let classes = "user-item convs-item";
   
+    //PUT THIS IN USE EFFECT, Runs Way too much!
     if(currentConv){
-        console.log(currentConv.id, conv.id)
+        /* console.log(currentConv.id, conv.id) */
         classes += currentConv.id === conv.id ? " user-item-active" : "";
     }
 

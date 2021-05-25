@@ -11,9 +11,11 @@ function UserContextProvider(props) {
     const [onlineUsers, setOnlineUsers] = useState([]);
 
     //Setup Socket Client
-    const newSocket = io('/', { autoConnect: false });
+    const HOST = window.location.origin.replace(/^http/, 'ws');
+    const newSocket = io(HOST, { autoConnect: false });
 
     useEffect(() => {
+        console.log(HOST);
         isLoggedIn();
     }, []);
 
