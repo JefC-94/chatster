@@ -1,40 +1,37 @@
-import React, {useEffect, useContext, useState} from 'react';
+import React, {useContext} from 'react';
 import {Link} from 'react-router-dom';
 import {UserContext} from '../../contexts/UserContext';
 import {timeSinceConvs} from '../helpers/TimeSince';
 import {FaCircle} from 'react-icons/fa';
+import { ConvContext } from '../../contexts/ConvContext';
 
-function ConvItem({conv, currentConv, setCurrentConv, unreadConvs, setUnreadConvs}) {
-
-    const [unread, setUnread] = useState(true);
+function ConvItem({conv, currentConv, setCurrentConv}) {
 
     //USER
     const {rootState} = useContext(UserContext);
     const {theUser} = rootState;
 
+    const { unreadConvs, setUnreadConvs} = useContext(ConvContext);
+
     //setup classes
     let classes = "user-item convs-item";
-  
-    //PUT THIS IN USE EFFECT, Runs Way too much!
+    let active = "";
+    let unread = "";
+
     if(currentConv){
-        /* console.log(currentConv.id, conv.id) */
-        classes += currentConv.id === conv.id ? " user-item-active" : "";
+        active = currentConv.id === conv.id ? " user-item-active" : "";
     }
-
-    //to fix: unread moet ook als class toegevoegd worden voor als er nieuwe berichten zijn!
-    // + verwijderd worden als de user deze class als currentConv zet (mss in de onclick toevoegen?)
-
-    /* useEffect(() => {
-        unreadConvs.includes(conv.id) ? setUnread(true) : setUnread(false);
-    }, [unreadConvs]);
-
-    useEffect(() => {
-        classes += unread ? ' convs-item-new' : "";
-    }, [unread]); */
+  
+    //Check the unreadConvs array to see if this conversation has new messages
+    //In the onclick of the component Link -> delete this id from the unreadConvs
+    unread = unreadConvs.includes(conv.id) ? 'convs-item-new' : '';
 
     return (
-        <Link to="/dashboard/conversations" onClick={(e) => {setCurrentConv(conv)}}>
-            <div key={conv.id} className={classes} >
+        <Link to="/dashboard/conversations" onClick={(e) => {
+                setCurrentConv(conv)
+                setUnreadConvs(prevVal => [...prevVal.filter(el => el !== conv.id)]);
+            }}>
+            <div key={conv.id} className={`${classes} ${active} ${unread}`} >
                 <div className="item-image">
                     <img src={conv.imageUrl} alt="profile" />
                     {conv.online ? <span className="online-icon"><FaCircle size={13} /></span> : ""}

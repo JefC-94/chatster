@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import { ConvContext } from '../../contexts/ConvContext';
 import ConvItem from './ConvItem';
 
-function ConvList({convs, currentConv, setCurrentConv, unreadConvs, setUnreadConvs}) {
+function ConvList({convs, currentConv, setCurrentConv}) {
 
     //CONTEXTS
     const {groupdata, convsdata} = useContext(ConvContext);
@@ -21,7 +21,7 @@ function ConvList({convs, currentConv, setCurrentConv, unreadConvs, setUnreadCon
                     return (b.lastMessage ? b.lastMessage.created_at : b.created_at) - (a.lastMessage ? a.lastMessage.created_at : a.created_at)
                 })
                 .map(conv => {
-                    return <ConvItem key={conv.id} conv={conv} currentConv={currentConv} setCurrentConv={setCurrentConv} unreadConvs={unreadConvs} setUnreadConvs={setUnreadConvs}/>;
+                    return <ConvItem key={conv.id} conv={conv} currentConv={currentConv} setCurrentConv={setCurrentConv} />;
                 })
             }
             {

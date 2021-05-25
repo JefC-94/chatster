@@ -12,7 +12,7 @@ export const ConvContext = createContext();
 function ConvContextProvider(props) {
     
     //CONTEXTS
-    const {rootState, onlineUsers} = useContext(UserContext);
+    const {rootState, onlineUsers, socket} = useContext(UserContext);
     const {theUser} = rootState;
 
     //Import contact-data: conversations should be re-rendered when contacts change!
@@ -21,6 +21,8 @@ function ConvContextProvider(props) {
     //STATE
     //Setup state to add individual conversations + group conversations
     const [convs, setConvs] = useState([]);
+    //Setup state array for conversation ids that have received new messages
+    const [unreadConvs, setUnreadConvs] = useState([]); // array of ids
 
     //SETUP SWR CONNECTION FOR INDIVIDUAL CONVS
 
@@ -60,6 +62,27 @@ function ConvContextProvider(props) {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, groupdata, onlineUsers]);
+
+
+    //SOCKET EVENT LISTENER for new messages -> setup array of conv_ids
+    useEffect(() => {
+        socket.on('chat-message', (message) => {
+            console.log("new message received");
+            mutate(url);
+            mutate(groupurl);
+            //Todo: find a way that there are no doubles in this array!
+            //IF STATEMENT NOT WORKING!!
+            if(!unreadConvs.includes(message.conv_id)){
+                setUnreadConvs(prevVal => [...prevVal, message.conv_id]);
+            }
+        });
+        return () => socket.off('message');
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        console.log(unreadConvs);
+    }, [unreadConvs]);
 
     //Get all conversations, plus set lastMessage and otherUser + imageUrl as properties
     async function getConvs(){
@@ -115,7 +138,9 @@ function ConvContextProvider(props) {
             groupurl: groupurl,
             convs,
             setConvs,
-            getSingleConv
+            getSingleConv,
+            unreadConvs,
+            setUnreadConvs
         }}>
             {props.children}
         </ConvContext.Provider>

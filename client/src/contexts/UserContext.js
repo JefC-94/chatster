@@ -15,7 +15,6 @@ function UserContextProvider(props) {
     const newSocket = io(HOST, { autoConnect: false });
 
     useEffect(() => {
-        console.log(HOST);
         isLoggedIn();
     }, []);
 
