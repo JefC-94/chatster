@@ -6,7 +6,7 @@ function ConvList({convs, currentConv, setCurrentConv}) {
 
     //CONTEXTS
     const {groupdata, convsdata} = useContext(ConvContext);
-    
+
     /**
      * Note on the sorting of these items:
      * The conversations are sorted by last-message, except for those who do not have a last message -> creation of conversation moment
@@ -15,6 +15,7 @@ function ConvList({convs, currentConv, setCurrentConv}) {
     return (
         <div className="convs-list">
             {
+            
             ((convsdata || groupdata) && convs.length > 0) &&
             convs.sort((a, b) => {
                     return (b.lastMessage ? b.lastMessage.created_at : b.created_at) - (a.lastMessage ? a.lastMessage.created_at : a.created_at)

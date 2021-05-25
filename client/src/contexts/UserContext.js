@@ -1,14 +1,49 @@
 import React, {useState, useEffect, createContext} from "react";
 import axios from 'axios';
+import io from 'socket.io-client';
 
 export const UserContext = createContext();
 
 function UserContextProvider(props) {
     const [rootState, setRootState] = useState({isAuth:false,theUser:null})
 
+    const [socket, setSocket] = useState();
+    const [onlineUsers, setOnlineUsers] = useState([]);
+
+    //Change PORT FOR PRODUCTION SERVER!!
+    const newSocket = io('http://localhost:3000', { autoConnect: false });
+
     useEffect(() => {
         isLoggedIn();
     }, []);
+
+    useEffect(() => {
+        if(rootState.isAuth){
+            console.log("connecting")
+            let id = rootState.theUser.id;
+            newSocket.auth = { id };
+            newSocket.connect();
+            setSocket(newSocket);
+        }
+        if(!rootState.isAuth){
+            console.log("disconnecting")
+            newSocket.close();
+            setSocket();
+        }
+        return () => {
+            newSocket.close();
+            setSocket();
+        }
+    }, [rootState]);
+
+    useEffect(() => {
+        if(socket){
+            socket.on('users', (users) => {
+                //console.log('online users: ', users);
+                setOnlineUsers(users);
+            });
+        }
+    }, [socket]);
 
     const logoutUser = () => {
         localStorage.removeItem('loginToken');
@@ -68,12 +103,14 @@ function UserContextProvider(props) {
 
     return (
         <UserContext.Provider value={{
-            rootState : rootState,
-            isLoggedIn : isLoggedIn,
-            registerUser: registerUser,
-            loginUser: loginUser,
-            logoutUser: logoutUser,
-            editUser: editUser
+            rootState,
+            isLoggedIn,
+            registerUser,
+            loginUser,
+            logoutUser,
+            editUser,
+            socket,
+            onlineUsers
         }}>
             {props.children}
         </UserContext.Provider>

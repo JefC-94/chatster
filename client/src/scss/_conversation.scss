@@ -32,8 +32,20 @@
     .convs-item{
         //@include flex(row, space-between, center);
         
-        img{@include profile-image(50px, 50px, var(--imageBgColor));}
+        .item-image{
+            position:relative;
+            
+            img{@include profile-image(50px, 50px, var(--imageBgColor));}
 
+            span.online-icon{
+                color:var(--accentColor);
+                position:absolute;
+                right:0px;
+                bottom:0px;
+            }
+        }
+
+        
         .item-content{
             margin:0 10px;
             flex-grow: 1;
@@ -97,9 +109,20 @@
         @include flex(row, flex-start, center);
         width:calc(100% - 150px);
 
-        img{
-            @include profile-image(40px, 40px, var(--imageBgColor));
-            margin:.5em;
+        .conv-info-image{
+            position:relative;
+
+            img{
+                @include profile-image(40px, 40px, var(--imageBgColor));
+                margin:.5em;
+            }
+
+            span.online-icon{
+                color:var(--accentColor);
+                position:absolute;
+                right:4px;
+                bottom:4px;
+            }
         }
 
         .conv-names{

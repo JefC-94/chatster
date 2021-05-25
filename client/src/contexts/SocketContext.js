@@ -1,4 +1,4 @@
-import React, {createContext, useState, useEffect} from 'react'
+/* import React, {createContext, useState, useEffect} from 'react'
 import io from 'socket.io-client';
 
 export const SocketContext = createContext();
@@ -22,4 +22,4 @@ export default function SocketProvider({id, children}) {
             {children}
         </SocketContext.Provider>
     )
-}
+} */

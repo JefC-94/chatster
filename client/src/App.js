@@ -4,7 +4,7 @@ import UserContextProvider from './contexts/UserContext';
 import {WindowContext} from './contexts/WindowContext';
 import WindowContextProvider from './contexts/WindowContext';
 import ModalContextProvider from './contexts/ModalContext';
-import SocketProvider from './contexts/SocketContext';
+//import SocketProvider from './contexts/SocketContext';
 import Home from './components/Home';
 import Footer from './components/ui/Footer';
 import {BrowserRouter} from 'react-router-dom';
@@ -42,9 +42,9 @@ function App() {
 function AppWrapper(){
   return (
     <WindowContextProvider>
-       <SocketProvider>
+       {/* <SocketProvider> */}
         <App />
-      </SocketProvider>
+      {/* </SocketProvider> */}
     </WindowContextProvider>
   )
 }

@@ -4,12 +4,12 @@ import {UserContext} from '../../contexts/UserContext';
 import {WindowContext} from '../../contexts/WindowContext';
 import {ConvContext} from '../../contexts/ConvContext';
 import {ModalContext} from '../../contexts/ModalContext';
-import {SocketContext} from '../../contexts/SocketContext';
+//import {SocketContext} from '../../contexts/SocketContext';
 import Message from './Message';
 import ConvForm from './ConvForm';
 import axios from 'axios';
 import {useSWRInfinite, mutate} from 'swr';
-import { FaChevronLeft } from 'react-icons/fa';
+import { FaChevronLeft, FaCircle } from 'react-icons/fa';
 
 function Conversation({conv, setCurrentConv, getCurrentConv, basePath}) {
 
@@ -155,17 +155,15 @@ function Conversation({conv, setCurrentConv, getCurrentConv, basePath}) {
         })]);
     }
 
-    const socket = useContext(SocketContext);
+    const {socket} = useContext(UserContext);
     useEffect(() => {
-        if(socket === null){
-            return;
-        }
         socket.on('chat-message', addMessageToConv);
         return () => socket.off('message');
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [socket]);
+    }, []);
 
-    function addMessageToConv(data){   
+    function addMessageToConv(data){  
+        console.log("emit received");
         if(data.conv_id === conv.id && data.user_id !== theUser.id){
             console.log("new message");
             messMutate();
@@ -198,7 +196,10 @@ function Conversation({conv, setCurrentConv, getCurrentConv, basePath}) {
                 {windowWidth < 800 &&
                     <button className="link flex" onClick={() => setCurrentConv()}><FaChevronLeft size={18} /></button>
                 }
-                <img src={conv.imageUrl} alt="profile" />
+                <div className="conv-info-image">
+                    <img src={conv.imageUrl} alt="profile" />
+                    {conv.online ? <span className="online-icon">{<FaCircle size={12} />}</span> : ""}
+                </div>
                 <div className="conv-names">
                     <h2>{conv.displayName}</h2>
                     {(!conv.otherUser && conv.displayName !== conv.userNames) && <p>You, {conv.userNames}</p>}

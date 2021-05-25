@@ -10,7 +10,7 @@ import profilespic from '../images/profiles-blanc.svg';
 export const ConvContext = createContext();
 
 function ConvContextProvider(props) {
-    const {rootState} = useContext(UserContext);
+    const {rootState, onlineUsers} = useContext(UserContext);
     const {theUser} = rootState;
 
     //Import contact-data: conversations should be re-rendered when contacts change!
@@ -21,7 +21,6 @@ function ConvContextProvider(props) {
         mutate(url);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [contactdata]);
-
 
     //Setup state to add individual conversations / group conversations
     const [convs, setConvs] = useState([]);
@@ -59,6 +58,7 @@ function ConvContextProvider(props) {
     const {data: groupdata, error: grouperror} = useSWR(groupurl, groupfetcher);
 
     //setup conversations when data updates -> cache & mutate
+    //also, when onlineusers array changes -> check online status for every conversation
     useEffect(() => {
         if(data){
             getConvs();
@@ -70,7 +70,7 @@ function ConvContextProvider(props) {
             setConvs([]);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [data, groupdata]);
+    }, [data, groupdata, onlineUsers]);
 
     //Get all conversations, plus set lastMessage and otherUser + imageUrl as properties
     async function getConvs(){
@@ -79,6 +79,7 @@ function ConvContextProvider(props) {
             conv.otherUser = conv.contact.user_1.id === theUser.id ? conv.contact.user_2 : conv.contact.user_1;
             conv.displayName = conv.otherUser.username;
             conv.imageUrl = conv.otherUser.photo_url ? `${imgPath}/${conv.otherUser.photo_url}` : profilepic;
+            conv.online = onlineUsers.filter(onlineUser => onlineUser.user_id === conv.otherUser.id).length;
             conversations.push(conv);
         });
         setConvs(prevValue => ([

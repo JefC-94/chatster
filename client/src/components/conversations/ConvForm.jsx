@@ -5,13 +5,13 @@ import {v4 as uuid} from 'uuid';
 import { MdSend } from 'react-icons/md';
 import { ConvContext } from '../../contexts/ConvContext';
 import { UserContext } from '../../contexts/UserContext';
-import {SocketContext} from '../../contexts/SocketContext';
+//import {SocketContext} from '../../contexts/SocketContext';
 
 function ConvForm({conv, size, data, messMutate, setMessEvent}) {
 
     //CONTEXTS
     const {convsdata, convsurl, groupdata, groupurl} = useContext(ConvContext);
-    const socket = useContext(SocketContext);
+    const {socket} = useContext(UserContext);
 
     //USER
     const {rootState} = useContext(UserContext);
