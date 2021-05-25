@@ -10,13 +10,14 @@ function UserContextProvider(props) {
     const [socket, setSocket] = useState();
     const [onlineUsers, setOnlineUsers] = useState([]);
 
-    //Change PORT FOR PRODUCTION SERVER!!
-    const newSocket = io('http://localhost:3000', { autoConnect: false });
+    //Setup Socket Client
+    const newSocket = io('/', { autoConnect: false });
 
     useEffect(() => {
         isLoggedIn();
     }, []);
 
+    //Connect to socket when user logs in, disconnect when user logs out
     useEffect(() => {
         if(rootState.isAuth){
             console.log("connecting")
@@ -36,6 +37,7 @@ function UserContextProvider(props) {
         }
     }, [rootState]);
 
+    //Listen to socket event for other users going online and offline
     useEffect(() => {
         if(socket){
             socket.on('users', (users) => {
@@ -93,7 +95,7 @@ function UserContextProvider(props) {
 
             const {data} = await axios.get('/api/auth/me');
 
-            console.log(data);
+            //console.log(data); //logs current logged in user
 
             if(data.user){
                 setRootState(prevValue => ({...prevValue, isAuth:true,theUser:data.user}));

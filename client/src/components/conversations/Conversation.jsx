@@ -164,10 +164,8 @@ function Conversation({conv, setCurrentConv, getCurrentConv, basePath}) {
 
     function addMessageToConv(data){  
         console.log("emit received");
-        if(data.conv_id === conv.id && data.user_id !== theUser.id){
-            console.log("new message");
-            messMutate();
-        }
+        console.log("new message");
+        messMutate();
     }
 
     //FUNCTIE VERPLAATSEN NAAR CONVCONTEXT?

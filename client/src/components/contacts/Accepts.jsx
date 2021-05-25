@@ -5,7 +5,7 @@ import Accept from './Accept';
 import {imgPath} from '../../Constants';
 import {timeSinceSignup, timeSinceRel} from '../helpers/TimeSince';
 import profilepic from '../../images/profile-blanc.svg';
-import {FaTimes} from 'react-icons/fa';
+import {FaTimes, FaCircle} from 'react-icons/fa';
 
 function Accepts({id, basePath}) {
    
@@ -55,7 +55,11 @@ function Accepts({id, basePath}) {
             <div className="contact-detail-wrap">
                 <div className="contact-detail">
                     <button className="circle secondary flex" onClick={() => setSelectedContact(false)}><FaTimes size={15} /></button>
-                    <img src={selectedContact.otherUser.photo_url ? `${imgPath}/${selectedContact.otherUser.photo_url}` : profilepic} alt="profile-pic" />
+                    <div className="contact-detail-image">
+                        <img src={selectedContact.otherUser.photo_url ? `${imgPath}/${selectedContact.otherUser.photo_url}` : profilepic} alt="profile-pic" />
+                        {selectedContact.online ? <span className="online-icon"><FaCircle size={16} /></span> : ""}
+                    </div>
+                    
                     <h2>{selectedContact.otherUser.username}</h2>
                     <p>Member since {timeSinceSignup(selectedContact.otherUser.created_at)}</p>
                     <p>Friends since {timeSinceRel(selectedContact.created_at)}</p>

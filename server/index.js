@@ -32,7 +32,6 @@ app.use(cors({origin: 'http://localhost:3000'}));
 
 //Setup route for site
 app.use(express.static(path.resolve(__dirname, '../client/build')));
-app.use(express.static(path.resolve(__dirname, '../client/build')));
 
 //Setup route for files
 app.use('/server/uploads', express.static(process.cwd() + '/server/uploads'));
@@ -46,8 +45,8 @@ app.get('*', function (req, res) {
 });
 
 
-//SOCKET
-
+//SOCKET INITIALIZATION AND EVENT EMITTERS + LISTENERS
+let userSessions = [];
 
 io.on("connection", (socket) => {
     
@@ -60,26 +59,43 @@ io.on("connection", (socket) => {
 
     console.log(`user ${socket.user_id} connected on ${socket.id}`);
 
-    //Send active users back to client
-    const users = [];
-    for(let [id, socket] of io.of('/').sockets){
-        users.push({
-            id: id,
-            user_id : socket.user_id, 
-        });
-    }
-    io.emit('users', users);
-
-    //Other functions
-    socket.on("chat-message", (msg) => {
-        console.log(`message: conv_id = ${msg.conv_id} | user_id = ${msg.user_id}`);
-        io.emit("chat-message", msg);
+    //Add this user to the array of users + send back to client for updates
+    userSessions.push({
+        id: socket.id,
+        user_id : socket.user_id, 
     });
+    io.emit('users', userSessions);
+
+    console.log(userSessions);
+
+    //MESSAGE EVENT - INDVIDUAL CHAT -> FIND USER ON ID AND SEND TO HIS SOCKET
+    //It's possible that a user is logged in via different browsers
+    // all these sockets should get the message -> for loop
+    socket.on("chat-message", (msg) => {
+        console.log(`message: conv_id = ${msg.conv_id} | to = ${msg.to_id}`);
+        const findUsers = userSessions.filter(session => session.user_id === msg.to_id);
+        console.log(findUsers);
+        for (userSession of findUsers){
+            socket.broadcast.to(userSession.id).emit("chat-message", msg);
+        }
+    });
+
+    //CONTACT OPERATION -> Send emit event to the right user to reload contacts and otherusers
+    //Data has action -> if it is necessary to display a snackbar to the other user
+    //Transfer the action property as method, it's null in the case of reject and delete/block
+    socket.on('contact-update', (data) => {
+        console.log(data.to_id);
+        const findUsers = userSessions.filter(session => session.user_id === data.to_id);
+        console.log(findUsers);
+        for(userSession of findUsers){
+            socket.broadcast.to(userSession.id).emit('contact-update', {message: data.action});
+        }
+    })
 
     socket.on("disconnect", () => {
         console.log(`user ${socket.user_id} disconnected`);
-        const newUsers = users.filter(user => user.user_id !== socket.user_id);
-        io.emit('users', newUsers);
+        userSessions = userSessions.filter(user => user.user_id !== socket.user_id);
+        io.emit('users', userSessions);
     })
 
 })

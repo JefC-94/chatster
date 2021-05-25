@@ -137,6 +137,21 @@
             font-weight:normal;
             flex:1;
         }
+
+        .item-image{
+            position:relative;
+
+            img{
+                @include profile-image(60px, 60px, var(--imageBgColor));
+            }
+
+            span.online-icon{
+                color:var(--accentColor);
+                position:absolute;
+                right:2px;
+                bottom:2px;
+            }
+        }
     }
 }
 
@@ -210,9 +225,20 @@
             right:0em;
         }
 
-        img{
-            margin-top:.5em;
-            @include profile-image(100px, 100px, var(--imageBgColor))
+        .contact-detail-image{
+            position:relative;
+
+            img{
+                @include profile-image(100px, 100px, var(--imageBgColor));
+                margin:.5em;
+            }
+
+            span.online-icon{
+                color:var(--accentColor);
+                position:absolute;
+                right:10px;
+                bottom:10px;
+            }
         }
 
         h2{

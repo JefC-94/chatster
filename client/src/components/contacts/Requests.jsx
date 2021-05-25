@@ -19,8 +19,8 @@ function Requests() {
                     <div className="item-content">
                         <p>{request.otherUser.username} </p>
                         <div className="item-options">
-                            <button className="button primary" onClick={(e) => {acceptRequest(request.id)}}>accept</button>
-                            <button className="button secondary" onClick={(e) => {rejectRequest(request.id)}}>reject</button>
+                            <button className="button primary" onClick={(e) => {acceptRequest(request.id, request.otherUser)}}>accept</button>
+                            <button className="button secondary" onClick={(e) => {rejectRequest(request.id, request.otherUser)}}>reject</button>
                         </div>
                     </div>
                 </div>

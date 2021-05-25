@@ -10,7 +10,7 @@ export const ContactContext = createContext();
 
 function ContactContextProvider(props) {
     
-    const {rootState} = useContext(UserContext);
+    const {rootState, onlineUsers, socket} = useContext(UserContext);
     const {theUser} = rootState;
 
     const {setSnackBar} = useContext(ModalContext);
@@ -44,8 +44,7 @@ function ContactContextProvider(props) {
 
     const {data : usersdata, error: userserror} = useSWR(usersurl, usersFetcher);
 
-    //Contact data gets divided over different categories
-
+    //When contact data changes, update contacts + also when onlineusers array changes
     useEffect(() => {
         if(data){
             getContacts();
@@ -54,12 +53,31 @@ function ContactContextProvider(props) {
             clearContacts();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [data]);
+    }, [data, onlineUsers]);
+
+    //Update contacts and otherUsers when the socket receives a contact-update event
+    //If data.message is null, the event is delete/block/reject, so we don't show a message
+    useEffect(() => {
+        if(data){
+            socket.on('contact-update', (data) => {
+                console.log("event received");
+                console.log(data.message);
+                if(data.message){
+                    setSnackBar({open: true, message: data.message});
+                }
+                mutate(url);
+                mutate(usersurl);
+            });
+        }
+        return () => socket.off('message');
+    }, [data, socket])
 
     async function getContacts(){
+        //Contact data gets divided over different categories
         data.forEach(contact => {
             contact.otherUser = contact.user_1.id === theUser.id ? contact.user_2 : contact.user_1;
             if(contact.status === 2){
+                contact.online = onlineUsers.filter(onlineUser => onlineUser.user_id === contact.otherUser.id).length;
                 setContacts(prevValue => ({
                     ...prevValue, accepts: [...prevValue.accepts, contact]
                 }));
@@ -136,6 +154,10 @@ function ContactContextProvider(props) {
             mutate(url);
             mutate(usersurl);
             setSnackBar({open: true, message: 'Request has been sent'});
+            socket.emit("contact-update", { 
+                to_id: user.id,
+                action: `${theUser.username} has sent you an invite`
+            });
         } catch(error) {
             console.log(error.response.data.message);
         }
@@ -179,6 +201,10 @@ function ContactContextProvider(props) {
                 mutate(url);
                 mutate(usersurl);
                 setSnackBar({open: true, message: 'Contact has been added'});
+                socket.emit("contact-update", { 
+                    to_id: user.id,
+                    action: `${theUser.username} has added you as a contact`
+                });
             } catch(error){
                 console.log(error.response.data.message);
             }
@@ -187,7 +213,7 @@ function ContactContextProvider(props) {
         }
     }
 
-    async function acceptRequest(id){
+    async function acceptRequest(id, otherUser){
         try{
             //Create CONV and return ID
             const request = await axios.post(`/api/convs/user_id=${theUser.id}`, {
@@ -220,6 +246,10 @@ function ContactContextProvider(props) {
                 console.log(request2.data.message);
                 mutate(url);
                 setSnackBar({open: true, message: 'User added as contact'});
+                socket.emit("contact-update", { 
+                    to_id: otherUser.id,
+                    action: `${theUser.username} has accepted your invite`
+                });
             } catch(error){
                 console.log(error.response.data.message)
             }
@@ -228,7 +258,7 @@ function ContactContextProvider(props) {
         }
     }
 
-    async function rejectRequest(id){
+    async function rejectRequest(id, otherUser){
         mutate(url, [...data.map(contact => {
             if(contact.id === id){
                 return {
@@ -242,11 +272,16 @@ function ContactContextProvider(props) {
         })], false);
         try {
             const request = await axios.put(`/api/contacts/id=${id}&user_id=${theUser.id}`, {
-                status: 3
+                status: 3,
+                conv_id: null
             });
             console.log(request.data.message);
             setSnackBar({open: true, message: 'User request has been blocked'});
             mutate(url);
+            socket.emit("contact-update", { 
+                to_id: otherUser.id,
+                action: null
+            });
         } catch(error){
             console.log(error.response.data.message)
         }
@@ -268,6 +303,10 @@ function ContactContextProvider(props) {
             mutate(url);
             mutate(usersurl);
             setSnackBar({open: true, message: 'User invite has been cancelled'});
+            socket.emit("contact-update", { 
+                to_id: otherUser.id,
+                action: null
+            });
         } catch(error){
             console.log(error.response.data.message);
         }
@@ -295,6 +334,10 @@ function ContactContextProvider(props) {
                 mutate(url);
                 mutate(usersurl);
                 setSnackBar({open: true, message: 'Contact has been deleted'});
+                socket.emit("contact-update", { 
+                    to_id: otherUser.id,
+                    action: null
+                });
             } catch(error){
                 console.log(error.response.data.message);
             }
@@ -303,7 +346,7 @@ function ContactContextProvider(props) {
         }
     }
 
-    async function blockContact(id, conv_id){
+    async function blockContact(id, conv_id, otherUser){
         /* mutate(url, [...data.map(contact => {
             if(contact.id === id){
                 return {
@@ -327,6 +370,10 @@ function ContactContextProvider(props) {
                 console.log(request2.data.message);
                 setSnackBar({open: true, message: 'Contact has been blocked'});
                 mutate(url);
+                socket.emit("contact-update", { 
+                    to_id: otherUser.id,
+                    action: null
+                });
             } catch(error){
                 console.log(error.response.data.message);
             }

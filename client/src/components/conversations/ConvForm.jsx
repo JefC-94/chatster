@@ -74,12 +74,20 @@ function ConvForm({conv, size, data, messMutate, setMessEvent}) {
                 setInputField('');
                 messMutate();
                 conv.otherUser ? mutate(convsurl) : mutate(groupurl);
+                
+                //EMIT MESSAGE EVENT TO SOCKET
+                conv.otherUser ? 
                 socket.emit("chat-message", {
-                    user_id: theUser.id, 
+                    to_id: conv.otherUser.id, //to immediatily get right user on server
                     body: inputField,
                     conv_id : conv.id,
                     datetime: timestamp
-                });
+                }) :
+                socket.emit("group-message", { 
+                    body: inputField,
+                    conv_id : conv.id,
+                    datetime: timestamp
+                })
             } catch(error){
                 console.log(error.response.data.message);
             }

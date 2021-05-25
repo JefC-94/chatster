@@ -15,12 +15,22 @@ function Lobby() {
     const [showLogin, setShowLogin] = useState(true);
 
     //Declare demouser for instant login
-    const demoUser = {
+    const demoUser1 = {
         email:'steve@hotmail.com',
         password:'azertyui',
     }
 
-    const demoLogin = async () => {
+    const demoUser2 = {
+        email:'tony@hotmail.com',
+        password:'azertyui',
+    }
+
+    const demoUser3 = {
+        email:'bruce@hotmail.com',
+        password:'azertyui',
+    }
+
+    const demoLogin = async (demoUser) => {
         const data = await loginUser(demoUser);
         if(data.success && data.token){
             localStorage.setItem('loginToken', data.token);
@@ -48,7 +58,9 @@ function Lobby() {
         <div className="disclaimer">
             <div className="demo-wrap">
                 <p>If you want to quickly see the app in working, login as one of the demo users</p>
-                <button className="button primary" type="button" onClick={() => demoLogin()}>View demo</button>
+                <button className="button primary" type="button" onClick={() => demoLogin(demoUser1)}>View as Steve</button>
+                <button className="button primary" type="button" onClick={() => demoLogin(demoUser2)}>View as Tony</button>
+                <button className="button primary" type="button" onClick={() => demoLogin(demoUser3)}>View as Bruce</button>
             </div>
         </div>
         </main>

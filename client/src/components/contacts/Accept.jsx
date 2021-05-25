@@ -4,6 +4,7 @@ import {ContactContext} from '../../contexts/ContactContext';
 import {imgPath} from '../../Constants';
 import profilepic from '../../images/profile-blanc.svg';
 import {BsThreeDots} from 'react-icons/bs';
+import {FaCircle} from 'react-icons/fa';
 
 function Accept({accept, selectedContact, setSelectedContact, showOptions, setShowOptions}) {
 
@@ -42,13 +43,15 @@ function Accept({accept, selectedContact, setSelectedContact, showOptions, setSh
             }
         }}>
         <div className={classes} key={accept.id}> {/*Id is contact id, not user id */}
-            <img src={accept.otherUser.photo_url ? `${imgPath}/${accept.otherUser.photo_url}` : profilepic} alt="profile-pic" />
-            
+            <div className="item-image">
+                <img src={accept.otherUser.photo_url ? `${imgPath}/${accept.otherUser.photo_url}` : profilepic} alt="profile-pic" />
+                {accept.online ? <span className="online-icon"><FaCircle size={14} /></span> : ""}
+            </div>
             <div className="item-content">
                 <p className="username">{accept.otherUser.username}</p>
                 {showOptions === accept.id ? <div className="item-options">
                 <button className="button secondary" onClick={() => {deleteContact(accept.id, accept.conv_id, accept.otherUser)}}>Delete</button>
-                <button className="button secondary" onClick={() => {blockContact(accept.id, accept.conv_id)}}>Block</button>
+                <button className="button secondary" onClick={() => {blockContact(accept.id, accept.conv_id, accept.otherUser)}}>Block</button>
                 </div> : null}
             </div>
                         
