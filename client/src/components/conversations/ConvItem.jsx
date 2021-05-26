@@ -24,7 +24,7 @@ function ConvItem({conv, currentConv, setCurrentConv}) {
   
     //Check the unreadConvs array to see if this conversation has new messages
     //In the onclick of the component Link -> delete this id from the unreadConvs
-    unread = unreadConvs.includes(conv.id) ? 'convs-item-new' : '';
+    unread = currentConv.id === conv.id ? "" : unreadConvs.includes(conv.id) ? 'convs-item-new' : '';
 
     return (
         <Link to="/dashboard/conversations" onClick={(e) => {

@@ -11,15 +11,13 @@ const convsByUser = async (req, res) => {
     for(singleConv of queryConvs){
         
         singleConv.contact = await knex('contact').where('conv_id', singleConv.id).first();
+
+        console.log(singleConv.contact);
+
+        singleConv.contact.user_1 = await knex('users').where('id', singleConv.contact.user_1).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();
+        singleConv.contact.user_2 = await knex('users').where('id', singleConv.contact.user_2).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();
         
-        const user_1 = await knex('users').where('id', singleConv.contact.user_1).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();
-       
-        const user_2 = await knex('users').where('id', singleConv.contact.user_2).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();
-            
-        singleConv.contact = await knex('contact').where('conv_id', singleConv.id).first();
-        
-        singleConv.contact.user_1 = user_1;
-        singleConv.contact.user_2 = user_2;
+        console.log(singleConv.contact);
 
         singleConv.lastMessage = await knex('message').where('conv_id', singleConv.id).orderBy('created_at', 'desc').first();
 

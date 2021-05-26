@@ -5,8 +5,6 @@ import {WindowContext} from '../../contexts/WindowContext';
 import Conversation from '../conversations/Conversation';
 import ConvList from '../conversations/ConvList';
 import DashboardNav from '../ui/DashboardNav';
-import {mutate} from 'swr';
-import { UserContext } from '../../contexts/UserContext';
 
 function Conversations({match}) {
     
@@ -20,8 +18,7 @@ function Conversations({match}) {
 
     //CONTEXTS
     const {windowWidth} = useContext(WindowContext);
-    const {convserror, grouperror, convs, convsurl, groupurl, getSingleConv} = useContext(ConvContext);
-    const {socket} = useContext(UserContext);
+    const {convserror, grouperror, convs, getSingleConv} = useContext(ConvContext);
 
     //STATES
     //this is the current active conversation, defined here because it can be set by id as well as click function on convItems
