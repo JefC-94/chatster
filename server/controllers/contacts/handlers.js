@@ -137,11 +137,77 @@ const updateContact = async (req, res) => {
     res.status(200).send({message: updateContactQuery});
 }
 
+const updateUnreadContact = async (req, res) => {
+
+    //Query first!
+    const queryContact = await knex('contact').where('id', req.params.id).first();
+
+    //Check if one of the contact users is the current user
+    if(!(queryContact.user_1 === req.user_id || queryContact.user_2 === req.user_id)){
+        return res.status(401).send({message:'Not authorized to update contact between other users'});
+    }    
+    
+    console.log(req.params.to_id);
+
+    if(+req.params.to_id === queryContact.user_1){
+        const updateContactQuery = await knex('contact').where('id', req.params.id)
+        .update({
+            user1_unread: queryContact.user1_unread + 1
+        });
+
+        return res.status(200).send({message: updateContactQuery});
+    }
+
+    if(+req.params.to_id === queryContact.user_2){
+        const updateContactQuery = await knex('contact').where('id', req.params.id)
+        .update({
+            user2_unread: queryContact.user2_unread + 1
+        });
+
+        return res.status(200).send({message: updateContactQuery});
+
+    }    
+}
+
+const readUnreadContact = async (req, res) => {
+
+    //Query first!
+    const queryContact = await knex('contact').where('id', req.params.id).first();
+
+    //Check if one of the contact users is the current user
+    if(!(queryContact.user_1 === req.user_id || queryContact.user_2 === req.user_id)){
+        return res.status(401).send({message:'Not authorized to update contact between other users'});
+    }    
+    
+    console.log(req.params.to_id);
+
+    if(+req.params.to_id === queryContact.user_1){
+        const updateContactQuery = await knex('contact').where('id', req.params.id)
+        .update({
+            user1_unread: 0
+        });
+
+        return res.status(200).send({message: updateContactQuery});
+    }
+
+    if(+req.params.to_id === queryContact.user_2){
+        const updateContactQuery = await knex('contact').where('id', req.params.id)
+        .update({
+            user2_unread: 0
+        });
+
+        return res.status(200).send({message: updateContactQuery});
+
+    }    
+}
+
 module.exports = {
     contactsByUser,
     contact,
     otherUsers,
     createContact,
     deleteContact,
-    updateContact
+    updateContact,
+    updateUnreadContact,
+    readUnreadContact
 }

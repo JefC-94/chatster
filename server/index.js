@@ -71,7 +71,7 @@ io.on("connection", (socket) => {
     });
     io.emit('users', userSessions);
 
-    console.log(userSessions);
+    //console.log(userSessions);
 
     //MESSAGE EVENT - INDVIDUAL CHAT -> FIND USER ON ID AND SEND TO HIS SOCKET
     //It's possible that a user is logged in via different browsers
@@ -79,7 +79,6 @@ io.on("connection", (socket) => {
     socket.on("chat-message", (msg) => {
         console.log(`message: conv_id = ${msg.conv_id} | to = ${msg.to_id}`);
         const findUsers = userSessions.filter(session => session.user_id === msg.to_id);
-        console.log(findUsers);
         for (userSession of findUsers){
             socket.broadcast.to(userSession.id).emit("chat-message", msg);
         }
@@ -91,7 +90,6 @@ io.on("connection", (socket) => {
     socket.on('contact-update', (data) => {
         console.log(data.to_id);
         const findUsers = userSessions.filter(session => session.user_id === data.to_id);
-        console.log(findUsers);
         for(userSession of findUsers){
             socket.broadcast.to(userSession.id).emit('contact-update', {message: data.action});
         }

@@ -88,6 +88,16 @@ function ConvContextProvider(props) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    //THIS SHOULD FIRE VERY VERY FIRST
+    useEffect(() => {
+        if(contactdata){
+            const unreadContacts = contactdata
+            .filter(contact => contact.status === 2)
+            .filter(contact => contact.user_1.id === theUser.id ? contact.user1_unread > 0 : contact.user2_unread > 0);
+            setUnreadConvs([...unreadContacts.map(contact => contact.conv_id)]);
+        }
+    }, [contactdata]);
+
     useEffect(() => {
         console.log(unreadConvs);
     }, [unreadConvs]);
@@ -97,8 +107,6 @@ function ConvContextProvider(props) {
     //Pass unreadConvs and currentConv as Refs (current)
     function updateUnreads(message, unreadConvs, currentConv){
         console.log("message handler executed");
-        mutate(url);
-        mutate(groupurl);
         //Don't add to unreadConvs if it is for the currentConv or it is already unread!
         if(currentConv){
             if(currentConv.id !== message.conv_id){
@@ -109,6 +117,8 @@ function ConvContextProvider(props) {
                 setUnreadConvs(prevVal => [...prevVal, message.conv_id]);
             }
         }
+        mutate(url);
+        mutate(groupurl);
     }
 
     //Get all conversations, plus set lastMessage and otherUser + imageUrl as properties
@@ -120,14 +130,7 @@ function ConvContextProvider(props) {
             conv.imageUrl = conv.otherUser.photo_url ? `${imgPath}/${conv.otherUser.photo_url}` : profilepic;
             conv.online = onlineUsers.filter(onlineUser => onlineUser.user_id === conv.otherUser.id).length;
             //Check the unreadConvs array to see if this conversation has new messages
-            //Check last_login and compare with last_message to see if first render should show new messages
-            //Still not covering everything -> what if user nevers clicks on this message?!
-            if(theUser.last_login){
-                conv.unread = conv.lastMessage.created_at - theUser.last_login > 0;
-                console.log(conv.lastMessage.created_at, theUser.last_login);
-            } else {
-                conv.unread = unreadConvs.includes(conv.id);
-            }
+            conv.unread = unreadConvs.includes(conv.id);
             conversations.push(conv);
         });
         

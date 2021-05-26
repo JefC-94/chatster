@@ -89,6 +89,17 @@ function ConvForm({conv, size, data, messMutate, setMessEvent}) {
                     conv_id : conv.id,
                     datetime: timestamp
                 });
+
+                //Update contact -> add unread message for the other user
+                if(conv.otherUser){
+                    try{
+                        const request = await axios.get(`/api/contacts/updateunread/id=${conv.contact.id}&to_id=${conv.otherUser.id}&user_id=${theUser.id}`);
+                        console.log(request.data.message);
+                    } catch(error){
+                        console.log(error);
+                    }
+                }
+
             } catch(error){
                 console.log(error.response.data.message);
             }

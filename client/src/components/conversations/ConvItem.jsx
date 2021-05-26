@@ -1,9 +1,10 @@
-import React, {useContext} from 'react';
+import React, {useEffect, useContext} from 'react';
 import {Link} from 'react-router-dom';
 import {UserContext} from '../../contexts/UserContext';
 import {timeSinceConvs} from '../helpers/TimeSince';
 import {FaCircle} from 'react-icons/fa';
 import { ConvContext } from '../../contexts/ConvContext';
+import axios from 'axios';
 
 function ConvItem({conv}) {
 
@@ -29,11 +30,24 @@ function ConvItem({conv}) {
         unread = conv.unread ? 'convs-item-new' : '';
     }
 
+    async function readUnreadContact(conv){
+        setUnreadConvs(prevVal => [...prevVal.filter(el => el !== conv.id)]);
+        try{
+            //update contact: set unread messages to zero for this user!
+            const request = await axios.get(`/api/contacts/readunread/id=${conv.contact.id}&to_id=${theUser.id}&user_id=${theUser.id}`);
+            console.log(request.data.message);
+        } catch(error){
+            console.log(error);
+        }
+    }
+
     return (
         <Link to="/dashboard/conversations" onClick={(e) => {
                 //user clicks on the convItem -> set this as currentConv + delete from unreadConvs
                 setCurrentConv(conv);
-                setUnreadConvs(prevVal => [...prevVal.filter(el => el !== conv.id)]);
+                if(conv.otherUser){
+                    readUnreadContact(conv);
+                }
             }}>
             <div key={conv.id} className={`${classes} ${active} ${unread}`} >
                 <div className="item-image">

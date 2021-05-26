@@ -7,7 +7,9 @@ const {
     otherUsers,
     createContact,
     deleteContact,
-    updateContact
+    updateContact,
+    updateUnreadContact,
+    readUnreadContact
 } = require('./handlers');
 
 //MIDDLEWARES
@@ -44,5 +46,9 @@ router.post('/user_id=:user_id', verifyToken, authCheck, jsonParser, createConta
 router.delete('/id=:id&user_id=:user_id', verifyToken, authCheck, deleteContact);
 
 router.put('/id=:id&user_id=:user_id', verifyToken, authCheck, jsonParser, updateContact);
+
+router.get('/updateunread/id=:id&to_id=:to_id&user_id=:user_id', verifyToken, authCheck, updateUnreadContact);
+
+router.get('/readunread/id=:id&to_id=:to_id&user_id=:user_id', verifyToken, authCheck, readUnreadContact);
 
 module.exports = router;
