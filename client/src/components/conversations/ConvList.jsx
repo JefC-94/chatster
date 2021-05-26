@@ -2,10 +2,10 @@ import React, {useContext} from 'react';
 import { ConvContext } from '../../contexts/ConvContext';
 import ConvItem from './ConvItem';
 
-function ConvList({convs, currentConv, setCurrentConv}) {
+function ConvList() {
 
     //CONTEXTS
-    const {groupdata, convsdata} = useContext(ConvContext);
+    const {groupdata, convsdata, convs} = useContext(ConvContext);
 
     /**
      * Note on the sorting of these items:
@@ -15,13 +15,12 @@ function ConvList({convs, currentConv, setCurrentConv}) {
     return (
         <div className="convs-list">
             {
-            
             ((convsdata || groupdata) && convs.length > 0) &&
             convs.sort((a, b) => {
                     return (b.lastMessage ? b.lastMessage.created_at : b.created_at) - (a.lastMessage ? a.lastMessage.created_at : a.created_at)
                 })
                 .map(conv => {
-                    return <ConvItem key={conv.id} conv={conv} currentConv={currentConv} setCurrentConv={setCurrentConv} />;
+                    return <ConvItem key={conv.id} conv={conv} />;
                 })
             }
             {

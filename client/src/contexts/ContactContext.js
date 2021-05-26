@@ -50,20 +50,22 @@ function ContactContextProvider(props) {
     //Update contacts and otherUsers when the socket receives a contact-update event
     //If data.message is null, the event is delete/block/reject, so we don't show a message
     useEffect(() => {
+        const handler = (data) => {updateContacts(data);}
         if(data){
-            socket.on('contact-update', (data) => {
-                console.log(data.message);
-                if(data.message){
-                    setSnackBar({open: true, message: data.message});
-                }
-                mutate(url);
-                mutate(usersurl);
-            });
+            socket.on('contact-update', handler);
         }
-        return () => socket.off('contact-update');
+        return () => socket.off('contact-update', handler);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, socket])
 
+
+    function updateContacts(data){
+        if(data.message){
+            setSnackBar({open: true, message: data.message});
+        }
+        mutate(url);
+        mutate(usersurl);
+    }
 
     //FUNCTIONS FOR GETTING CONTACTS
 

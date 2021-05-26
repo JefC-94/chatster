@@ -5,6 +5,8 @@ const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
 
+const {setLastLogin, clearLastLogin} = require('./controllers/auth/handlers');
+
 const mainRouter = require("./controllers");
 
 const port = process.env.PORT || 7555;
@@ -56,8 +58,11 @@ io.on("connection", (socket) => {
         return new Error('userid required');
     }
     socket.user_id = userid;
-
+    
     console.log(`user ${socket.user_id} connected on ${socket.id}`);
+    
+    //Clear last_login value for this user -> user is logged in and getConvs() on client will ignore this if statement!
+    clearLastLogin(socket.user_id);
 
     //Add this user to the array of users + send back to client for updates
     userSessions.push({
@@ -95,10 +100,13 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
         console.log(`user ${socket.user_id} disconnected`);
         userSessions = userSessions.filter(user => user.user_id !== socket.user_id);
+        //Save datetime of this moment as last_login for this user in db -> require from auth handlers
+        setLastLogin(socket.user_id);
         io.emit('users', userSessions);
     })
 
 })
+
 
 server.listen(port, () => {
     console.log(`Backend server running on port: ${port}`)

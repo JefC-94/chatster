@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useEffect, useContext} from 'react';
 import {useParams, Link} from 'react-router-dom';
 import {ConvContext} from '../../contexts/ConvContext';
 import {WindowContext} from '../../contexts/WindowContext';
@@ -19,11 +19,7 @@ function Conversations({match}) {
     //CONTEXTS
     const {windowWidth} = useContext(WindowContext);
     const {convserror, grouperror, convs, getSingleConv} = useContext(ConvContext);
-
-    //STATES
-    //this is the current active conversation, defined here because it can be set by id as well as click function on convItems
-    const [currentConv, setCurrentConv] = useState();
-    
+    const {currentConv, setCurrentConv} = useContext(ConvContext);
     
     //USE EFFECTS
 
@@ -83,10 +79,10 @@ function Conversations({match}) {
                         <>
                         {!currentConv && 
                             <>
-                            <ConvList convs={convs} currentConv={currentConv} setCurrentConv={setCurrentConv} />
+                            <ConvList />
                             </>
                         }
-                        {currentConv && <Conversation conv={currentConv} setCurrentConv={setCurrentConv} getCurrentConv={getCurrentConv} basePath={basePath} />}
+                        {currentConv && <Conversation conv={currentConv} basePath={basePath} />}
                         <div className="navigation navigation-space navigation-bg">    
                             <Link className="button primary" to={`/${basePath}/contacts`} >Go to contacts</Link> 
                             <Link className="button primary" to={`/${basePath}/group/create`} >Start Group Chat</Link>
@@ -103,14 +99,14 @@ function Conversations({match}) {
                 {(!convserror && !grouperror && convs) &&
                     <>
                     <div className="conv-left">
-                        <ConvList convs={convs} currentConv={currentConv} setCurrentConv={setCurrentConv} getCurrentConv={getCurrentConv} />
+                        <ConvList />
                         <div className="navigation navigation-center navigation-border-top">    
                             <Link className="button primary" to={`/${basePath}/group/create`} >Start Group Chat</Link>
                         </div>
                         <DashboardNav path={`${basePath}/contacts`} text={`Go to contacts`} />
                     </div>
                     <div className="conv-right">
-                        {currentConv && <Conversation conv={currentConv} setCurrentConv={setCurrentConv} basePath={basePath} />}
+                        {currentConv && <Conversation conv={currentConv} basePath={basePath} />}
                         {/** currentConv && above this line is absolutely necessary, need empty conv div for when there is none */}
                     </div>
                     </>

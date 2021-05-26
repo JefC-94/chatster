@@ -42,6 +42,7 @@ function Header({match}) {
             <div className="current-user">
                 <img src={theUser.photo_url ? `${imgPath}/${theUser.photo_url}` : profilepic} alt="" />
                 <h1 className="dashboard">{theUser.username}</h1>
+                <h2>{theUser.last_login}</h2>
             </div>
             
             <div className="navbar">

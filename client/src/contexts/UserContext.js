@@ -101,7 +101,7 @@ function UserContextProvider(props) {
             //console.log(data); //logs current logged in user
 
             if(data.user){
-                setRootState(prevValue => ({...prevValue, isAuth:true,theUser:data.user}));
+                setRootState(prevValue => ({...prevValue, isAuth:true,theUser: data.user}));
             }
         }
     }

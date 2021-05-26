@@ -73,6 +73,7 @@ const login = async (req, res) => {
             //USER HAS BEEN FOUND
             const user = rows[0];
 
+            //apparentley very often there's a problem with the line below
             var passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
 
             if(!passwordIsValid) return res.status(401).send({type: 'password', message:'Invalid password'});
@@ -91,7 +92,7 @@ const login = async (req, res) => {
 const me = async (req, res, next) => {
 
     //Req.user_id refers to the returned value from the verifyToken middleware!
-    knex.select('id', 'username', 'email', 'created_at', 'photo_url').from('users').where('id', req.user_id)
+    knex.select('id', 'username', 'email', 'created_at', 'photo_url', 'last_login').from('users').where('id', req.user_id)
     .then(rows => {
         res.status(200).send({success: 1, user: rows[0]});
     })
@@ -158,6 +159,61 @@ const logout = async (req, res) => {
     res.status(200).send({auth: false, token: null});
 }
 
+const setLastLogin = async (user_id) => {
+
+    knex('users').where('id', user_id).first()
+    .catch(err => {
+        return res.status(500).send({message: err});
+    })
+    .then(async (rows) => {
+        if(!rows){
+            return res.status(500).send({message:'No user found'});
+        } else {
+            //USER HAS BEEN FOUND
+            const user = rows;
+            const now = Math.floor(new Date().getTime() / 1000 );
+
+            const updateUserQuery = await knex('users').where('id', user_id).update({
+                last_login : now
+            });
+
+            if(updateUserQuery){
+                return true;
+            } else {
+                return false;
+            }
+        }
+    })
+}
+
+const clearLastLogin = async (user_id) => {
+
+    knex('users').where('id', user_id).first()
+    .catch(err => {
+        return res.status(500).send({message: err});
+    })
+    .then(async (rows) => {
+        if(!rows){
+            return res.status(500).send({message:'No user found'});
+        } else {
+            //USER HAS BEEN FOUND
+            const user = rows;
+            const now = new Date();
+
+            const updateUserQuery = await knex('users').where('id', user_id).update({
+                last_login : null
+            });
+
+            if(updateUserQuery){
+                return true;
+            } else {
+                return false;
+            }
+        }
+    })
+
+}
+
 
 module.exports = {
     register,
@@ -165,4 +221,6 @@ module.exports = {
     login,
     logout,
     edit,
+    setLastLogin,
+    clearLastLogin
 }

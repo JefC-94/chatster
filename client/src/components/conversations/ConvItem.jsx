@@ -5,13 +5,13 @@ import {timeSinceConvs} from '../helpers/TimeSince';
 import {FaCircle} from 'react-icons/fa';
 import { ConvContext } from '../../contexts/ConvContext';
 
-function ConvItem({conv, currentConv, setCurrentConv}) {
+function ConvItem({conv}) {
 
     //USER
     const {rootState} = useContext(UserContext);
     const {theUser} = rootState;
 
-    const { unreadConvs, setUnreadConvs} = useContext(ConvContext);
+    const {currentConv, setCurrentConv, setUnreadConvs} = useContext(ConvContext);
 
     //setup classes
     let classes = "user-item convs-item";
@@ -22,13 +22,17 @@ function ConvItem({conv, currentConv, setCurrentConv}) {
         active = currentConv.id === conv.id ? " user-item-active" : "";
     }
   
-    //Check the unreadConvs array to see if this conversation has new messages
-    //In the onclick of the component Link -> delete this id from the unreadConvs
-    unread = currentConv.id === conv.id ? "" : unreadConvs.includes(conv.id) ? 'convs-item-new' : '';
+    //Compare to currentConv if there is one, otherwise follow unread value
+    if(currentConv){
+        unread = currentConv.id === conv.id ? "" : conv.unread ? 'convs-item-new' : '';
+    } else {
+        unread = conv.unread ? 'convs-item-new' : '';
+    }
 
     return (
         <Link to="/dashboard/conversations" onClick={(e) => {
-                setCurrentConv(conv)
+                //user clicks on the convItem -> set this as currentConv + delete from unreadConvs
+                setCurrentConv(conv);
                 setUnreadConvs(prevVal => [...prevVal.filter(el => el !== conv.id)]);
             }}>
             <div key={conv.id} className={`${classes} ${active} ${unread}`} >

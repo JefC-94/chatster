@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext, createContext} from 'react';
+import React, {useState, useEffect, useContext, createContext, useRef} from 'react';
 import useSWR, { mutate } from 'swr';
 import {UserContext} from '../contexts/UserContext';
 import {imgPath} from '../Constants';
@@ -18,11 +18,24 @@ function ConvContextProvider(props) {
     //Import contact-data: conversations should be re-rendered when contacts change!
     const {contactdata} = useContext(ContactContext);
 
-    //STATE
+    //STATES
+
     //Setup state to add individual conversations + group conversations
     const [convs, setConvs] = useState([]);
+    
+    //this is the current active conversation, defined here but mainly set in conversations.jsx: it can be set by id as well as click function on convItems
+    const [currentConv, setCurrentConv] = useState();
+
+    //Setup a reference to the currentConv to use in the socket event handler
+    const currentConvRef = useRef(currentConv);
+    useEffect(() => {currentConvRef.current = currentConv});
+
     //Setup state array for conversation ids that have received new messages
     const [unreadConvs, setUnreadConvs] = useState([]); // array of ids
+
+    //Setup a reference to the unreadConvs to use in the socket event handler
+    const unreadConvsRef = useRef(unreadConvs);
+    useEffect(() => {unreadConvsRef.current = unreadConvs});
 
     //SETUP SWR CONNECTION FOR INDIVIDUAL CONVS
 
@@ -61,28 +74,42 @@ function ConvContextProvider(props) {
             setConvs([]);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [data, groupdata, onlineUsers]);
+    }, [data, groupdata, onlineUsers, unreadConvs]);
 
 
     //SOCKET EVENT LISTENER for new messages -> setup array of conv_ids
     useEffect(() => {
-        socket.on('chat-message', (message) => {
-            console.log("new message received");
-            mutate(url);
-            mutate(groupurl);
-            //Todo: find a way that there are no doubles in this array!
-            //IF STATEMENT NOT WORKING!!
-            if(!unreadConvs.includes(message.conv_id)){
-                setUnreadConvs(prevVal => [...prevVal, message.conv_id]);
-            }
-        });
-        return () => socket.off('message');
+        //Pass unreadConvsRef to the handler function for synchronisation (otherwise empty array or undefined)
+        const handler = (message) => {updateUnreads(message, unreadConvsRef.current, currentConvRef.current)}
+        socket.on('chat-message', handler);
+        return () => {
+            socket.off('chat-message', handler);
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         console.log(unreadConvs);
     }, [unreadConvs]);
+
+    //FUNCTIONS
+
+    //Pass unreadConvs and currentConv as Refs (current)
+    function updateUnreads(message, unreadConvs, currentConv){
+        console.log("message handler executed");
+        mutate(url);
+        mutate(groupurl);
+        //Don't add to unreadConvs if it is for the currentConv or it is already unread!
+        if(currentConv){
+            if(currentConv.id !== message.conv_id){
+                setUnreadConvs(prevVal => [...prevVal, message.conv_id]);
+            }
+        } else {
+            if(!unreadConvs.includes(message.conv_id)){
+                setUnreadConvs(prevVal => [...prevVal, message.conv_id]);
+            }
+        }
+    }
 
     //Get all conversations, plus set lastMessage and otherUser + imageUrl as properties
     async function getConvs(){
@@ -92,11 +119,22 @@ function ConvContextProvider(props) {
             conv.displayName = conv.otherUser.username;
             conv.imageUrl = conv.otherUser.photo_url ? `${imgPath}/${conv.otherUser.photo_url}` : profilepic;
             conv.online = onlineUsers.filter(onlineUser => onlineUser.user_id === conv.otherUser.id).length;
+            //Check the unreadConvs array to see if this conversation has new messages
+            //Check last_login and compare with last_message to see if first render should show new messages
+            //Still not covering everything -> what if user nevers clicks on this message?!
+            if(theUser.last_login){
+                conv.unread = conv.lastMessage.created_at - theUser.last_login > 0;
+                console.log(conv.lastMessage.created_at, theUser.last_login);
+            } else {
+                conv.unread = unreadConvs.includes(conv.id);
+            }
             conversations.push(conv);
         });
+        
         setConvs(prevValue => ([
             ...prevValue, ...conversations
         ]));
+        theUser.last_login = null;
     }
 
     //Get all group conversations, set userNames as string, displayName is conversation if there is one, also set lastMessage and imageUrl
@@ -140,7 +178,9 @@ function ConvContextProvider(props) {
             setConvs,
             getSingleConv,
             unreadConvs,
-            setUnreadConvs
+            setUnreadConvs,
+            currentConv,
+            setCurrentConv
         }}>
             {props.children}
         </ConvContext.Provider>

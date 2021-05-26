@@ -10,11 +10,11 @@ import axios from 'axios';
 import {useSWRInfinite, mutate} from 'swr';
 import { FaChevronLeft, FaCircle } from 'react-icons/fa';
 
-function Conversation({conv, setCurrentConv, basePath}) {
+function Conversation({conv, basePath}) {
 
     //CONTEXTS
     const {windowWidth} = useContext(WindowContext);
-    const {groupurl} = useContext(ConvContext);
+    const {groupurl, setCurrentConv} = useContext(ConvContext);
 
     const {setSnackBar} = useContext(ModalContext);
 
@@ -89,7 +89,6 @@ function Conversation({conv, setCurrentConv, basePath}) {
     //SOCKET EVENT LISTENER
     useEffect(() => {
         socket.on('chat-message', () => {
-            console.log("new message received");
             messMutate();
         });
         return () => socket.off('message');
