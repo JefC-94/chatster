@@ -3,7 +3,9 @@ const multer = require('multer');
 const path = require('path');
 const slugify = require('slugify');
 const knex = require('../db');
-
+const fs = require('fs');
+const { promisify } = require('util')
+const unlinkAsync = promisify(fs.unlink)
 const router = express.Router();
 
 //Setup settings for file storage:
@@ -38,63 +40,107 @@ const upload = multer({
 
 //PROFILE PICTURE UPLOAD
 
-router.post('/profile&user_id=:id', (req, res) => {
-   
-    upload(req, res, (err) => {
+router.post('/profile&user_id=:id', async (req, res) => {
+
+    let previous_image = null;
+    //GET Filename of previous photo_url if there is one
+    //Delete when uploading is successful
+    const queryUserForImage = await knex('users').where('id', req.params.id).select('photo_url').first();
+    
+    if(queryUserForImage){
+        previous_image = queryUserForImage.photo_url;
+    }
+
+    upload(req, res, async (err) => {
         if(req.fileValidationError){
-            return res.send({success: 0, status: 500, message: req.fileValidationError});
+            return res.status(500).send({message: req.fileValidationError});
         }
         else if(!req.file){
-            return res.send({success: 0, status: 500, message: 'Please select an image to upload'});
+            return res.status(500).send({message: 'Please select an image to upload'});
         /* }
          else if(err instanceof multer.MulterErrof){
             return res.send(err); */
         } else if(err){
-            return res.send({success: 0, status: 500, message: err});
+            return res.status(500).send({message: err});
         }
 
         //upload successfull: now add image to database!
         knex('users').where('id', req.params.id).update({
             photo_url : req.file.filename
         })
-        .catch(err => {
-            res.json({success: 0, status: 500, message: err});
-            return;
+        .then(() => {
+            res.status(200).send({message: 'Profile picture updated!'});
         })
-        .then(rows => {
-            res.json({success:1, status: 201, message: 'Profile picture updated!'});
+        .catch(err => {
+            res.status(500).send({message: err});
+            return;
         });
+
+        console.log(previous_image);
+
+        if(previous_image){
+            await unlinkAsync('./server/uploads/' + previous_image);
+        }
 
     })
 
 });
 
+//User deletes his profile image (no new)
+router.delete('/profile&user_id=:id', async (req, res) => {
+
+    let previous_image = null;
+    //GET Filename of previous photo_url if there is one
+    //Delete when uploading is successful
+    const queryUserForImage = await knex('users').where('id', req.params.id).select('photo_url').first();
+    
+    if(queryUserForImage){
+        previous_image = queryUserForImage.photo_url;
+        
+        if(previous_image){
+            await unlinkAsync('./server/uploads/' + previous_image);
+        } else {
+            return res.status(500).send({message: 'user has no profile picture yet'});
+        }
+
+        knex('users').where('id', req.params.id).update({
+            photo_url : null
+        })
+        .then(() => {
+            return res.status(200).send({message: 'Profile picture deleted!'});
+        })
+        .catch(err => {
+            return res.status(500).send({message: err});
+        });
+    }
+
+});
 
 router.post('/conv-img&id=:id', (req, res) => {
    
     upload(req, res, (err) => {
         if(req.fileValidationError){
-            return res.send({success: 0, status: 500, message: req.fileValidationError});
+            return res.status(500).send({message: req.fileValidationError});
         }
         else if(!req.file){
-            return res.send({success: 0, status: 500, message: 'Please select an image to upload'});
+            return res.status(500).send({message: 'Please select an image to upload'});
         /* }
          else if(err instanceof multer.MulterErrof){
             return res.send(err); */
         } else if(err){
-            return res.send({success: 0, status: 500, message: err});
+            return res.status(500).send({message: err});
         }
 
         //upload successfull: now add image to database!
         knex('conversation').where('id', req.params.id).update({
             photo_url : req.file.filename
         })
-        .catch(err => {
-            res.json({success: 0, status: 500, message: err});
-            return;
+        .then(() => {
+            return res.status(200).send({message: 'Group picture updated!'});
         })
-        .then(rows => {
-            res.json({success:1, status: 201, message: 'Group picture updated!'});
+        .catch(err => {
+            return res.status(500).send({message: err});
+            ;
         });
 
     })

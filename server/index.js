@@ -89,7 +89,6 @@ io.on("connection", (socket) => {
     //Data has action -> if it is necessary to display a snackbar to the other user
     //Transfer the action property as method, it's null in the case of reject and delete/block
     socket.on('contact-update', (data) => {
-        console.log(data.to_id);
         const findUsers = userSessions.filter(session => session.user_id === data.to_id);
         for(userSession of findUsers){
             socket.broadcast.to(userSession.id).emit('contact-update', {message: data.action});

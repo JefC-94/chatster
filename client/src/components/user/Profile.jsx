@@ -4,7 +4,7 @@ import {UserContext} from '../../contexts/UserContext';
 import axios from 'axios';
 import {imgPath} from '../../Constants';
 import profilepic from '../../images/profile-blanc.svg';
-import {FaPlus, FaCheck} from 'react-icons/fa';
+import {FaPlus, FaCheck, FaTimes} from 'react-icons/fa';
 import {AiOutlineReload} from 'react-icons/ai';
 import { timeSinceSignup } from '../helpers/TimeSince';
 import { ModalContext } from '../../contexts/ModalContext';
@@ -115,24 +115,38 @@ function Profile({match}) {
             );
         }
         //Only request that is for now not with try/catch
-        const request = await axios.post(`/api/fileupload/profile&user_id=${theUser.id}`, formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-        });
-        console.log(request.data);
-        if(request.data.success){
+        try {
+            const request = await axios.post(`/api/fileupload/profile&user_id=${theUser.id}`, formData, {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
+                }
+            });
+            console.log(request.data.message);
             setImgUpdated(true);
             setImgError(false);
             setTimeout(() => setImgUpdated(false), 800);
             setTimeout(() => setSelectedFile(), 800);
             isLoggedIn();
             setSnackBar({open: true, message: "Profile picture updated"});
-        } else {
+        } catch(error){
             setImgUpdated(false);
             setSelectedFile();
             setSelectedUrl();
-            setImgError(request.data.message);
+            setImgError(error.response.data.message);
+            console.log(error.response.data.message);
+        }
+    }
+
+    async function deleteImage(){
+        try{
+            const request = await axios.delete(`/api/fileupload/profile&user_id=${theUser.id}`);
+            console.log(request.data);
+            setImgError(false);
+            setSelectedUrl(profilepic);
+            isLoggedIn();
+            setSnackBar({open: true, message: "Profile picture deleted"});
+        }catch(error){
+            console.log(error.response.data.message);
         }
     }
 
@@ -147,6 +161,10 @@ function Profile({match}) {
 
                     <div className="form-profile-picture">
                         <img src={selectedUrl} alt="profilepic" />
+                        {
+                        /* (selectedUrl !== profilepic && !selectedFile) && */
+                        <button className="circle primary flex deleteimage" onClick={() => deleteImage()}><FaTimes /></button>
+                        }
                         <div className="profile-picture-change flex">
                             <label htmlFor="profile-pic">
                                 {!theUser.photo_url && !selectedFile && <FaPlus />}

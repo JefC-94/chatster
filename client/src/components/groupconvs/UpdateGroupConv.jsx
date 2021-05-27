@@ -233,14 +233,13 @@ function UpdateGroupConv({match, history}) {
             formData.append('fileToUpload', selectedFile
             );
         }
-        
-        const request = await axios.post(`/api/fileupload/conv-img&id=${conv.id}`, formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-        });
-        console.log(request.data);
-        if(request.data.success){
+        try {
+            const request = await axios.post(`/api/fileupload/conv-img&id=${conv.id}`, formData, {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
+                }
+            });
+            console.log(request.data.message);
             setImgUpdated(true);
             setImgError(false);
             getCurrentConv();
@@ -248,11 +247,11 @@ function UpdateGroupConv({match, history}) {
             setTimeout(() => setImgUpdated(false), 800);
             setTimeout(() => setSelectedFile(), 800);
             setSnackBar({open: true, message: "Group picture updated"});
-        } else {
+        } catch(error){
             setImgUpdated(false);
             setSelectedFile();
             setSelectedUrl();
-            setImgError(request.data.message);
+            setImgError(error.response.data.message);
         }
     }
 

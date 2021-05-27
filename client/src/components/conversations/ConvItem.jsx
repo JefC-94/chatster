@@ -1,4 +1,4 @@
-import React, {useEffect, useContext} from 'react';
+import React, {useContext} from 'react';
 import {Link} from 'react-router-dom';
 import {UserContext} from '../../contexts/UserContext';
 import {timeSinceConvs} from '../helpers/TimeSince';
@@ -43,9 +43,9 @@ function ConvItem({conv}) {
 
     return (
         <Link to="/dashboard/conversations" onClick={(e) => {
-                //user clicks on the convItem -> set this as currentConv + delete from unreadConvs
+                //user clicks on the convItem -> set this as currentConv + if necessary, delete from unreadConvs
                 setCurrentConv(conv);
-                if(conv.otherUser){
+                if(conv.otherUser && conv.unread){
                     readUnreadContact(conv);
                 }
             }}>

@@ -84,6 +84,7 @@ function ConvContextProvider(props) {
             .filter(contact => contact.user_1.id === theUser.id ? contact.user1_unread > 0 : contact.user2_unread > 0)
             setUnreadConvs([...unreadContacts.map(contact => contact.conv_id)]);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [contactdata]);
 
 
