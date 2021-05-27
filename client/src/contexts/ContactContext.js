@@ -70,6 +70,7 @@ function ContactContextProvider(props) {
     //FUNCTIONS FOR GETTING CONTACTS
 
     async function getContacts(){
+        console.log("getContacts runs");
         //Contact data gets divided over different categories
         data.forEach(contact => {
             contact.otherUser = contact.user_1.id === theUser.id ? contact.user_2 : contact.user_1;

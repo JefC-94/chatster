@@ -4,7 +4,7 @@ import {UserContext} from '../../contexts/UserContext';
 import {timeSinceConvs} from '../helpers/TimeSince';
 import {FaCircle} from 'react-icons/fa';
 import { ConvContext } from '../../contexts/ConvContext';
-import axios from 'axios';
+import { mutate } from 'swr';
 
 function ConvItem({conv}) {
 
@@ -12,7 +12,7 @@ function ConvItem({conv}) {
     const {rootState} = useContext(UserContext);
     const {theUser} = rootState;
 
-    const {currentConv, setCurrentConv, setUnreadConvs} = useContext(ConvContext);
+    const {currentConv, setCurrentConv, convsurl, readUnreadContact} = useContext(ConvContext);
 
     //setup classes
     let classes = "user-item convs-item";
@@ -30,23 +30,13 @@ function ConvItem({conv}) {
         unread = conv.unread ? 'convs-item-new' : '';
     }
 
-    async function readUnreadContact(conv){
-        setUnreadConvs(prevVal => [...prevVal.filter(el => el !== conv.id)]);
-        try{
-            //update contact: set unread messages to zero for this user!
-            const request = await axios.get(`/api/contacts/readunread/id=${conv.contact.id}&to_id=${theUser.id}&user_id=${theUser.id}`);
-            console.log(request.data.message);
-        } catch(error){
-            console.log(error);
-        }
-    }
-
     return (
         <Link to="/dashboard/conversations" onClick={(e) => {
                 //user clicks on the convItem -> set this as currentConv + if necessary, delete from unreadConvs
                 setCurrentConv(conv);
                 if(conv.otherUser && conv.unread){
-                    readUnreadContact(conv);
+                    readUnreadContact(conv.contact.id);
+                    mutate(convsurl);
                 }
             }}>
             <div key={conv.id} className={`${classes} ${active} ${unread}`} >

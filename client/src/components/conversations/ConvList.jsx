@@ -5,7 +5,7 @@ import ConvItem from './ConvItem';
 function ConvList() {
 
     //CONTEXTS
-    const {groupdata, convsdata, convs} = useContext(ConvContext);
+    const {convs, loading} = useContext(ConvContext);
 
     /**
      * Note on the sorting of these items:
@@ -14,8 +14,9 @@ function ConvList() {
 
     return (
         <div className="convs-list">
+            {(loading.single || loading.group) && <div className="navigation navigation-center">Loading...</div>}
             {
-            ((convsdata || groupdata) && convs.length > 0) &&
+            (!loading.single && !loading.group && convs.length > 0) &&
             convs.sort((a, b) => {
                     return (b.lastMessage ? b.lastMessage.created_at : b.created_at) - (a.lastMessage ? a.lastMessage.created_at : a.created_at)
                 })
@@ -24,7 +25,7 @@ function ConvList() {
                 })
             }
             {
-            ((convsdata || groupdata) && convs.length === 0) && 
+            (!loading.single && !loading.group && convs.length === 0) && 
                 <div className="no-results convs-tab">
                     <p className="">You have no conversations yet. Go to contacts and invite some people to chat.</p>
                 </div>
