@@ -63,9 +63,6 @@ const login = async (req, res) => {
     // VALIDATE EMAIL!!
 
     knex('users').where('email', req.body.email)
-    .catch(err => {
-        return res.status(500).send({message:err});
-    })
     .then(rows => {
         if(rows.length === 0){
             return res.status(401).send({type: 'email', message:'Sorry, we found no user with this email'});
@@ -85,6 +82,9 @@ const login = async (req, res) => {
             res.status(200).send({success: 1, token: token});
         }
     })
+    .catch(err => {
+        return res.status(500).send({message:err});
+    });
     
 }
 
@@ -110,9 +110,6 @@ const edit = async (req, res) => {
     }
 
     knex('users').where('id', req.body.id).first()
-    .catch(err => {
-        return res.status(500).send({message: err});
-    })
     .then(async (rows) => {
         if(!rows){
             return res.status(500).send({message:'No user found'});
@@ -152,6 +149,9 @@ const edit = async (req, res) => {
 
             }
         }
+    })
+    .catch(err => {
+        return res.status(500).send({message: err});
     });
 }
 
@@ -162,9 +162,6 @@ const logout = async (req, res) => {
 const setLastLogin = async (user_id) => {
 
     knex('users').where('id', user_id).first()
-    .catch(err => {
-        return res.status(500).send({message: err});
-    })
     .then(async (rows) => {
         if(!rows){
             return res.status(500).send({message:'No user found'});
@@ -184,14 +181,15 @@ const setLastLogin = async (user_id) => {
             }
         }
     })
+    .catch(err => {
+        return res.status(500).send({message: err});
+    });
+
 }
 
 const clearLastLogin = async (user_id) => {
 
     knex('users').where('id', user_id).first()
-    .catch(err => {
-        return res.status(500).send({message: err});
-    })
     .then(async (rows) => {
         if(!rows){
             return res.status(500).send({message:'No user found'});
@@ -211,6 +209,9 @@ const clearLastLogin = async (user_id) => {
             }
         }
     })
+    .catch(err => {
+        return res.status(500).send({message: err});
+    });
 
 }
 

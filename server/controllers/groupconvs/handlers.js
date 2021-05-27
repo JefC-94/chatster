@@ -67,9 +67,13 @@ const deleteGroupConv = async (req, res) => {
         return res.status(401).send({message:'Not authorized to delete to a conversation between other users'});
     }
 
-    const deleteGroupConvQuery = await knex('conversation').where('id', req.params.id).del();
-
-    res.status(200).send({message: deleteGroupConvQuery});
+    knex('conversation').where('id', req.params.id).del()
+    .then(() => {
+        return res.status(200).send({message: 'Deleted group conversation'});
+    })
+    .catch(err => {
+        return res.status(500).send({message: err})
+    });
 
 }
 
@@ -82,15 +86,20 @@ const updateGroupConv = async (req, res) => {
         return res.status(401).send({message:'Not authorized to update to a conversation between other users'});
     }
 
+    //Also check if user is creator of group? Can other users alter the group information??
 
-    const updateGroupConvQuery = await knex('conversation').where('id', req.params.id)
+    knex('conversation').where('id', req.params.id)
     .update({
         name: req.body.name,
         photo_url: req.body.photo_url,
         created_by: req.body.created_by,
+    })
+    .then(() => {
+        return res.status(200).send({message: 'Updated group conversation'});
+    })
+    .catch(err => {
+        return res.status(500).send({message: err})
     });
-
-    res.status(200).send({message: updateGroupConvQuery});
 
 }
 

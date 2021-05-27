@@ -65,14 +65,20 @@ const createConv = async (req, res) => {
 
     if(+req.body.created_by !== req.user_id) return res.status(401).send({message:'Not authorized to create conv as other user'});
 
-    const createConvQuery = await knex('conversation').insert({
+    knex('conversation').insert({
         name: req.body.name,
         photo_url: req.body.photo_url,
         created_at: req.body.created_at,
         created_by: req.body.created_by,
+    })
+    .then(rows => {
+        return res.status(200).send({message: rows[0]});
+    })
+    .catch(err => {
+        return res.status(500).send({message: err});
     });
 
-    res.status(200).send({message: createConvQuery[0]});
+    
 }
 
 
@@ -92,12 +98,16 @@ const deleteConv = async (req, res) => {
         return res.status(401).send({message:'Not authorized to delete conversation between other users'});
     }
 
-    const deleteConvQuery = await knex('conversation').where('id', req.params.id).del();
-
-    res.status(200).send({message: deleteConvQuery});
+    knex('conversation').where('id', req.params.id).del()
+    .then(() => {
+        return res.status(200).send({message: 'Converation deleted'});
+    })
+    .catch(err => {
+        return res.status(500).send({message: err})
+    });
 }
 
-
+//This function will probably never be called, only groupconvs will be updated
 const updateConv = async (req, res) => {
 
     //Query first -> also add contact.user_1 & user_2 to select
@@ -114,14 +124,19 @@ const updateConv = async (req, res) => {
         return res.status(401).send({message:'Not authorized to alter conversation between other users'});
     }
 
-    const updateConvQuery = await knex('conversation').where('id', req.params.id)
+    knex('conversation').where('id', req.params.id)
     .update({
         name: req.body.name,
         photo_url: req.body.photo_url,
         created_by: req.body.created_by,
+    })
+    .then(() => {
+        return res.status(200).send({message: updateConvQuery});
+    })
+    .catch(err => {
+        return res.status(500).send({message: err})
     });
 
-    res.status(200).send({message: updateConvQuery});
 }
 
 module.exports = {

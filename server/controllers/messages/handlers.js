@@ -44,7 +44,7 @@ const createMessage = async (req, res) => {
 
     //If both results are false -> unauthorized
     if(!checkIndConv && !checkGroupConv ){
-        return res.status(401).send({message:'Not authorized to add to a conversation between other users'});
+        return res.status(401).send({message:'Not authorized to create a message in a conversation between other users'});
     }
 
     if(req.body.user_id !== req.user_id){
@@ -57,14 +57,18 @@ const createMessage = async (req, res) => {
 
     //Validate req.body.body!!
 
-    const createMessageQuery = await knex('message').insert({
+    knex('message').insert({
         conv_id : req.body.conv_id, 
         user_id: req.body.user_id, 
         body: req.body.body, 
         created_at: req.body.created_at
+    })
+    .then((rows) => {
+        return res.status(200).send({message: rows[0]});
+    })
+    .catch(err => {
+        return res.status(500).send({message: err})
     });
-
-    res.status(200).send({message: createMessageQuery[0]});
 
 }
 

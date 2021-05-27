@@ -47,6 +47,9 @@ const otherUsers = async (req, res) => {
 
 const createContact = async (req, res) => {
 
+    //Check that body is not empty
+    if(Object.keys(req.body).length === 0) return res.status(422).send({message:'Bad request'});
+
     //Check if one of the contact users in the body is the current user
     if(!(req.body.user_1 === req.user_id || req.body.user_2 === req.user_id)){
         return res.status(401).send({message:'Not authorized to create contact between other users'});
@@ -76,15 +79,20 @@ const createContact = async (req, res) => {
         }
     }    
 
-    const createContactQuery = await knex('contact').insert({
+    knex('contact').insert({
         user_1: req.body.user_1,
         user_2: req.body.user_2,
         created_at: req.body.created_at,
         conv_id: req.body.conv_id,
         status: req.body.status
+    })
+    .then(rows => {
+        return res.status(200).send({message: rows[0]}); //Keep this as the id of newly created contact
+    })
+    .catch(err => {
+        return res.status(500).send({message: err});
     });
-
-    res.status(200).send({message: createContactQuery[0]});
+    
 }
 
 
@@ -93,14 +101,23 @@ const deleteContact = async (req, res) => {
     //Query first
     const queryContact = await knex('contact').where('id', req.params.id).first();
 
+    if(!queryContact){
+        return res.status(500).send({message: 'No contact with this id'});
+    }
+
     //Check if one of the contact users is the current user
     if(!(queryContact.user_1 === req.user_id || queryContact.user_2 === req.user_id)){
         res.status(401).send({message:'Not authorized to delete contact between other users'});
     }
         
-    const deleteContactQuery = await knex('contact').where('id', req.params.id).del();
-
-    res.status(200).send({message: deleteContactQuery}); // Replace by "contact deleted?"
+    knex('contact').where('id', req.params.id).del()
+    .then(() => {
+        res.status(200).send({message: 'Contact deleted'});
+    })
+    .catch(err => {
+        return res.status(500).send({message: err})
+    });
+    
 }
 
 
@@ -108,6 +125,10 @@ const updateContact = async (req, res) => {
 
     //Query first!
     const queryContact = await knex('contact').where('id', req.params.id).first();
+
+    if(!queryContact){
+        return res.status(500).send({message: 'No contact with this id'});
+    }
 
     //Check if one of the contact users is the current user
     if(!(queryContact.user_1 === req.user_id || queryContact.user_2 === req.user_id)){
@@ -127,20 +148,30 @@ const updateContact = async (req, res) => {
         }
     }
         
-    const updateContactQuery = await knex('contact').where('id', req.params.id)
+    knex('contact').where('id', req.params.id)
     .update({
         created_at: req.body.created_at,
         conv_id: req.body.conv_id,
         status: req.body.status
+    })
+    .then(() => {
+        return res.status(200).send({message: 'Contact updated'});
+    })
+    .catch(err => {
+        return res.status(500).send({message: err})
     });
 
-    res.status(200).send({message: updateContactQuery});
+   
 }
 
 const updateUnreadContact = async (req, res) => {
 
     //Query first!
     const queryContact = await knex('contact').where('id', req.params.id).first();
+
+    if(!queryContact){
+        return res.status(500).send({message: 'No contact with this id'});
+    }
 
     //Check if one of the contact users is the current user
     if(!(queryContact.user_1 === req.user_id || queryContact.user_2 === req.user_id)){
@@ -150,21 +181,31 @@ const updateUnreadContact = async (req, res) => {
     console.log(req.params.to_id);
 
     if(+req.params.to_id === queryContact.user_1){
-        const updateContactQuery = await knex('contact').where('id', req.params.id)
+        
+        knex('contact').where('id', req.params.id)
         .update({
             user1_unread: queryContact.user1_unread + 1
+        })
+        .then(() => {
+            return res.status(200).send({message: 'User 1 unread incremented'});
+        })
+        .catch(err => {
+            return res.status(500).send({message: err})
         });
-
-        return res.status(200).send({message: updateContactQuery});
     }
 
     if(+req.params.to_id === queryContact.user_2){
-        const updateContactQuery = await knex('contact').where('id', req.params.id)
+        
+        knex('contact').where('id', req.params.id)
         .update({
             user2_unread: queryContact.user2_unread + 1
+        })
+        .then(() => {
+            return res.status(200).send({message: 'User 2 unread incremented'});
+        })
+        .catch(err => {
+            return res.status(500).send({message: err})
         });
-
-        return res.status(200).send({message: updateContactQuery});
 
     }    
 }
@@ -174,6 +215,10 @@ const readUnreadContact = async (req, res) => {
     //Query first!
     const queryContact = await knex('contact').where('id', req.params.id).first();
 
+    if(!queryContact){
+        return res.status(500).send({message: 'No contact with this id'});
+    }
+
     //Check if one of the contact users is the current user
     if(!(queryContact.user_1 === req.user_id || queryContact.user_2 === req.user_id)){
         return res.status(401).send({message:'Not authorized to update contact between other users'});
@@ -182,21 +227,30 @@ const readUnreadContact = async (req, res) => {
     console.log(req.params.to_id);
 
     if(+req.params.to_id === queryContact.user_1){
-        const updateContactQuery = await knex('contact').where('id', req.params.id)
+        knex('contact').where('id', req.params.id)
         .update({
             user1_unread: 0
+        })
+        .then(() => {
+            return res.status(200).send({message: 'User 1 unread set to 0'});
+        })
+        .catch(err => {
+            return res.status(500).send({message: err})
         });
 
-        return res.status(200).send({message: updateContactQuery});
     }
 
     if(+req.params.to_id === queryContact.user_2){
-        const updateContactQuery = await knex('contact').where('id', req.params.id)
+        knex('contact').where('id', req.params.id)
         .update({
             user2_unread: 0
+        })
+        .then(() => {
+            return res.status(200).send({message: 'User 2 unread set to 0'});
+        })
+        .catch(err => {
+            return res.status(500).send({message: err})
         });
-
-        return res.status(200).send({message: updateContactQuery});
 
     }    
 }

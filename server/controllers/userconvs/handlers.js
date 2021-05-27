@@ -21,13 +21,17 @@ const createUserConv = async (req, res) => {
     }
 
     //Add user to groupchat
-    const createUserConvQuery = await knex('user_conv').insert({
+    knex('user_conv').insert({
         user_id : req.body.user_id,
         conv_id: req.body.conv_id,
         created_at: req.body.created_at,
+    })
+    .then((rows) => {
+        return res.status(200).send({message: rows[0]});
+    })
+    .catch(err => {
+        return res.status(500).send({message: err})
     });
-
-    res.status(200).send({message: createUserConvQuery[0]});
 
 }
 
@@ -45,9 +49,13 @@ const deleteUserConv = async (req, res) => {
         return res.status(401).send({message:'Not authorized to remove users from this conversation'});
     }
 
-    const deleteUserConvQuery = await knex('user_conv').where('id', req.params.id).del();
-
-    res.status(200).send({message: deleteUserConvQuery});
+    knex('user_conv').where('id', req.params.id).del()
+    .then(() => {
+        return res.status(200).send({message: 'User deleted from conversation'});
+    })
+    .catch(err => {
+        return res.status(500).send({message: err})
+    });
 }
 
 module.exports = {
