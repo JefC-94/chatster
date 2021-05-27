@@ -5,6 +5,7 @@ import {v4 as uuid} from 'uuid';
 import { MdSend } from 'react-icons/md';
 import { ConvContext } from '../../contexts/ConvContext';
 import { UserContext } from '../../contexts/UserContext';
+import {now} from '../helpers/TimeSince';
 
 function ConvForm({conv, size, data, messMutate, setMessEvent}) {
 
@@ -22,7 +23,7 @@ function ConvForm({conv, size, data, messMutate, setMessEvent}) {
     //FUNCTIONS
 
     //helper function for submitform -> this adds a message to either convsdata or groupdata
-    function mutateAddMessageToConvs(data, url, timestamp){
+    function mutateAddMessageToConvs(data, url){
         mutate(url, [...data.map(item => {
             if(item.id === conv.id){
                 return {
@@ -32,7 +33,7 @@ function ConvForm({conv, size, data, messMutate, setMessEvent}) {
                         conv_id : conv.id, 
                         user_id: theUser.id, 
                         body: inputField, 
-                        created_at: timestamp
+                        created_at: now()
                     },
                 }
             } else {
@@ -41,15 +42,15 @@ function ConvForm({conv, size, data, messMutate, setMessEvent}) {
         })], false);
     }
 
+
     //FORM SUBMIT FUNCTION
     async function handleFormSubmit(){
         if(inputField){
-            const timestamp = Math.floor(new Date().getTime() / 1000 );
             //MUTATE 1: First set cache of convlist items -> determine convs or groups with otherUser
             if(conv.otherUser){
-                mutateAddMessageToConvs(convsdata, convsurl, timestamp);
+                mutateAddMessageToConvs(convsdata, convsurl);
             } else {
-                mutateAddMessageToConvs(groupdata, groupurl, timestamp);
+                mutateAddMessageToConvs(groupdata, groupurl);
             }
             //MUTATE 2: Messages: PROBLEM: no url to mutate because of useSWRInfinite in Conversation.jsx!
             /* mutate(URL NODIG VANUIT CONVERSATION.JSX , [...data, {
@@ -57,7 +58,7 @@ function ConvForm({conv, size, data, messMutate, setMessEvent}) {
                 conv_id : conv.id, 
                 user_id: theUser.id, 
                 body: inputField, 
-                created_at: timestamp,
+                created_at: now(),
                 received: false,
                 //we don't know if timestamp/fullday will be true, can't set it here
             }], false); */
@@ -67,44 +68,61 @@ function ConvForm({conv, size, data, messMutate, setMessEvent}) {
                     conv_id : conv.id, 
                     user_id: theUser.id, 
                     body: inputField, 
-                    created_at: timestamp
+                    created_at: now()
                 });
                 console.log(request.data.message);
                 
                 //Update form and messages
                 setInputField('');
                 messMutate();
+
+                //Update the convitems on the side as well
                 conv.otherUser ? mutate(convsurl) : mutate(groupurl);
                 
-                //Emit messages event to socket
-                conv.otherUser ? 
-                socket.emit("chat-message", {
-                    to_id: conv.otherUser.id, //to immediatily get right user on server
-                    body: inputField,
-                    conv_id : conv.id,
-                    datetime: timestamp
-                }) :
-                socket.emit("group-message", { 
-                    body: inputField,
-                    conv_id : conv.id,
-                    datetime: timestamp
-                });
-
+                //Emit message event to socket
+                conv.otherUser ? emitMessageToContact() : emitMessageToGroup();
+                
                 //Update contact -> add unread message for the other user
-                if(conv.otherUser){
-                    try{
-                        const request = await axios.get(`/api/contacts/updateunread/id=${conv.contact.id}&to_id=${conv.otherUser.id}&user_id=${theUser.id}`);
-                        console.log(request.data.message);
-                    } catch(error){
-                        console.log(error);
-                    }
-                }
+                conv.otherUser ? setUnreadMessage() : setUnreadGroupMessage();
 
             } catch(error){
                 console.log(error.response.data.message);
             }
         }
     }
+
+    //HANDLER FUNCTIONS IN FORM SUBMIT (AFTER DB INSERTION)
+
+    function emitMessageToContact(){
+        socket.emit("chat-message", {
+            to_id: conv.otherUser.id, //to immediatily get right user on server
+            body: inputField,
+            conv_id : conv.id,
+            datetime: now()
+        })
+    }
+
+    function emitMessageToGroup(){
+        socket.emit("group-message", { 
+            body: inputField,
+            conv_id : conv.id,
+            datetime: now()
+        });
+    }
+
+    async function setUnreadMessage(){
+        try{
+            const request = await axios.get(`/api/contacts/updateunread/id=${conv.contact.id}&to_id=${conv.otherUser.id}&user_id=${theUser.id}`);
+            console.log(request.data.message);
+        } catch(error){
+            console.log(error);
+        }
+    }
+
+    async function setUnreadGroupMessage(){
+        //
+    }
+
 
     return (
         <div className="message-form-wrap">

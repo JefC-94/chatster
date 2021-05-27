@@ -58,7 +58,22 @@ const deleteUserConv = async (req, res) => {
     });
 }
 
+const updateUnreadUserConv = async (req, res) => {
+    
+    //Update a single user_conv and set unread to +1
+    
+}
+
+const readUnreadUserConv = async (req, res) => {
+
+    //set unread of single user_conv to 0
+    
+}
+
+
 module.exports = {
     createUserConv,
-    deleteUserConv
+    deleteUserConv,
+    updateUnreadUserConv,
+    readUnreadUserConv
 }
