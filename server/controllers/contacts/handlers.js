@@ -31,6 +31,23 @@ const contact = async (req, res) => {
     res.status(200).send(queryContact);
 }
 
+const contactByConvId = async (req, res) => {
+
+    const queryContact = await knex('contact').where('conv_id', req.params.conv_id).first();
+
+    //Not found
+    if(!queryContact) return res.status(500).send({message:'No contact with this conv_id for this user'});
+
+    //Authorization check: user should be one of both contacts
+    if(!(queryContact.user_1 === req.user_id || queryContact.user_2 === req.user_id)){
+        return res.status(401).send({message:'Not authorized to view contact between other users'});
+    }
+
+    queryContact.user_1 = await knex('users').where('id', queryContact.user_1).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();
+    queryContact.user_2 = await knex('users').where('id', queryContact.user_2).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();
+
+    res.status(200).send(queryContact);
+}
 
 const otherUsers = async (req, res) => {
 
@@ -258,6 +275,7 @@ const readUnreadContact = async (req, res) => {
 module.exports = {
     contactsByUser,
     contact,
+    contactByConvId,
     otherUsers,
     createContact,
     deleteContact,

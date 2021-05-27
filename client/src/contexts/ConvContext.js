@@ -76,6 +76,16 @@ function ConvContextProvider(props) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, groupdata, onlineUsers, unreadConvs]);
 
+    //Update the unreadConvs based on the contactdata -> user1_unread or user2_unread
+    useEffect(() => {
+        if(contactdata){
+            const unreadContacts = contactdata
+            .filter(contact => contact.status === 2)
+            .filter(contact => contact.user_1.id === theUser.id ? contact.user1_unread > 0 : contact.user2_unread > 0)
+            setUnreadConvs([...unreadContacts.map(contact => contact.conv_id)]);
+        }
+    }, [contactdata]);
+
 
     //SOCKET EVENT LISTENER for new messages -> setup array of conv_ids
     useEffect(() => {
@@ -88,29 +98,24 @@ function ConvContextProvider(props) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    //THIS SHOULD FIRE VERY VERY FIRST
-    useEffect(() => {
-        if(contactdata){
-            const unreadContacts = contactdata
-            .filter(contact => contact.status === 2)
-            .filter(contact => contact.user_1.id === theUser.id ? contact.user1_unread > 0 : contact.user2_unread > 0);
-            setUnreadConvs([...unreadContacts.map(contact => contact.conv_id)]);
-        }
-    }, [contactdata]);
-
-    useEffect(() => {
-        console.log(unreadConvs);
-    }, [unreadConvs]);
-
-    //FUNCTIONS
-
+    //SOCKET MESSAGE RECEIVE HANDLER
     //Pass unreadConvs and currentConv as Refs (current)
-    function updateUnreads(message, unreadConvs, currentConv){
+    //Determine whether the conv of this message should get unread status based on currentConv
+        //If not: set the unread immediately to zero
+        //Else: add to unreadConvs array
+    async function updateUnreads(message, unreadConvs, currentConv){
         console.log("message handler executed");
         //Don't add to unreadConvs if it is for the currentConv or it is already unread!
         if(currentConv){
             if(currentConv.id !== message.conv_id){
                 setUnreadConvs(prevVal => [...prevVal, message.conv_id]);
+            } else {
+                //The new message is added to the current conversation -> immediately read!
+                //Set unread of this contact user immediately to zero!
+                const request = await axios.get(`/api/contacts/conv_id=${message.conv_id}&user_id=${theUser.id}`)
+                const contact_id = request.data;
+                const request2 = await axios.get(`/api/contacts/readunread/id=${contact_id.id}&to_id=${theUser.id}&user_id=${theUser.id}`);
+                console.log(request2.data.message);
             }
         } else {
             if(!unreadConvs.includes(message.conv_id)){
@@ -120,6 +125,8 @@ function ConvContextProvider(props) {
         mutate(url);
         mutate(groupurl);
     }
+
+    //GET FUNCTIONS
 
     //Get all conversations, plus set lastMessage and otherUser + imageUrl as properties
     async function getConvs(){

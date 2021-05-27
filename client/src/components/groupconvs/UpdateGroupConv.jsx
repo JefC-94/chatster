@@ -194,7 +194,7 @@ function UpdateGroupConv({match, history}) {
         }
     }
 
-    //FUNCTIE VERPLAATSEN NAAR CONVCONTEXT?
+    //FUNCTIE VERPLAATSEN NAAR CONVCONTEXT? -> aparte groupcontext aanmaken?
     async function deleteUserFromGroup(user_conv_id){
         if(conv.user_conv.length > 3){
             try{

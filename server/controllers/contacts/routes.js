@@ -9,7 +9,8 @@ const {
     deleteContact,
     updateContact,
     updateUnreadContact,
-    readUnreadContact
+    readUnreadContact,
+    contactByConvId
 } = require('./handlers');
 
 //MIDDLEWARES
@@ -50,5 +51,7 @@ router.put('/id=:id&user_id=:user_id', verifyToken, authCheck, jsonParser, updat
 router.get('/updateunread/id=:id&to_id=:to_id&user_id=:user_id', verifyToken, authCheck, updateUnreadContact);
 
 router.get('/readunread/id=:id&to_id=:to_id&user_id=:user_id', verifyToken, authCheck, readUnreadContact);
+
+router.get('/conv_id=:conv_id&user_id=:user_id', verifyToken, authCheck, contactByConvId);
 
 module.exports = router;
