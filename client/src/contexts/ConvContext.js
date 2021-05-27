@@ -159,6 +159,8 @@ function ConvContextProvider(props) {
 
     return (
         <ConvContext.Provider value={{
+            convsdata: data,
+            groupdata: groupdata,
             convsurl: url,
             groupurl: groupurl,
             loading,
