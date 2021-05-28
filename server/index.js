@@ -60,7 +60,7 @@ io.on("connection", (socket) => {
     }
     socket.user_id = userid;
     
-    console.log(`user ${socket.user_id} connected on ${socket.id}`);
+    console.log(`user ${socket.user_id} connected`);
     
     //Clear last_login value for this user -> user is logged in and getConvs() on client will ignore this if statement!
     clearLastLogin(socket.user_id);

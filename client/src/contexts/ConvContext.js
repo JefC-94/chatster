@@ -52,7 +52,7 @@ function ConvContextProvider(props) {
 
     //When user (in contactModule) adds a user, this should update the data here as well
     useEffect(() => {
-        mutate(url);
+        setTimeout(() => {mutate(url)}, 500);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [contactdata]);
 

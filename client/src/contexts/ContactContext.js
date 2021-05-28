@@ -55,13 +55,14 @@ function ContactContextProvider(props) {
     useEffect(() => {
         const handler = (resdata) => {
             setTimeout(() => {updateContacts(resdata)},1000);
+            /* updateContacts(resdata); */
             }
         if(data){
             socket.on('contact-update', handler);
         }
         return () => socket.off('contact-update', handler);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [data]); //wait for data to setup socket
 
 
     function updateContacts(resdata){
