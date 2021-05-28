@@ -40,10 +40,6 @@ main.lobby-main{
                 margin-top:0.5em;
                 min-height:315px;
             }
-
-            .below-form{
-
-            }
         }
     }
 }
@@ -59,7 +55,11 @@ main.lobby-main{
     .demo-wrap{
 
         p{
-            margin:.4em;
+            margin:.6em 0;
+        }
+
+        button.demologin:last-of-type{
+            margin-left:1em;
         }
     }
 }

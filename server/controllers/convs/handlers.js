@@ -12,14 +12,14 @@ const convsByUser = async (req, res) => {
         
         singleConv.contact = await knex('contact').where('conv_id', singleConv.id).first();
 
-        console.log(singleConv.contact.id);
+        //console.log(singleConv.contact.id);
 
-        if(singleConv.contact){
+        /* if(singleConv.contact){ */
             
             singleConv.contact.user_1 = await knex('users').where('id', singleConv.contact.user_1).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();
             singleConv.contact.user_2 = await knex('users').where('id', singleConv.contact.user_2).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();
             
-        }
+        /* } */
 
         singleConv.lastMessage = await knex('message').where('conv_id', singleConv.id).orderBy('created_at', 'desc').first();
 
@@ -30,6 +30,7 @@ const convsByUser = async (req, res) => {
     }
 
     res.status(200).send(queryConvs);
+    
 }
 
 
@@ -102,7 +103,7 @@ const deleteConv = async (req, res) => {
 
     knex('conversation').where('id', req.params.id).del()
     .then(() => {
-        return res.status(200).send({message: 'Converation deleted'});
+        return res.status(200).send({message: 'Conversation deleted'});
     })
     .catch(err => {
         return res.status(500).send({message: err})

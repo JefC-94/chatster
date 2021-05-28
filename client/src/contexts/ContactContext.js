@@ -25,7 +25,9 @@ function ContactContextProvider(props) {
 
     //SETUP CONTACT SWR CONNECTION
     const url = `/api/contacts/user_id=${theUser.id}`;
-    const fetcher = url => axios.get(url).then(response => response.data);
+    const fetcher = url => axios.get(url).then(response => {
+        //console.log(response.data);
+        return response.data});
     const {data, error} = useSWR(url, fetcher);
 
     //SETUP OTHER USERS SWR CONNECTION
@@ -48,20 +50,24 @@ function ContactContextProvider(props) {
     }, [data, onlineUsers]);
 
     //Update contacts and otherUsers when the socket receives a contact-update event
+    //For now: wait exactly one second before updating contacts -> otherwise API OVERLOAD!!
     //If data.message is null, the event is delete/block/reject, so we don't show a message
     useEffect(() => {
-        const handler = (data) => {updateContacts(data);}
+        const handler = (resdata) => {
+            setTimeout(() => {updateContacts(resdata)},1000);
+            }
         if(data){
             socket.on('contact-update', handler);
         }
         return () => socket.off('contact-update', handler);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [data, socket])
+    }, []);
 
 
-    function updateContacts(data){
-        if(data.message){
-            setSnackBar({open: true, message: data.message});
+    function updateContacts(resdata){
+        console.log("contact update event received");
+        if(resdata.message){
+            setSnackBar({open: true, message: resdata.message});
         }
         mutate(url);
         mutate(usersurl);
@@ -312,9 +318,7 @@ function ContactContextProvider(props) {
     
     async function deleteContact(id, conv_id, otherUser){
         //Mutate contacts
-        //ERROR: the mutate function here deletes the contact from the data, and
-        //for some reason in the end the getConvs() function calls the deleted conv_id with no contact_id
-        //mutate(url, [...data.filter(contact => contact.id !== id)], false);
+        mutate(url, [...data.filter(contact => contact.id !== id)], false);
         
         //Mutate users: don't do this, elements get added to bottom of array and then jump
         /* mutate(usersurl, [...usersdata, {
@@ -345,7 +349,7 @@ function ContactContextProvider(props) {
     }
 
     async function blockContact(id, conv_id, otherUser){
-        /* mutate(url, [...data.map(contact => {
+        mutate(url, [...data.map(contact => {
             if(contact.id === id){
                 return {
                     ...contact,
@@ -355,7 +359,7 @@ function ContactContextProvider(props) {
             } else {
                 return contact;
             }
-        })], false); */
+        })], false);
         //API Requests
         try {
             const request = await axios.delete(`/api/convs/id=${conv_id}&user_id=${theUser.id}`);

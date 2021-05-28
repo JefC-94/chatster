@@ -25,11 +25,6 @@ function Lobby() {
         password:'azertyui',
     }
 
-    const demoUser3 = {
-        email:'bruce@hotmail.com',
-        password:'azertyui',
-    }
-
     const demoLogin = async (demoUser) => {
         const data = await loginUser(demoUser);
         if(data.success && data.token){
@@ -57,10 +52,9 @@ function Lobby() {
         </div>
         <div className="disclaimer">
             <div className="demo-wrap">
-                <p>If you want to quickly see the app in working, login as one of the demo users</p>
-                <button className="button primary" type="button" onClick={() => demoLogin(demoUser1)}>View as Steve</button>
-                <button className="button primary" type="button" onClick={() => demoLogin(demoUser2)}>View as Tony</button>
-                <button className="button primary" type="button" onClick={() => demoLogin(demoUser3)}>View as Bruce</button>
+                <p>Login as one of the demo-users to view the app. Open two (private) browsers for both demo-users to start chatting.</p>
+                <button className="button primary demologin" type="button" onClick={() => demoLogin(demoUser1)}>View as Steven</button>
+                <button className="button primary demologin" type="button" onClick={() => demoLogin(demoUser2)}>View as Thomas</button>
             </div>
         </div>
         </main>

@@ -5,8 +5,10 @@ const contactsByUser = async (req, res) => {
     const queryContacts = await knex('contact').where('user_1', req.params.user_id).orWhere('user_2', req.params.user_id);
 
     for(singleContact of queryContacts){
+
         singleContact.user_1 = await knex('users').where('id', singleContact.user_1).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();
         singleContact.user_2 = await knex('users').where('id', singleContact.user_2).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();
+
     }
     
     res.status(200).send(queryContacts);
@@ -80,7 +82,10 @@ const createContact = async (req, res) => {
         return res.status(401).send({message:'These users are already in contact with each other'});
     }
 
-    //REAL WORLD ENVIRONMENT: Not possible to create contact with status "2" -> allow this for examplary "add to contacts" button
+    //REAL WORLD ENVIRONMENT: Not possible to create contact with status "2" (turn this off in case SendAcceptedRequest is activated)
+    if(req.body.status === 2){
+        return res.status(401).send({message:'Not allowed to immediately add someone as contact. Invite and wait for an accept'});
+    }
 
     //Check if conv_id is not null and handle errors 
     if(req.body.conv_id !== null){
@@ -193,9 +198,7 @@ const updateUnreadContact = async (req, res) => {
     //Check if one of the contact users is the current user
     if(!(queryContact.user_1 === req.user_id || queryContact.user_2 === req.user_id)){
         return res.status(401).send({message:'Not authorized to update contact between other users'});
-    }    
-    
-    console.log(req.params.to_id);
+    }
 
     if(+req.params.to_id === queryContact.user_1){
         
@@ -239,9 +242,7 @@ const readUnreadContact = async (req, res) => {
     //Check if one of the contact users is the current user
     if(!(queryContact.user_1 === req.user_id || queryContact.user_2 === req.user_id)){
         return res.status(401).send({message:'Not authorized to update contact between other users'});
-    }    
-    
-    console.log(req.params.to_id);
+    }
 
     if(+req.params.to_id === queryContact.user_1){
         knex('contact').where('id', req.params.id)

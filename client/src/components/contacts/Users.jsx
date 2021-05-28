@@ -5,14 +5,14 @@ import profilepic from '../../images/profile-blanc.svg';
 
 function Users() {
 
-    const {sendRequest, sendAcceptedRequest, users} = useContext(ContactContext);
+    const {sendRequest, users} = useContext(ContactContext);
 
     return (
         <>
         <h2 className="mg">Add more contacts</h2>
         <div className="contact-items-list otherusers-list">
             <div className="no-results">
-                <p>You can immediately add the top user to your contacts and see how a conversation works. Most of these accounts are just exemplary and (sadly) won't talk back.</p>
+                <p>Most of these accounts are just exemplary and (sadly) won't talk back.</p>
             </div>
             {users && users.map((user, index) => {
                 return (
@@ -21,8 +21,8 @@ function Users() {
                         <div className="item-content">
                             <p className="username">{user.username}</p>
                             <div className="item-options">
-                            {index > 0 && <button className="button secondary" onClick={(e) => {sendRequest(user)}}>send friend request</button>}
-                            {index === 0 && <button className="button secondary" onClick={(e) => {sendAcceptedRequest(user)}}>add to contacts</button>}
+                            <button className="button secondary" onClick={(e) => {sendRequest(user)}}>send friend request</button>
+                            {/* {index === 0 && <button className="button secondary" onClick={(e) => {sendAcceptedRequest(user)}}>add to contacts</button>} */}
                             </div>
                         </div>                        
                     </div>

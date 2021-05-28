@@ -36,6 +36,7 @@ function Profile({match}) {
     const [selectedUrl, setSelectedUrl] = useState();
     const [imgUpdated, setImgUpdated] = useState(false);
     const [imgError, setImgError] = useState(false);
+    const [imgLoading, setImgLoading] = useState(false);
     
     const [userInfo,setUserInfo] = useState(initialState);
 
@@ -107,6 +108,7 @@ function Profile({match}) {
 
     async function onFileUpload(){
         setImgError(false);
+        setImgLoading(true);
         const formData = new FormData();
         
         if(selectedFile){
@@ -115,6 +117,7 @@ function Profile({match}) {
             );
         }
         //Only request that is for now not with try/catch
+        
         try {
             const request = await axios.post(`/api/fileupload/profile&user_id=${theUser.id}`, formData, {
                 headers: {
@@ -123,6 +126,7 @@ function Profile({match}) {
             });
             console.log(request.data.message);
             setImgUpdated(true);
+            setImgLoading(false);
             setImgError(false);
             setTimeout(() => setImgUpdated(false), 800);
             setTimeout(() => setSelectedFile(), 800);
@@ -130,6 +134,7 @@ function Profile({match}) {
             setSnackBar({open: true, message: "Profile picture updated"});
         } catch(error){
             setImgUpdated(false);
+            setImgLoading(false);
             setSelectedFile();
             setSelectedUrl();
             setImgError(error.response.data.message);
@@ -162,7 +167,7 @@ function Profile({match}) {
                     <div className="form-profile-picture">
                         <img src={selectedUrl} alt="profilepic" />
                         {
-                        /* (selectedUrl !== profilepic && !selectedFile) && */
+                        (selectedUrl !== profilepic && !selectedFile) &&
                         <button className="circle primary flex deleteimage" onClick={() => deleteImage()}><FaTimes /></button>
                         }
                         <div className="profile-picture-change flex">
@@ -179,6 +184,7 @@ function Profile({match}) {
                             <button className="button secondary" onClick={onFileUpload}>Set as profile picture</button>
                             </>}
                             {imgError && <p className="error">{imgError}</p>}
+                            {imgLoading && <p className="">Uploading image...</p>}
                         </div>
                     </div>
                     <form id="edit-form" onSubmit={submitForm}>

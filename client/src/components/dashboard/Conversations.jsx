@@ -1,6 +1,7 @@
 import React, {useEffect, useContext} from 'react';
 import {useParams, Link} from 'react-router-dom';
 import {ConvContext} from '../../contexts/ConvContext';
+import { UserContext } from '../../contexts/UserContext';
 import {WindowContext} from '../../contexts/WindowContext';
 import Conversation from '../conversations/Conversation';
 import ConvList from '../conversations/ConvList';
@@ -21,6 +22,8 @@ function Conversations({match}) {
     const {convserror, grouperror, convs, getSingleConv} = useContext(ConvContext);
     const {currentConv, setCurrentConv} = useContext(ConvContext);
     
+    const {onlineUsers} = useContext(UserContext);
+
     //USE EFFECTS
 
     //get currentConv if there are conversations
@@ -32,7 +35,7 @@ function Conversations({match}) {
             setCurrentConv();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [convs]);
+    }, [convs, onlineUsers]);
 
     //if user resizes from small screen to big screen, set a conversation visibile by default
     useEffect(() => {
@@ -47,8 +50,11 @@ function Conversations({match}) {
 
     // Keep this function independent from the convs -> separate refresh possible
     async function getCurrentConv(){
-        //useSWR runs this function when user clicks back on browser window -> make sure he doesn't reset currentConv
+        //useSWR runs this function when user clicks back on browser window 
+        // -> make sure he doesn't reset currentConv
+        // -> also check if online status has changed for this conversation
         if(currentConv){
+            currentConv.online = onlineUsers.filter(onlineUser => onlineUser.user_id === currentConv.otherUser.id).length;
             setCurrentConv(currentConv);
             return;
         }
@@ -108,7 +114,7 @@ function Conversations({match}) {
                     </div>
                     <div className="conv-right">
                         {currentConv && <Conversation conv={currentConv} basePath={basePath} />}
-                        {!currentConv && <div className="navigation navigation-center">No conversation selected. Click on a conversation in the left panel.</div>}
+                        {(convs.length > 0 && !currentConv) && <div className="navigation navigation-center">No conversation selected. Click on a conversation in the left panel.</div>}
                     </div>
                     </>
                 }

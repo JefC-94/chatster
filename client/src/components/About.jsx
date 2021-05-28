@@ -9,12 +9,18 @@ function About() {
                 <div className="about-block">
                     <p>
                         Deze chat-applicatie werd ontworpenen en ontwikkeld door Jef Ceuppens, als eindwerk voor de opleiding Front End Developer bij Syntra AB.
-                    </p>
+                    </p>                    
+                </div>
+
+                <div className="about-block">
                     <p>
-                        De applicatie werd ontwikkeld met React, in combinatie met scss voor de layout.
+                        De front-end van de applicatie werd volledig ontwikkeld in React. Voor de layout werd SCSS gebruikt.
                     </p>
+                </div>
+
+                <div className="about-block">
                     <p>
-                        Omdat dit project op de front-end en niet zozeer op back-end gefocust is, heb ik realtime chatten tussen gebruikers en meldingen van nieuwe berichten voorlopig nog niet gerealiseerd. Ik ben op dit moment me aan het verdiepen in php sockets en hoop dit zo snel mogelijk te kunnen integreren.
+                        De back-end werd ontwikkeld in NodeJS. De authenticatie gebeurt via een JWT-token. Om realtime chatberichten te ontvangen werd een socket gebouwd met de socket-io bibliotheek. De API werd gebouwd met Express en Knex. 
                     </p>
                 </div>
                 
@@ -23,18 +29,8 @@ function About() {
                         Begeleider: David Verhulst
                     </p>
                 </div>
-                <div className="about-block">
-                    <p>
-                        De backend werd gebaseerd op volgende open-source code (en lichtelijk aangepast naar de noden van dit project):
-                    </p>
-                    <ul>
-                        <li><a className="link" href="https://github.com/mevdschee/php-crud-api" target="_blank" rel="noreferrer">PHP-CRUD-API</a> door mvedschee</li>
-                        <li><a className="link" href="https://www.w3jar.com/php-login-and-registration-restful-api/" target="_blank" rel="noreferrer">PHP Login system</a> door w3jar</li>
-                    </ul> 
-                </div>
-                <div className="about-block">
-
-                </div>
+                
+                
             
                 <div className="back">
                     <Link className="link" to='/'>Terug naar Chatster</Link> {/* This will return to dashboard when logged in */}

@@ -56,6 +56,7 @@ function UpdateGroupConv({match, history}) {
     const [selectedUrl, setSelectedUrl] = useState();
     const [imgUpdated, setImgUpdated] = useState(false);
     const [imgError, setImgError] = useState(false);
+    const [imgLoading, setImgLoading] = useState(false);
 
     //SET VISIBLE TAB:
     const [openTab, setOpenTab] = useState('members');
@@ -223,6 +224,7 @@ function UpdateGroupConv({match, history}) {
 
     async function onFileUpload(){
         setImgError(false);
+        setImgLoading(true);
         if(theUser.id !== conv.created_by){
             console.log("not authorized!");
             return false;
@@ -241,6 +243,7 @@ function UpdateGroupConv({match, history}) {
             });
             console.log(request.data.message);
             setImgUpdated(true);
+            setImgLoading(false);
             setImgError(false);
             getCurrentConv();
             mutate(groupurl);
@@ -249,6 +252,7 @@ function UpdateGroupConv({match, history}) {
             setSnackBar({open: true, message: "Group picture updated"});
         } catch(error){
             setImgUpdated(false);
+            setImgLoading(false);
             setSelectedFile();
             setSelectedUrl();
             setImgError(error.response.data.message);
@@ -289,6 +293,7 @@ function UpdateGroupConv({match, history}) {
                     <button className="button secondary" onClick={onFileUpload}>Set as group picture</button>
                     </>}
                     {imgError && <p className="error">{imgError}</p>}
+                    {imgLoading && <p className="">Uploading image...</p>}
                 </div>
             </div>}
             {conv && <div className="groupconvs-wrap">

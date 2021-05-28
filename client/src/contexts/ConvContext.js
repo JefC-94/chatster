@@ -73,7 +73,7 @@ function ConvContextProvider(props) {
     }, [data, groupdata, onlineUsers]);
 
     
-    //SOCKET EVENT LISTENER for new messages
+    //SOCKET EVENT LISTENER for New Messages -> Update CONVITEMS!
     useEffect(() => {
         //Pass currentConvRef to the handler function for synchronisation (otherwise always undefined)
         const handler = (message) => {updateUnreads(message, currentConvRef.current)}
@@ -95,10 +95,16 @@ function ConvContextProvider(props) {
                 const request = await axios.get(`/api/contacts/conv_id=${message.conv_id}&user_id=${theUser.id}`)
                 const contact_id = request.data;
                 readUnreadContact(contact_id.id);
+                mutate(url);
+                mutate(groupurl);
+            } else {
+                mutate(url);
+                mutate(groupurl);
             }
+        } else {
+            mutate(url);
+            mutate(groupurl);
         }
-        mutate(url);
-        mutate(groupurl);
     }
 
 
@@ -142,6 +148,8 @@ function ConvContextProvider(props) {
             conv.otherUser = conv.contact.user_1.id === theUser.id ? conv.contact.user_2 : conv.contact.user_1;
             conv.displayName = conv.otherUser.username;
             conv.imageUrl = conv.otherUser.photo_url ? `${imgPath}/${conv.otherUser.photo_url}` : profilepic;
+            conv.online = onlineUsers.filter(onlineUser => onlineUser.user_id === conv.otherUser.id).length;
+            conv.unread = conv.contact.user_1.id === theUser.id ? conv.contact.user1_unread : conv.contact.user2_unread;
             return conv;
         } catch(error){
             console.log(error.response.data.message);
