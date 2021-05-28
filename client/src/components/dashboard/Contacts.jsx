@@ -9,6 +9,8 @@ import Users from '../contacts/Users';
 import DashboardNav from '../ui/DashboardNav';
 import NavButton from '../contacts/NavButton';
 import {FaChevronUp, FaChevronDown} from 'react-icons/fa';
+import MessageSnackBar from '../ui/MessageSnackBar';
+import { ModalContext } from '../../contexts/ModalContext';
 
 function Contacts({match}) {
 
@@ -24,6 +26,8 @@ function Contacts({match}) {
     const {error} = useContext(ContactContext);
 
     const {windowWidth} = useContext(WindowContext);
+
+    const {messageSnackBar, setMessageSnackBar} = useContext(ModalContext);
 
     //STATES
     //mid size screen only:
@@ -103,6 +107,12 @@ function Contacts({match}) {
                 </>
             }
 
+            <MessageSnackBar
+            messageSnackBar={messageSnackBar}
+            setMessageSnackBar={setMessageSnackBar}
+            //hide={3000}
+            />
+            
         </main>
         </>
         

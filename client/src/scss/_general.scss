@@ -207,13 +207,61 @@ div.error-message{
     p{
         color:var(--primaryBgColor);
     }
+}
 
-    button.close-snackbar-btn{
-        background:none;
-        color:var(--primaryBgColor);
+button.close-snackbar-btn{
+    background:none;
+    color:var(--primaryBgColor);
+}
+
+// MESSAGE SNACKBAR
+
+.message-snackbar{
+    background:var(--secondaryBgColor);
+    box-shadow: 0 0 4px 1px rgba(0,0,0,0.1);
+    box-shadow: 0 0 0 0 ;
+
+    a{
+        width:100%;
     }
 }
 
+.message-snackbar-content{
+    font-weight:bold;
+    @include flex(row, space-between, center);
+    padding:10px 15px;
+    font-size:16px;
+    width:100%;
+
+    .left{
+        @include flex(row, flex-start, center);
+        width:90%;
+
+        img{
+            @include profile-image(30px, 30px, var(--imageBgColor));
+            margin-right:.5em;
+        }
+
+        p{
+            margin-right:.5em;
+        }
+
+        p.message{
+            overflow:hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+    }
+
+    .right{
+        button.close-snackbar-btn{
+            background:none;
+            color:var(--accentColor);
+        }
+    }
+
+
+}
 
 // GENERAL SCROLLBAR STYLING
 

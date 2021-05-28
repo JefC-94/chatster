@@ -96,6 +96,11 @@ function ConvForm({conv, size, data, messMutate, setMessEvent}) {
     function emitMessageToContact(){
         socket.emit("chat-message", {
             to_id: conv.otherUser.id, //to immediatily get right user on server
+            user : {
+                user_id : theUser.id,
+                username : theUser.username,
+                photo_url : theUser.photo_url,
+            },
             body: inputField,
             conv_id : conv.id,
             datetime: now()

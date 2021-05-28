@@ -8,11 +8,22 @@ function ModalContextProvider({children}) {
         open: false,
         message: ''
     });
+
+    const [messageSnackBar, setMessageSnackBar] = useState({
+        open: false,
+        data: {
+            user: {
+                
+            }
+        },
+    });
     
     return (
         <ModalContext.Provider value={{
-            snackBar: snackBar,
-            setSnackBar: setSnackBar
+            snackBar,
+            setSnackBar,
+            messageSnackBar,
+            setMessageSnackBar
         }}>
             {children}
         </ModalContext.Provider>

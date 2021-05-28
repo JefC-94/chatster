@@ -6,6 +6,7 @@ import axios from 'axios';
 import { ContactContext } from './ContactContext';
 import profilepic from '../images/profile-blanc.svg';
 import profilespic from '../images/profiles-blanc.svg';
+import { ModalContext } from './ModalContext';
 
 export const ConvContext = createContext();
 
@@ -14,6 +15,8 @@ function ConvContextProvider(props) {
     //CONTEXTS
     const {rootState, onlineUsers, socket} = useContext(UserContext);
     const {theUser} = rootState;
+
+    const {setMessageSnackBar} = useContext(ModalContext);
 
     //Import contact-data: conversations should be re-rendered when contacts change!
     const {contactdata} = useContext(ContactContext);
@@ -101,10 +104,10 @@ function ConvContextProvider(props) {
                 mutate(url);
                 mutate(groupurl);
             }
-        } else {
-            mutate(url);
-            mutate(groupurl);
         }
+        mutate(url);
+        mutate(groupurl);
+        setMessageSnackBar({open: true, data: message});
     }
 
 

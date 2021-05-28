@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react'
 import {FaTimes} from 'react-icons/fa';
 
-function CustomModal(props) {
+function Snackbar(props) {
     
     const { snackBar, hide, setSnackBar} = props;
     
@@ -32,4 +32,4 @@ function CustomModal(props) {
     )
 }
 
-export default CustomModal
+export default Snackbar
