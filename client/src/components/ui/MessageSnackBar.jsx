@@ -21,7 +21,7 @@ function MessageSnackBar(props) {
                 transform: messageSnackBar.open ? 'translateX(0px)' : 'translateX(-200px)',
                 opacity: messageSnackBar.open ? '1' : '0'
             }}>
-            <Link to={`/dashboard/conversations/${messageSnackBar.data.conv_id}`}>
+            <Link to={`/dashboard/conversations/${messageSnackBar.data.conv_id}`} >
             <div className="message-snackbar-content">
                     <div className="left">
                         <img src={`${imgPath}/${messageSnackBar.data.user.photo_url}`} />

@@ -78,7 +78,7 @@ io.on("connection", (socket) => {
     //It's possible that a user is logged in via different browsers
     // all these sockets should get the message -> for loop
     socket.on("chat-message", (msg) => {
-        console.log(msg);
+        //console.log(msg);
         //console.log(`message: conv_id = ${msg.conv_id} | to = ${msg.to_id}`);
         const findUsers = userSessions.filter(session => session.user_id === msg.to_id);
         for (userSession of findUsers){

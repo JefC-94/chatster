@@ -34,10 +34,7 @@ function ConvItem({conv}) {
         <Link to="/dashboard/conversations" onClick={(e) => {
                 //user clicks on the convItem -> set this as currentConv + if necessary, delete from unreadConvs
                 setCurrentConv(conv);
-                if(conv.otherUser && conv.unread){
-                    readUnreadContact(conv.contact.id);
-                    mutate(convsurl);
-                }
+                
             }}>
             <div key={conv.id} className={`${classes} ${active} ${unread}`} >
                 <div className="item-image">

@@ -75,6 +75,15 @@ function ConvContextProvider(props) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, groupdata, onlineUsers]);
 
+    //When a conversation is selected (or becomes currentConv through link), setUnread to 0 if it is not 0 + mutate url
+    useEffect(() => {
+        if(currentConv){
+            console.log('use effect runs');
+            if(currentConv.otherUser && currentConv.unread){
+                readUnreadContact(currentConv.contact.id);
+            }
+        }
+    }, [currentConv]);
     
     //SOCKET EVENT LISTENER for New Messages -> Update CONVITEMS!
     useEffect(() => {
@@ -163,6 +172,7 @@ function ConvContextProvider(props) {
         try {
             const request2 = await axios.get(`/api/contacts/readunread/id=${contact_id}&to_id=${theUser.id}&user_id=${theUser.id}`);
             console.log(request2.data.message);
+            mutate(url);
         } catch(error){
             console.log(error.response.data.message);
         }

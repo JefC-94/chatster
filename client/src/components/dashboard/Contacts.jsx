@@ -110,7 +110,7 @@ function Contacts({match}) {
             <MessageSnackBar
             messageSnackBar={messageSnackBar}
             setMessageSnackBar={setMessageSnackBar}
-            //hide={3000}
+            hide={3000}
             />
             
         </main>
