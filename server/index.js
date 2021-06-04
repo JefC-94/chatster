@@ -79,7 +79,7 @@ io.on("connection", (socket) => {
     // all these sockets should get the message -> for loop
     socket.on("chat-message", (msg) => {
         //console.log(msg);
-        //console.log(`message: conv_id = ${msg.conv_id} | to = ${msg.to_id}`);
+        console.log(`message: conv_id = ${msg.conv_id} | to = ${msg.to_id}`);
         const findUsers = userSessions.filter(session => session.user_id === msg.to_id);
         for (userSession of findUsers){
             socket.broadcast.to(userSession.id).emit("chat-message", msg);
