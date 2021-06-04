@@ -103,7 +103,7 @@ function ConvContextProvider(props) {
     //SOCKET EVENT LISTENER for New Messages FOR INDIVIDUAL CONVERSATIONS
     useEffect(() => {
         //Pass currentConvRef to the handler function for synchronisation (otherwise always undefined)
-        const handler = (message) => {updateUnreadsInd(message, currentConvRef.current)}
+        const handler = (message) => {setTimeout(() => updateUnreadsInd(message, currentConvRef.current), 1000)}
         socket.on('chat-message', handler);
         return () => {
             socket.off('chat-message', handler);
@@ -114,7 +114,7 @@ function ConvContextProvider(props) {
     //SOCKET EVENT LISTENER for New Messages FOR GROUP CONVERSATIONS
     useEffect(() => {
         //Pass currentConvRef to the handler function for synchronisation (otherwise always undefined)
-        const handler = (message) => {updateUnreadsGroup(message, currentConvRef.current)}
+        const handler = (message) => {setTimeout(() => updateUnreadsGroup(message, currentConvRef.current), 1000)}
         socket.on('group-message', handler);
         return () => {
             socket.off('group-message', handler);
@@ -131,7 +131,7 @@ function ConvContextProvider(props) {
                 const request = await axios.get(`/api/contacts/conv_id=${message.conv_id}&user_id=${theUser.id}`)
                 const contact_id = request.data;
                 readUnreadContact(contact_id.id);
-                //mutate(url);
+                mutate(url);
             } else {
                 mutate(url);
             }
@@ -147,7 +147,7 @@ function ConvContextProvider(props) {
         if(currentConv){
             if(currentConv.id === message.conv_id){
                 readUnreadUserConv(currentConv.id);
-                //mutate(groupurl);
+                mutate(groupurl);
             } else {
                 mutate(groupurl);
             }

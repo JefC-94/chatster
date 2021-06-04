@@ -25,7 +25,7 @@ const groupconvs = async (req, res) => {
         }
     }
 
-    console.log(queryGroupConvs);
+    //console.log(queryGroupConvs);
 
     res.status(200).send(queryGroupConvs);
 
