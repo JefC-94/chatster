@@ -2,7 +2,7 @@ node_modules
 package-lock.json
 .env
 
-server/uploads/*
+# server/uploads/*
 
 client/node_modules
 client/package-lock.json
