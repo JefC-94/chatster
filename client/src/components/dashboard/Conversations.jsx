@@ -94,7 +94,7 @@ function Conversations({match}) {
                         {currentConv && <Conversation conv={currentConv} basePath={basePath} />}
                         <div className="navigation navigation-space navigation-bg">    
                             <Link className="button primary" to={`/${basePath}/contacts`} >Go to contacts</Link> 
-                            <Link className="button primary" to={`/${basePath}/group/create`} >Start Group Chat</Link>
+                            {/* <Link className="button primary" to={`/${basePath}/group/create`} >Start Group Chat</Link> */}
                         </div>
                         </>
                     }
@@ -109,9 +109,9 @@ function Conversations({match}) {
                     <>
                     <div className="conv-left">
                         <ConvList />
-                        <div className="navigation navigation-center navigation-border-top">    
+                        {/* <div className="navigation navigation-center navigation-border-top">    
                             <Link className="button primary" to={`/${basePath}/group/create`} >Start Group Chat</Link>
-                        </div>
+                        </div> */}
                         <DashboardNav path={`${basePath}/contacts`} text={`Go to contacts`} />
                     </div>
                     <div className="conv-right">
