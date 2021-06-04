@@ -19,7 +19,7 @@ function Conversations({match}) {
 
     //CONTEXTS
     const {windowWidth} = useContext(WindowContext);
-    const {convserror, grouperror, convs, getSingleConv} = useContext(ConvContext);
+    const {convserror, grouperror, convs, groupConvs, getSingleConv} = useContext(ConvContext);
     const {currentConv, setCurrentConv} = useContext(ConvContext);
     
     const {onlineUsers} = useContext(UserContext);
@@ -84,7 +84,7 @@ function Conversations({match}) {
             
                 <div className="conv-full">
                     
-                    {(!convserror && !grouperror && convs) &&
+                    {(!convserror && !grouperror && convs && groupConvs) &&
                         <>
                         {!currentConv && 
                             <>
@@ -105,7 +105,7 @@ function Conversations({match}) {
             {/* Version on widescreens */}
             {windowWidth > 800 &&
                 <>
-                {(!convserror && !grouperror && convs) &&
+                {(!convserror && !grouperror && convs && groupConvs) &&
                     <>
                     <div className="conv-left">
                         <ConvList />

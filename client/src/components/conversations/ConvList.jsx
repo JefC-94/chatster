@@ -5,7 +5,7 @@ import ConvItem from './ConvItem';
 function ConvList() {
 
     //CONTEXTS
-    const {convs, loading} = useContext(ConvContext);
+    const {convs, groupConvs, loading} = useContext(ConvContext);
 
     /**
      * Note on the sorting of these items:
@@ -16,8 +16,8 @@ function ConvList() {
         <div className="convs-list">
             {(loading.single || loading.group) && <div className="navigation navigation-center">Loading...</div>}
             {
-            (!loading.single && !loading.group && convs.length > 0) &&
-            convs.sort((a, b) => {
+            (!loading.single && !loading.group && (convs.length > 0 || groupConvs.length > 0)) &&
+            convs.concat(groupConvs).sort((a, b) => {
                     return (b.lastMessage ? b.lastMessage.created_at : b.created_at) - (a.lastMessage ? a.lastMessage.created_at : a.created_at)
                 })
                 .map(conv => {

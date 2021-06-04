@@ -25,6 +25,7 @@ function ConvContextProvider(props) {
 
     //Setup state to add individual conversations + group conversations
     const [convs, setConvs] = useState([]);
+    const [groupConvs, setGroupConvs] = useState([]);
     const [loading, setLoading] = useState({single: false, group: false});
 
     //this is the current active conversation, defined here but mainly set in conversations.jsx: it can be set by id as well as click function on convItems
@@ -37,7 +38,6 @@ function ConvContextProvider(props) {
 
     //SETUP SWR CONNECTION FOR INDIVIDUAL CONVS
 
-    //const url = `/contact?join=conversation,contact,users&join=conversation,message&filter1=user_1,eq,${theUser.id}&filter2=user_2,eq,${theUser.id}&filter=status,eq,2`;
     const url = `/api/convs/user_id=${theUser.id}`;
     const fetcher = url => axios.get(url).then(response => response.data);
     const {data} = useSWR(url, fetcher); //DATA is the list of individual conversations
@@ -45,7 +45,6 @@ function ConvContextProvider(props) {
     
     //SETUP SWR CONNECTION FOR GROUP CONVS
 
-    //const groupurl = `/user_conv?join=conversation,user_conv,users&join=conversation,message&filter1=user_id,eq,${theUser.id}`;
     const groupurl = `/api/groupconvs/user_id=${theUser.id}`;
     const groupfetcher = url => axios.get(url).then(response => response.data);
     const {data: groupdata} = useSWR(groupurl, groupfetcher);
@@ -63,19 +62,28 @@ function ConvContextProvider(props) {
     //setup conversations when data updates -> cache & mutate
     //also, when onlineusers array changes -> check online status for every conversation
     useEffect(() => {
-        console.log("data or groupdata trigger");
-        setLoading({single: true, group: true});
+        console.log("data trigger");
+        setLoading(prevVal => ({...prevVal, single: true}));
         if(data){
             getConvs();
-        }
-        if(groupdata){
-            getGroupConvs();
         }
         return () => {
             setConvs([]);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [data, groupdata, onlineUsers]);
+    }, [data, onlineUsers]);
+
+    useEffect(() => {
+        console.log('groupdata trigger');
+        setLoading(prevVal => ({...prevVal, group: true}));
+        if(groupdata){
+            getGroupConvs();
+        }
+        return () => {
+            setGroupConvs([]);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [groupdata]);
 
     //When a conversation is selected (or becomes currentConv through link), setUnread to 0 if it is not 0 + mutate url
     useEffect(() => {
@@ -178,7 +186,7 @@ function ConvContextProvider(props) {
             conv.imageUrl = conv.photo_url ? `${imgPath}/${conv.photo_url}` : profilespic;
             //Find the unread for this user
             conv.unread = conv.user_conv.filter(user_conv => user_conv.user_id.id === theUser.id)[0].unread;
-            setConvs(prevValue => ([
+            setGroupConvs(prevValue => ([
                 ...prevValue, conv
             ]));
         });
@@ -230,11 +238,13 @@ function ConvContextProvider(props) {
             groupurl: groupurl,
             loading,
             convs,
-            setConvs,
+            //setConvs,
+            groupConvs,
+            //setGroupConvs,
             getSingleConv,
             currentConv,
             setCurrentConv,
-            readUnreadContact
+            //readUnreadContact
         }}>
             {props.children}
         </ConvContext.Provider>
