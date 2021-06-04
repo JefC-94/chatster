@@ -4,7 +4,6 @@ import {UserContext} from '../../contexts/UserContext';
 import {timeSinceConvs} from '../helpers/TimeSince';
 import {FaCircle} from 'react-icons/fa';
 import { ConvContext } from '../../contexts/ConvContext';
-import { mutate } from 'swr';
 
 function ConvItem({conv}) {
 
@@ -12,7 +11,7 @@ function ConvItem({conv}) {
     const {rootState} = useContext(UserContext);
     const {theUser} = rootState;
 
-    const {currentConv, setCurrentConv, convsurl, readUnreadContact} = useContext(ConvContext);
+    const {currentConv, setCurrentConv} = useContext(ConvContext);
 
     //setup classes
     let classes = "user-item convs-item";
@@ -34,7 +33,6 @@ function ConvItem({conv}) {
         <Link to="/dashboard/conversations" onClick={(e) => {
                 //user clicks on the convItem -> set this as currentConv + if necessary, delete from unreadConvs
                 setCurrentConv(conv);
-                
             }}>
             <div key={conv.id} className={`${classes} ${active} ${unread}`} >
                 <div className="item-image">

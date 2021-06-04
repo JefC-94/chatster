@@ -24,7 +24,7 @@ function MessageSnackBar(props) {
             <Link to={`/dashboard/conversations/${messageSnackBar.data.conv_id}`} >
             <div className="message-snackbar-content">
                     <div className="left">
-                        <img src={`${imgPath}/${messageSnackBar.data.user.photo_url}`} />
+                        <img src={`${imgPath}/${messageSnackBar.data.user.photo_url}`} alt="profile"/>
                         <p>
                             {messageSnackBar.data.user.username}: 
                         </p>

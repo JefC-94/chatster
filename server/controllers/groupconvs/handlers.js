@@ -10,7 +10,7 @@ const groupconvs = async (req, res) => {
 
     for(singleGroupConv of queryGroupConvs){
 
-        const userConvs1 = await knex('user_conv').where('conv_id', singleGroupConv.id).select('id','user_id','created_at');
+        const userConvs1 = await knex('user_conv').where('conv_id', singleGroupConv.id).select('id','user_id','created_at','unread');
 
         for(userConv1 of userConvs1){
             userConv1.user_id = await knex('users').where('id', userConv1.user_id).select('id', 'username', 'email', 'photo_url', 'created_at', 'updated_at').first();
@@ -25,6 +25,8 @@ const groupconvs = async (req, res) => {
         }
     }
 
+    console.log(queryGroupConvs);
+
     res.status(200).send(queryGroupConvs);
 
 }
@@ -35,7 +37,7 @@ const groupconv = async (req, res) => {
 
     //If both results are false -> unauthorized
     if(!checkGroupConv ){
-        return res.status(401).send({message:'Not authorized to update to a conversation between other users'});
+        return res.status(401).send({message:'Not authorized to see a conversation between other users'});
     }
 
     const queryGroupConv = await knex('conversation')
@@ -60,12 +62,20 @@ const groupconv = async (req, res) => {
 
 const deleteGroupConv = async (req, res) => {
 
-    const checkGroupConv = await userInGroupConversation(req.params.id, req.user_id);
+    
+    const queryFirst = await knex('conversation').where('id', req.params.id).first();
+
+    if(queryFirst.created_by !== req.user_id){
+        return res.status(401).send({message:'Not authorized to delete this converation - you are not the creator'});
+    }
+
+    //Above we already check -> only the creating user can delete this conversation!
+    /* const checkGroupConv = await userInGroupConversation(req.params.id, req.user_id);
 
     //If it is false -> unauthorized
     if(!checkGroupConv){
         return res.status(401).send({message:'Not authorized to delete to a conversation between other users'});
-    }
+    } */
 
     knex('conversation').where('id', req.params.id).del()
     .then(() => {
@@ -79,14 +89,19 @@ const deleteGroupConv = async (req, res) => {
 
 const updateGroupConv = async (req, res) => {
 
-    const checkGroupConv = await userInGroupConversation(req.params.id, req.user_id);
+    const queryFirst = await knex('conversation').where('id', req.params.id).first();
 
-    //If false -> unauthorized
-    if(!checkGroupConv ){
-        return res.status(401).send({message:'Not authorized to update to a conversation between other users'});
+    if(queryFirst.created_by !== req.user_id){
+        return res.status(401).send({message:'Not authorized to update this converation - you are not the creator'});
     }
 
-    //Also check if user is creator of group? Can other users alter the group information??
+    //Above we already check -> only the creating user can delete this conversation!
+    /* const checkGroupConv = await userInGroupConversation(req.params.id, req.user_id);
+
+    //If it is false -> unauthorized
+    if(!checkGroupConv){
+        return res.status(401).send({message:'Not authorized to delete to a conversation between other users'});
+    } */
 
     knex('conversation').where('id', req.params.id)
     .update({

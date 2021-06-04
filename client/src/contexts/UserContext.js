@@ -28,7 +28,7 @@ function UserContextProvider(props) {
             setSocket(newSocket);
         }
         if(!rootState.isAuth){
-            console.log("disconnecting")
+            //console.log("disconnecting")
             newSocket.close();
             setSocket();
         }

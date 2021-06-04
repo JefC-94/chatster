@@ -111,6 +111,7 @@ function ConvForm({conv, size, data, messMutate, setMessEvent}) {
         socket.emit("group-message", { 
             body: inputField,
             conv_id : conv.id,
+            user_convs : conv.user_conv.filter(user_conv => user_conv.user_id.id !== theUser.id),
             datetime: now()
         });
     }
@@ -125,7 +126,16 @@ function ConvForm({conv, size, data, messMutate, setMessEvent}) {
     }
 
     async function setUnreadGroupMessage(){
-        //
+        try{
+            await Promise.all(conv.user_conv
+                .filter(user_conv => user_conv.user_id.id !== theUser.id)
+                .map(async (userconv) => {
+                const request = await axios.get(`/api/userconvs/updateunread/id=${userconv.id}&user_id=${theUser.id}`);
+                console.log(request.data.message);
+            }));
+        } catch(error){
+            console.log(error);
+        }
     }
 
 

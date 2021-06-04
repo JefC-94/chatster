@@ -164,7 +164,7 @@ const setLastLogin = async (user_id) => {
     knex('users').where('id', user_id).first()
     .then(async (rows) => {
         if(!rows){
-            return res.status(500).send({message:'No user found'});
+            return false;
         } else {
             //USER HAS BEEN FOUND
             const user = rows;
@@ -182,7 +182,7 @@ const setLastLogin = async (user_id) => {
         }
     })
     .catch(err => {
-        return res.status(500).send({message: err});
+        return false;
     });
 
 }
@@ -192,7 +192,7 @@ const clearLastLogin = async (user_id) => {
     knex('users').where('id', user_id).first()
     .then(async (rows) => {
         if(!rows){
-            return res.status(500).send({message:'No user found'});
+            return false;
         } else {
             //USER HAS BEEN FOUND
             const user = rows;
@@ -210,7 +210,7 @@ const clearLastLogin = async (user_id) => {
         }
     })
     .catch(err => {
-        return res.status(500).send({message: err});
+        return false;
     });
 
 }

@@ -86,6 +86,19 @@ io.on("connection", (socket) => {
         }
     });
 
+    //MESSAGE EVENT - GROUP CHAT -> FIND USER ON USER_IDS AND SEND TO SOCKETS
+    //It's possible that a user is logged in via different browsers
+    // all these sockets should get the message -> for loop
+    socket.on("group-message", (msg) => {
+        const otherUsers = msg.user_convs.map(user_conv => user_conv.user_id.id);
+        //FIND ALl USERS IN THIS CONV AND SEND THE EMIT EVENT!
+        const findSessions = userSessions.filter(session => otherUsers.includes(session.user_id));
+        console.log(findSessions);
+        for(userSession of findSessions){
+            socket.broadcast.to(userSession.id).emit("group-message", msg);
+        }
+    });
+
     //CONTACT OPERATION -> Send emit event to the right user to reload contacts and otherusers
     //Data has action -> if it is necessary to display a snackbar to the other user
     //Transfer the action property as method, it's null in the case of reject and delete/block

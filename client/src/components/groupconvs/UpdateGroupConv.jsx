@@ -155,23 +155,22 @@ function UpdateGroupConv({match, history}) {
                     photo_url : null
                 });
                 console.log(request.data.message);
-
-                await Promise.all(formData.userids.map(async (userid) => {
-                    try {
+                try {
+                    await Promise.all(formData.userids.map(async (userid) => {
                         const request = await axios.post(`/api/userconvs/user_id=${theUser.id}`, {
                             user_id : userid,
                             conv_id : conv.id,
                             created_at : now(),
                         });
                         console.log(request.data.message);
-                    } catch(error){
-                        console.log(error.response.data.message);
-                    }
-                }));
-                mutate(groupurl);
-                getCurrentConv();
-                setSnackBar({open: true, message: 'Group chat updated'});
-                //history.push(`/dashboard/conversations/${conv.id}`);
+                    }));
+                    mutate(groupurl);
+                    getCurrentConv();
+                    setSnackBar({open: true, message: 'Group chat updated'});
+                    //history.push(`/dashboard/conversations/${conv.id}`);
+                } catch(error){
+                    console.log(error.response.data.message);
+                }
             } catch(error){
                 console.log(error.response.data.message);
             }
@@ -197,18 +196,14 @@ function UpdateGroupConv({match, history}) {
 
     //FUNCTIE VERPLAATSEN NAAR CONVCONTEXT? -> aparte groupcontext aanmaken?
     async function deleteUserFromGroup(user_conv_id){
-        if(conv.user_conv.length > 3){
-            try{
-                const request = await axios.delete(`/api/userconvs/id=${user_conv_id}&user_id=${theUser.id}`);
-                console.log(request.data.message);
-                getCurrentConv();
-                mutate(groupurl);
-                setSnackBar({open: true, message: 'User removed from group'});
-            } catch(error){
-                console.log(error.response.data.message);
-            }
-        } else {
-            setError(true);
+        try{
+            const request = await axios.delete(`/api/userconvs/id=${user_conv_id}&user_id=${theUser.id}`);
+            console.log(request.data.message);
+            getCurrentConv();
+            mutate(groupurl);
+            setSnackBar({open: true, message: 'User removed from group'});
+        } catch(error){
+            console.log(error.response.data.message);
         }
     }
 
@@ -325,6 +320,11 @@ function UpdateGroupConv({match, history}) {
                                     </div>
                                 )
                             })}
+                            {conv.user_conv.length === 1 && 
+                                <div class="nomembers">
+                                    <p>You are alone in this group chat. You can keep the chat to reread messages or add new contacts to keep the conversation going.</p>
+                                </div>
+                            }
                         </div>
                         </>
                     }

@@ -86,12 +86,21 @@ function Conversation({conv, basePath}) {
         setMessEvent("firstrender");
     }, [conv]);
 
-    //SOCKET EVENT LISTENER
+    //SOCKET EVENT LISTENER FOR INDIVIDUAL CONVOS
     useEffect(() => {
         socket.on('chat-message', () => {
             messMutate();
         });
-        return () => socket.off('message');
+        return () => socket.off('chat-message');
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    //SOCKET EVENT LISTENER FOR GROUP CONVOS
+    useEffect(() => {
+        socket.on('group-message', () => {
+            messMutate();
+        });
+        return () => socket.off('group-message');
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -160,20 +169,16 @@ function Conversation({conv, basePath}) {
 
     //FUNCTIE VERPLAATSEN NAAR CONVCONTEXT?
     async function deleteUserFromGroup(){
-        //aanpassen dat een user altijd een groep kan verlaten -> conversatie verwijdert zich als er maar twee over zijn?
-        //ook niet goed, want dan kan de adminuser geen mensen meer toevoegen / vorige berichten niet meer zien!!
-        //if(conv.user_conv.length > 3){
-            const user_conv_id = conv.user_conv.filter(user_conv => user_conv.user_id.id === theUser.id)[0];
-            try {
-                const request = await axios.delete(`/api/userconvs/id=${user_conv_id.id}&user_id=${theUser.id}`);
-                console.log(request.data.message);
-                mutate(groupurl);
-                setCurrentConv();
-                setSnackBar({open: true, message: 'You have left the group chat'});
-            } catch(error){
-                console.log(error.response.data.message);
-            }
-        //}
+        const user_conv_id = conv.user_conv.filter(user_conv => user_conv.user_id.id === theUser.id)[0];
+        try {
+            const request = await axios.delete(`/api/userconvs/id=${user_conv_id.id}&user_id=${theUser.id}`);
+            console.log(request.data.message);
+            mutate(groupurl);
+            setCurrentConv();
+            setSnackBar({open: true, message: 'You have left the group chat'});
+        } catch(error){
+            console.log(error.response.data.message);
+        }
     }
 
     return (
@@ -192,8 +197,10 @@ function Conversation({conv, basePath}) {
                 </div>
                 <div className="conv-names">
                     <h2>{conv.displayName}</h2>
-                    {(!conv.otherUser && conv.displayName !== conv.userNames) && <p>You, {conv.userNames}</p>}
+                    {(!conv.otherUser && conv.displayName !== conv.userNames) && 
+                        (conv.userNames !== "" ? <p>You, {conv.userNames}</p> : <p>You are alone in this group chat</p>)}
                 </div>
+                
             </div>
 
             {conv.otherUser ? 

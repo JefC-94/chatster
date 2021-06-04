@@ -4,6 +4,8 @@ const router = express.Router();
 const {
     createUserConv,
     deleteUserConv,
+    readUnreadUserConv,
+    updateUnreadUserConv,
 } = require('./handlers');
 
 //MIDDLEWARES
@@ -25,5 +27,9 @@ const jsonParser = bodyParser.json()
 router.post('/user_id=:user_id', verifyToken, authCheck, jsonParser, createUserConv);
 
 router.delete('/id=:id&user_id=:user_id', verifyToken, authCheck, deleteUserConv);
+
+router.get('/updateunread/id=:id&user_id=:user_id', verifyToken, authCheck, updateUnreadUserConv);
+
+router.get('/readunread/conv_id=:conv_id&user_id=:user_id', verifyToken, authCheck, readUnreadUserConv);
 
 module.exports = router;
