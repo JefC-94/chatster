@@ -137,8 +137,8 @@ function Profile({match}) {
             setImgLoading(false);
             setSelectedFile();
             setSelectedUrl();
-            setImgError(error.response.data.message);
-            console.log(error.response.data.message);
+            setImgError(error.response.data.message.message);
+            console.log(error.response.data.message.message);
         }
     }
 

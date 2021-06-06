@@ -7,9 +7,11 @@ const fs = require('fs');
 const { promisify } = require('util')
 const unlinkAsync = promisify(fs.unlink)
 const router = express.Router();
+const cloudinary = require('cloudinary').v2;
+const formidable = require('formidable');
 
 //Setup settings for file storage:
-const storage = multer.diskStorage({
+/* const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, 'server/uploads');
     },
@@ -35,7 +37,7 @@ const upload = multer({
     storage: storage, 
     limits: {fileSize: 1000000}, 
     fileFilter: imageFilter
-}).single('fileToUpload');
+}).single('fileToUpload'); */
 
 
 //PROFILE PICTURE UPLOAD
@@ -51,7 +53,7 @@ router.post('/profile&user_id=:id', async (req, res) => {
         previous_image = queryUserForImage.photo_url;
     }
 
-    upload(req, res, async (err) => {
+    /* upload(req, res, async (err) => {
         if(req.fileValidationError){
             return res.status(500).send({message: req.fileValidationError});
         }
@@ -60,29 +62,52 @@ router.post('/profile&user_id=:id', async (req, res) => {
         /* }
          else if(err instanceof multer.MulterErrof){
             return res.send(err); */
-        } else if(err){
+        /* } else if(err){
             return res.status(500).send({message: err});
+        } */
+
+    var form = new formidable.IncomingForm();
+
+    // form.parse analyzes the incoming stream data, picking apart the different fields and files for you.
+
+    form.parse(req, function(err, fields, file) {
+        if (err) {
+
+        // Check for and handle any errors here.
+
+        console.error(err.message);
+        return;
         }
 
-        //upload successfull: now add image to database!
-        knex('users').where('id', req.params.id).update({
-            photo_url : req.file.filename
-        })
-        .then(() => {
-            res.status(200).send({message: 'Profile picture updated!'});
-        })
-        .catch(err => {
-            res.status(500).send({message: err});
-            return;
+        console.log(file.fileToUpload.path);
+        // This last line responds to the form submission with a list of the parsed data and files.
+
+        cloudinary.uploader.upload(file.fileToUpload.path, {width: 400, format: "jpg"}, (err, image) => {
+            console.log(err, image);
+            if(err) {
+                return res.status(500).send({message: err});
+            }
+
+            //upload successfull: now add image to database!
+        
+            knex('users').where('id', req.params.id).update({
+                photo_url : image.public_id
+            })
+            .then(() => {
+                res.status(200).send({message: 'Profile picture updated!'});
+            })
+            .catch(err => {
+                return res.status(500).send({message: err});
+            });
+
+            console.log(previous_image);
+
+            if(previous_image){
+                cloudinary.uploader.destroy(previous_image, function(result) { console.log(result) });
+            }
         });
+    });
 
-        console.log(previous_image);
-
-        if(previous_image){
-            await unlinkAsync('./server/uploads/' + previous_image);
-        }
-
-    })
 
 });
 
@@ -98,7 +123,7 @@ router.delete('/profile&user_id=:id', async (req, res) => {
         previous_image = queryUserForImage.photo_url;
         
         if(previous_image){
-            await unlinkAsync('./server/uploads/' + previous_image);
+            cloudinary.uploader.destroy(previous_image, function(result) { console.log(result) });
         } else {
             return res.status(500).send({message: 'user has no profile picture yet'});
         }
