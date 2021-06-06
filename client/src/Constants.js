@@ -10,4 +10,4 @@ export const Axios = axios.create({
 
 //export const imgPath = process.env.NODE_ENV === 'development' ? '/server/uploads' : 'https://chatster-production.herokuapp.com/server/uploads';
 //export const imgPath = '/server/uploads';
-export const imgPath = process.env.CLOUDINARY_PATH;
+export const imgPath = 'http://res.cloudinary.com/hhs6pticf/image/upload/v1622979590/';
