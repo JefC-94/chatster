@@ -36,8 +36,8 @@ app.use(cors({origin: 'http://localhost:3000'}));
 //Setup route for site
 app.use(express.static(path.resolve(__dirname, '../client/build')));
 
-//Setup route for files
-app.use('/server/uploads', express.static(process.cwd() + '/server/uploads'));
+//Setup route for files -> NOT NECESSARY ANYMORE, VIA CLOUDINARY!
+//app.use('/server/uploads', express.static(process.cwd() + '/server/uploads'));
 
 //Setup router for API routes
 mainRouter(app); 

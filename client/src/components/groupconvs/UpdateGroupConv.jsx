@@ -11,7 +11,7 @@ import { ConvContext } from '../../contexts/ConvContext';
 import { mutate } from 'swr';
 import Dialog from '../ui/Dialog';
 import { ModalContext } from '../../contexts/ModalContext';
-import {FaPlus, FaCheck} from 'react-icons/fa';
+import {FaPlus, FaCheck, FaTimes} from 'react-icons/fa';
 import {AiOutlineReload} from 'react-icons/ai';
 import {now} from '../helpers/TimeSince';
 
@@ -254,6 +254,19 @@ function UpdateGroupConv({match, history}) {
         }
     }
 
+    async function deleteImage(conv_id){
+        console.log("click");
+        try{
+            const request = await axios.delete(`/api/fileupload/conv-img&conv_id=${conv_id}&user_id=${theUser.id}`);
+            console.log(request.data);
+            setImgError(false);
+            setSelectedUrl(profilespic);
+            setSnackBar({open: true, message: "Group picture deleted"});
+        }catch(error){
+            console.log(error.response.data.message);
+        }
+    }
+
     return (
         <main className="dashboard-main groupconv-main container">
             <div className="groupconvs-header">
@@ -275,6 +288,10 @@ function UpdateGroupConv({match, history}) {
             </div>
             {conv && showImageForm && <div className="form-profile-picture">
                 <img src={selectedUrl} alt="profilespic" />
+                {
+                (selectedUrl !== profilespic && !selectedFile) &&
+                <button className="circle primary flex deleteimage" onClick={() => deleteImage(conv.id)}><FaTimes /></button>
+                }
                 <div className="profile-picture-change flex">
                     <label htmlFor="profile-pic">
                         {!conv.photo_url && !selectedFile && <FaPlus />}
