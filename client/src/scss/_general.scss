@@ -263,6 +263,93 @@ button.close-snackbar-btn{
 
 }
 
+//EDIT PAGES HEADER
+
+.edit-header{
+    width:100%;
+    @include flex(row, space-between, center);
+    margin:0.5em auto 1em auto;
+
+    .edit-header-center{
+        width:400px;
+        @include flex(row, space-between, center);
+        margin:0 auto;
+    }
+}
+
+
+// UPLOAD IMAGE FORM
+
+//GENERAL PICTURE CHANGE FORM FOR PROFILE EDIT + GROUP CONV EDIT
+.form-profile-picture{
+    margin:1em auto 1em auto;
+    position:relative;
+    width:200px;
+
+    img{
+        margin:0 auto;
+        @include profile-image(120px, 120px, var(--imageBgColor));
+        z-index:0;
+        position:relative;
+    }
+
+    button.deleteimage{
+        position:absolute;
+        right:2em;
+        top:0;
+        width:35px;
+        border-radius:50%;
+    }
+
+    .profile-picture-change{
+        position:relative;
+        z-index:5;
+        margin-top:-2em;
+        width:100%;
+        overflow-x:hidden;
+        width:200px;
+        text-align:center;
+
+        input{
+            display:none;
+        }
+
+        label{
+            margin-left:2em;
+            display:block;
+            width:35px;
+            height:35px;
+            background-color:var(--accentColor);
+            border-radius:50%;
+            cursor:pointer;
+            font-weight:bold;
+            @include flex(row, center, center);
+
+            svg{
+                margin-right:0px;
+            }
+
+            &:hover{
+                background-color:var(--accentDarkColor);
+            }
+        }
+
+        p.filename{
+            font-size:14px;
+            margin:.5em 0;
+            white-space: nowrap;
+            overflow:hidden;
+            text-overflow: ellipsis;
+        }
+
+        p.success, p.error{
+            margin:.5em 0;
+            font-size:14px;
+        }
+    }
+}
+
+
 // GENERAL SCROLLBAR STYLING
 
 ::-webkit-scrollbar {

@@ -156,71 +156,69 @@ function Profile({match}) {
     }
 
     return (
-        <main className="dashboard-main container">
-            <div className="profile-wrap">
-                <div className="panel-profile">
-                    <Link className="button secondary" id="cancelEditBtn" to={`/${basePath}`}>Back</Link>
+        <main className="dashboard-main profile-main container">
+            <div className="edit-header">
+                <div className="edit-header-center">
                     <h2>Edit my profile</h2>
-            
-                    <p>Member since {timeSinceSignup(theUser.created_at)}</p>
-
-                    <div className="form-profile-picture">
-                        <img src={selectedUrl} alt="profilepic" />
-                        {
-                        (selectedUrl !== profilepic && !selectedFile) &&
-                        <button className="circle primary flex deleteimage" onClick={() => deleteImage()}><FaTimes /></button>
-                        }
-                        <div className="profile-picture-change flex">
-                            <label htmlFor="profile-pic">
-                                {!theUser.photo_url && !selectedFile && <FaPlus />}
-                                {theUser.photo_url && !selectedFile && <AiOutlineReload />}
-                                {theUser.photo_url && imgUpdated && <FaCheck />}
-                                
-                            </label>
-                            <input type="file" name="fileToUpload" id="profile-pic" onChange={onFileChange} />
-                            {selectedFile &&
-                            <>
-                            <p className="filename">{selectedFile.name}</p>
-                            <button className="button secondary" onClick={onFileUpload}>Set as profile picture</button>
-                            </>}
-                            {imgError && <p className="error">{imgError}</p>}
-                            {imgLoading && <p className="">Uploading image...</p>}
-                        </div>
-                    </div>
-                    <form id="edit-form" onSubmit={submitForm}>
-                        <div className="form-control">
-                            <label htmlFor="username">Username</label>
-                            <input className="form-input" type="text" name="username" value={userInfo.username} onChange={onChangeValue}/>
-                            {error.type === "username" && 
-                                <p className="error">{error.message}</p>
-                            }
-                        </div>
-                        <div className="form-control">
-                            <label htmlFor="password">Current Password</label>
-                            <input className="form-input" type="password" id="old-password" name="oldPassword" value={userInfo.oldPassword} onChange={onChangeValue} />
-                            {error.type === "old-password" && 
-                                <p className="error">{error.message}</p>
-                            }
-                        </div>
-                        <div className="form-control">
-                            <button className="button secondary" onClick={(e) => {
-                                e.preventDefault();
-                                setChangePassword(prevVal => !prevVal);
-                            }} type="button">Change password</button>
-                        </div>
-                        {changePassword && <div className="form-control">
-                            <label htmlFor="new-password">New password</label>
-                            <input className="form-input" type="password" id="new-password" name="newPassword" value={userInfo.newPassword} onChange={onChangeValue} />
-                            {error.type === "new-password" && 
-                                <p className="error">{error.message}</p>
-                            }
-                        </div>}
-                        <div className="form-control">
-                            <button className="button primary" type="submit" >Save Changes</button>
-                        </div>
-                    </form>
+                    <Link className="button secondary" id="cancelEditBtn" to={`/${basePath}`}>Back</Link>
                 </div>
             </div>
+            <p className="divider">Member since {timeSinceSignup(theUser.created_at)}</p>
+            <div className="form-profile-picture">
+                <img src={selectedUrl} alt="profilepic" />
+                {
+                (selectedUrl !== profilepic && !selectedFile) &&
+                <button className="circle primary flex deleteimage" onClick={() => deleteImage()}><FaTimes /></button>
+                }
+                <div className="profile-picture-change flex">
+                    <label htmlFor="profile-pic">
+                        {!theUser.photo_url && !selectedFile && <FaPlus />}
+                        {theUser.photo_url && !selectedFile && <AiOutlineReload />}
+                        {theUser.photo_url && imgUpdated && <FaCheck />}
+                        
+                    </label>
+                    <input type="file" name="fileToUpload" id="profile-pic" onChange={onFileChange} />
+                    {selectedFile &&
+                    <>
+                    <p className="filename">{selectedFile.name}</p>
+                    <button className="button secondary" onClick={onFileUpload}>Set as profile picture</button>
+                    </>}
+                    {imgError && <p className="error">{imgError}</p>}
+                    {imgLoading && <p className="">Uploading image...</p>}
+                </div>
+            </div>
+            <form id="edit-form" onSubmit={submitForm}>
+                <div className="form-control">
+                    <label htmlFor="username">Username</label>
+                    <input className="form-input" type="text" name="username" value={userInfo.username} onChange={onChangeValue}/>
+                    {error.type === "username" && 
+                        <p className="error">{error.message}</p>
+                    }
+                </div>
+                <div className="form-control">
+                    <label htmlFor="password">Current Password</label>
+                    <input className="form-input" type="password" id="old-password" name="oldPassword" value={userInfo.oldPassword} onChange={onChangeValue} />
+                    {error.type === "old-password" && 
+                        <p className="error">{error.message}</p>
+                    }
+                </div>
+                <div className="form-control">
+                    <button className="button secondary" onClick={(e) => {
+                        e.preventDefault();
+                        setChangePassword(prevVal => !prevVal);
+                    }} type="button">Change password</button>
+                </div>
+                {changePassword && <div className="form-control">
+                    <label htmlFor="new-password">New password</label>
+                    <input className="form-input" type="password" id="new-password" name="newPassword" value={userInfo.newPassword} onChange={onChangeValue} />
+                    {error.type === "new-password" && 
+                        <p className="error">{error.message}</p>
+                    }
+                </div>}
+                <div className="form-control">
+                    <button className="button primary" type="submit" >Save Changes</button>
+                </div>
+            </form>
         </main>
     )
 }

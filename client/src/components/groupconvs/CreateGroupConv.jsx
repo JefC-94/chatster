@@ -99,8 +99,11 @@ function CreateGroupConv({match, history}) {
 
     return (
         <main className="dashboard-main groupconv-main container">
-            <div className="groupconvs-header">
-                <h2>Create Group Chat</h2>
+            <div className="edit-header">
+                <div className="edit-header-center">
+                    <h2>Create Group Chat</h2>
+                    <Link to={`/${basePath}/conversations`} className="button secondary">Cancel</Link>
+                </div>
             </div>
             <div className="groupconvs-wrap">
                 <form onSubmit={(e) => {
@@ -113,8 +116,8 @@ function CreateGroupConv({match, history}) {
                         </label>
                         <input type="text" className="form-input" name="name" value={formData.name} onChange={(e) => {setFormData(prevVal => ({...prevVal, name: e.target.value}))}}/>
                     </div>
-                    <p>Select contacts</p>
-                    <div className="form-control select-contacts-wrap">
+                    <p className="select-contacts-label">Select contacts</p>
+                    <div className="form-control selects">
                         {accepts.map(accept => {
                         return (
                             <label key={accept.id} className="user-item select-item" htmlFor={`contact${accept.id}`} >
@@ -137,9 +140,6 @@ function CreateGroupConv({match, history}) {
                         <button className="button primary" type="submit" >Create</button>
                     </div>
                 </form>
-                <div className="navigation navigation-center">
-                    <Link to={`/${basePath}/conversations`} className="button secondary">Cancel</Link>
-                </div>
             </div>
         </main>
     )

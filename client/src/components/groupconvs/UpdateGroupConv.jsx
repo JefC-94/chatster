@@ -269,19 +269,11 @@ function UpdateGroupConv({match, history}) {
 
     return (
         <main className="dashboard-main groupconv-main container">
-            <div className="groupconvs-header">
-                <div className="groupconvs-header-center">
+            <div className="edit-header">
+                <div className="edit-header-center">
                     <h2>Update Group Chat</h2>
-                    <Dialog
-                        title="Delete Conversation"
-                        open={dialOpen}
-                        setOpen={setDialOpen}
-                        onConfirm={deleteGroupConv}
-                    >
-                        Are you sure you want to delete this group chat?
-                    </Dialog>
+                    <Link to={`/${basePath}/conversations`} id="cancelEditBtn" className="button secondary">Back</Link>
                 </div>
-                <Link to={`/${basePath}/conversations`} id="cancelEditBtn" className="button secondary">Back</Link>
             </div>
             <div className="groupconvs-below-header">
             <button className="button secondary" onClick={() => {setShowImageForm(prevVal => !prevVal)}}>Edit picture</button>
@@ -338,7 +330,7 @@ function UpdateGroupConv({match, history}) {
                                 )
                             })}
                             {conv.user_conv.length === 1 && 
-                                <div class="nomembers">
+                                <div className="no-results">
                                     <p>You are alone in this group chat. You can keep the chat to reread messages or add new contacts to keep the conversation going.</p>
                                 </div>
                             }
@@ -346,9 +338,7 @@ function UpdateGroupConv({match, history}) {
                         </>
                     }
                     {openTab === 'addcontacts' &&
-                        <>
-                        {addables.length !== 0 && 
-                        <div className="form-control select-contacts-wrap">
+                        <div className="form-control selects">
                             {addables.map(addable => {
                                 return (
                                     <label key={addable.id} className="user-item select-item" htmlFor={`contact${addable.id}`} >
@@ -366,24 +356,28 @@ function UpdateGroupConv({match, history}) {
                                 )
                             })
                             }
-                        </div>}
-                        {accepts.filter(accept => !conv.users.includes(accept.otherUser.id)).length === 0 && 
-                            <div className="form-control">
+                            {accepts.filter(accept => !conv.users.includes(accept.otherUser.id)).length === 0 && 
+                            <div className="no-results">
                                 <p>All your contacts are in this group chat</p>
                             </div>
                         }
-                        </>
+                        </div>
                     }
                     {error && <p className="error">You need at least two other users in a group chat.</p>}
                     <div className="form-control actions">
-                        <button className="button primary" type="submit" >Update</button>{/* {JSON.stringify(snackBar)} */}
+                        <button className="button primary" type="submit" >Update</button>
                         <button type="button" className="button secondary" onClick={() => {setDialOpen(true)}}>Delete this chat</button>
                     </div>
                 </form>
                 </div>}
-            <div className="navigation navigation-center">
-                
-            </div>
+            <Dialog
+                title="Delete Conversation"
+                open={dialOpen}
+                setOpen={setDialOpen}
+                onConfirm={deleteGroupConv}
+            >
+                Are you sure you want to delete this group chat?
+            </Dialog>
         </main>
     )
 }

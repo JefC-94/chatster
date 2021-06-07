@@ -7,18 +7,23 @@ const createUserConv = async (req, res) => {
     .where('conversation.id', req.body.conv_id)
     .first();
 
+    if(!queryConvGroup){
+        return res.status(400).send({message:'No conversation for this id'});
+    }
+
     if(queryConvGroup.created_by !== req.user_id){
         return res.status(401).send({message:'Not authorized to add users to this conversation'});
     }
 
-    //CHECK IF USER IS CONTACT OF THE ADDING/CREATING USER
-    const queryContacts = await knex('contact').where('user_1', req.user_id).andWhere('user_2', req.body.user_id).andWhere('status', 2).first();
-    const queryContacts2 = await knex('contact').where('user_1', req.body.user_id).andWhere('user_2', req.user_id).andWhere('status', 2).first();
+    if(req.user_id !== req.body.user_id){
 
-    console.log(queryContacts, queryContacts2);
-
-    if(!queryContacts && !queryContacts2){
-        return res.status(401).send({message:'This user is not one of your contacts, you cannot add him to your group conversation.'});
+        //CHECK IF USER IS CONTACT OF THE ADDING/CREATING USER
+        const queryContacts = await knex('contact').where('user_1', req.user_id).andWhere('user_2', req.body.user_id).andWhere('status', 2).first();
+        const queryContacts2 = await knex('contact').where('user_1', req.body.user_id).andWhere('user_2', req.user_id).andWhere('status', 2).first();
+  
+        if(!queryContacts && !queryContacts2){
+            return res.status(401).send({message:'This user is not one of your contacts, you cannot add him to your group conversation.'});
+        }    
     }
 
     //CHECK IF THE USER ISN'T ALREADY IN THE GROUP CHAT
@@ -49,6 +54,10 @@ const deleteUserConv = async (req, res) => {
 
     //FIRST GET THE CONVERSATION ID
     const userConv = await knex('user_conv').where('id', req.params.id).first();
+
+    if(!userConv){
+        return res.status(400).send({message:'No userconv for this id'});
+    }
 
     //CHECK IF DELETING USER IS CREATOR OF THIS GROUP CHAT OR IS DELETING HIMSELF!
     const queryConvGroup = await knex('conversation')
@@ -81,8 +90,12 @@ const updateUnreadUserConv = async (req, res) => {
     //Update a single user_conv and set unread to +1
     const queryUserConv = await knex('user_conv').where('id', req.params.id).first();    
 
-    //CHECK IF USER IS IN THE CONVERSATION (SHOULD NOT BE THE EXACT USER, BECAUSE THIS HAPPENS TO ALL USERS EXEPT ONE)
-    
+    //CHECK IF USER SENDING THE MESSAGE IS IN THE CONVERSATION
+    const checkUserConv = await knex('user_conv').where('user_id', req.user_id).andWhere('conv_id', queryUserConv.conv_id).first();
+    if(!checkUserConv){
+        return res.status(401).send({message: 'Not authorized to alter userconvs of this conversation'});
+    }
+
     knex('user_conv').where('id', req.params.id)
     .update({
         unread: queryUserConv.unread + 1
@@ -99,10 +112,13 @@ const updateUnreadUserConv = async (req, res) => {
 //TAKES PARAMETERS OF USER_ID AND CONV_ID
 const readUnreadUserConv = async (req, res) => {
 
-    //set unread of single user_conv to 0
-    
-    //CHECK IF USER IS CORRECT!
+    const queryUserConv = await knex('user_conv').where('conv_id', req.params.conv_id).andWhere('user_id', req.params.user_id).first();
 
+    if(!queryUserConv){
+        return res.status(400).send({message:'No userconv for this information'});
+    }
+
+    //set unread of single user_conv to 0
     knex('user_conv').where('conv_id', req.params.conv_id).andWhere('user_id', req.params.user_id)
     .update({
         unread: 0
