@@ -15,7 +15,9 @@ function Requests() {
             {requests.length > 0 && requests.map(request => {
                 return (
                 <div className="user-item contact-item request-item" key={request.id}>
-                    <img src={request.otherUser.photo_url ? `${imgPath}/${request.otherUser.photo_url}` : profilepic} alt="profile-pic" />
+                    <div className="item-image">
+                        <img src={request.otherUser.photo_url ? `${imgPath}/${request.otherUser.photo_url}` : profilepic} alt="profile-pic" />
+                    </div>
                     <div className="item-content">
                         <p>{request.otherUser.username} </p>
                         <div className="item-options">

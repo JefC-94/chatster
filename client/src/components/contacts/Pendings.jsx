@@ -15,7 +15,9 @@ function Pendings() {
             {pendings.length > 0 && pendings.map(pending => {
                 return (
                     <div className="user-item contact-item pending-item" key={pending.id}> {/* dit moet id van contact tabel zijn ipv id van user -> easy cancel! */}
+                        <div className="item-image">
                         <img src={pending.otherUser.photo_url ? `${imgPath}/${pending.otherUser.photo_url}` : profilepic} alt="profile-pic" />
+                        </div>
                         <div className="item-content">
                             <p className="username">{pending.otherUser.username}</p>
                             <div className="item-options">

@@ -17,7 +17,9 @@ function Users() {
             {users && users.map((user, index) => {
                 return (
                     <div className="user-item contact-item otheruser-item" key={user.id}>
-                        <img src={user.photo_url ? `${imgPath}/${user.photo_url}` : profilepic} alt="profile-pic" />
+                        <div className="item-image">
+                            <img src={user.photo_url ? `${imgPath}/${user.photo_url}` : profilepic} alt="profile-pic" />
+                        </div>
                         <div className="item-content">
                             <p className="username">{user.username}</p>
                             <div className="item-options">

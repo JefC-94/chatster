@@ -16,7 +16,7 @@ function DarkToggle() {
         }
     ); */
 
-    const [isDark, setIsDark] = useState(sessionStorage.getItem('color-scheme') === 'dark' ? true : false);
+    const [isDark, setIsDark] = useState(localStorage.getItem('color-scheme') === 'dark' ? true : false);
 
     useEffect(() => {
         if (isDark) {
@@ -24,13 +24,13 @@ function DarkToggle() {
             document.querySelectorAll('.theme').forEach((el) => {
                 el.classList.add(DARK_CLASS);
             });
-            sessionStorage.setItem('color-scheme', 'dark');
+            localStorage.setItem('color-scheme', 'dark');
         } else {
             document.documentElement.classList.remove(DARK_CLASS);
             document.querySelectorAll('.theme').forEach((el) => {
                 el.classList.remove(DARK_CLASS);
             });
-            sessionStorage.setItem('color-scheme', 'light');
+            localStorage.setItem('color-scheme', 'light');
         }
         }, [isDark]);
 

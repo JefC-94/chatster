@@ -89,13 +89,13 @@ function Conversations({match}) {
                         {!currentConv && 
                             <>
                             <ConvList />
+                            <div className="navigation navigation-space navigation-bg">    
+                                <Link className="button primary" to={`/${basePath}/contacts`} >Go to contacts</Link> 
+                                <Link className="button primary" to={`/${basePath}/group/create`} >Start Group Chat</Link>
+                            </div>
                             </>
                         }
                         {currentConv && <Conversation conv={currentConv} basePath={basePath} />}
-                        <div className="navigation navigation-space navigation-bg">    
-                            <Link className="button primary" to={`/${basePath}/contacts`} >Go to contacts</Link> 
-                            <Link className="button primary" to={`/${basePath}/group/create`} >Start Group Chat</Link>
-                        </div>
                         </>
                     }
                     {(convserror || grouperror) && <div className="error-message">Oops... Something went wrong. Please try again later!</div>}
