@@ -50,8 +50,14 @@ function Accept({accept, selectedContact, setSelectedContact, showOptions, setSh
             <div className="item-content">
                 <p className="username">{accept.otherUser.username}</p>
                 {showOptions === accept.id ? <div className="item-options">
-                <button className="button secondary" onClick={() => {deleteContact(accept.id, accept.conv_id, accept.otherUser)}}>Delete</button>
-                <button className="button secondary" onClick={() => {blockContact(accept.id, accept.conv_id, accept.otherUser)}}>Block</button>
+                <button className="button secondary" onClick={() => {
+                    deleteContact(accept.id, accept.conv_id, accept.otherUser);
+                    setSelectedContact();
+                }}>Delete</button>
+                <button className="button secondary" onClick={() => {
+                    blockContact(accept.id, accept.conv_id, accept.otherUser);
+                    setSelectedContact();
+                }}>Block</button>
                 </div> : null}
             </div>
                         

@@ -122,7 +122,9 @@ function CreateGroupConv({match, history}) {
                         return (
                             <label key={accept.id} className="user-item select-item" htmlFor={`contact${accept.id}`} >
                                 <div className="select-item-info">
-                                    <img src={accept.otherUser.photo_url ? `${imgPath}/${accept.otherUser.photo_url}` : profilepic} alt="profile-pic" />
+                                    <div className="item-image">
+                                        <img src={accept.otherUser.photo_url ? `${imgPath}/${accept.otherUser.photo_url}` : profilepic} alt="profile-pic" />
+                                    </div>
                                     <p>{accept.otherUser.username}</p>
                                 </div>
                                 <input 

@@ -15,7 +15,7 @@ function Snackbar(props) {
     return (
         <div className="snackbar-wrapper"
             style={{
-                transform: snackBar.open ? 'translateX(0px)' : 'translateX(-200px)',
+                transform: snackBar.open ? 'translateX(0px)' : 'translateX(-500px)',
                 opacity: snackBar.open ? '1' : '0'
             }}>
             <div className="snackbar-content">

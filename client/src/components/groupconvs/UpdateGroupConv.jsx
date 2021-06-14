@@ -322,7 +322,9 @@ function UpdateGroupConv({match, history}) {
                                 return (
                                     <div key={user_conv.user_id.id} className="user-item member-item">
                                         <div className="member-item-info">
+                                            <div className="item-image">
                                             <img src={user_conv.user_id.photo_url ? `${imgPath}/${user_conv.user_id.photo_url}` : profilepic} alt="profile-pic" />
+                                            </div>
                                             <p>{user_conv.user_id.username}</p>
                                         </div>
                                         <button type="button" className="button secondary" onClick={() => {deleteUserFromGroup(user_conv.id)}}>Remove</button>
@@ -343,7 +345,9 @@ function UpdateGroupConv({match, history}) {
                                 return (
                                     <label key={addable.id} className="user-item select-item" htmlFor={`contact${addable.id}`} >
                                         <div className="select-item-info">
-                                            <img src={addable.otherUser.photo_url ? `${imgPath}/${addable.otherUser.photo_url}` : profilepic} alt="profile-pic" />
+                                            <div className="item-image">
+                                                <img src={addable.otherUser.photo_url ? `${imgPath}/${addable.otherUser.photo_url}` : profilepic} alt="profile-pic" />
+                                            </div>
                                             <p>{addable.otherUser.username}</p>
                                         </div>
                                         <input 

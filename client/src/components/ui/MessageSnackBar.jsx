@@ -18,7 +18,7 @@ function MessageSnackBar(props) {
         
         <div className="snackbar-wrapper message-snackbar"
             style={{
-                transform: messageSnackBar.open ? 'translateX(0px)' : 'translateX(-200px)',
+                transform: messageSnackBar.open ? 'translateX(0px)' : 'translateX(-500px)',
                 opacity: messageSnackBar.open ? '1' : '0'
             }}>
             <Link to={`/dashboard/conversations/${messageSnackBar.data.conv_id}`} >
