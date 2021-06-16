@@ -1,12 +1,11 @@
 import React, {useState, useEffect, useContext, createContext, useRef} from 'react';
 import useSWR, { mutate } from 'swr';
-import {UserContext} from '../contexts/UserContext';
+import { UserContext } from '../contexts/UserContext';
+import { ContactContext } from './ContactContext';
 import {imgPath} from '../Constants';
 import axios from 'axios';
-import { ContactContext } from './ContactContext';
 import profilepic from '../images/profile-blanc.svg';
 import profilespic from '../images/profiles-blanc.svg';
-import { ModalContext } from './ModalContext';
 
 export const ConvContext = createContext();
 
@@ -15,8 +14,6 @@ function ConvContextProvider(props) {
     //CONTEXTS
     const {rootState, onlineUsers, socket} = useContext(UserContext);
     const {theUser} = rootState;
-
-    const {setMessageSnackBar} = useContext(ModalContext);
 
     //Import contact-data: conversations should be re-rendered when contacts change!
     const {contactdata} = useContext(ContactContext);
@@ -138,7 +135,6 @@ function ConvContextProvider(props) {
         } else {
             mutate(url);
         }
-        setMessageSnackBar({open: true, data: message});
     }
 
     //SOCKET MESSAGE RECEIVE HANDLER FOR GROUP CONVERSATION! If conv is currentConv -> immediately read it!
@@ -154,7 +150,6 @@ function ConvContextProvider(props) {
         } else {
             mutate(groupurl);
         }
-        setMessageSnackBar({open: true, data: message});
     }
 
     //GET FUNCTIONS
@@ -238,13 +233,10 @@ function ConvContextProvider(props) {
             groupurl: groupurl,
             loading,
             convs,
-            //setConvs,
             groupConvs,
-            //setGroupConvs,
             getSingleConv,
             currentConv,
             setCurrentConv,
-            //readUnreadContact
         }}>
             {props.children}
         </ConvContext.Provider>

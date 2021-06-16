@@ -1,7 +1,9 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {useParams} from 'react-router-dom';
-import {WindowContext} from '../../contexts/WindowContext';
-import {ContactContext} from '../../contexts/ContactContext';
+import { WindowContext } from '../../contexts/WindowContext';
+import { ContactContext } from '../../contexts/ContactContext';
+import { ModalContext } from '../../contexts/ModalContext';
+import { UserContext } from '../../contexts/UserContext';
 import Accepts from '../contacts/Accepts';
 import Requests from '../contacts/Requests';
 import Pendings from '../contacts/Pendings';
@@ -10,7 +12,6 @@ import DashboardNav from '../ui/DashboardNav';
 import NavButton from '../contacts/NavButton';
 import {FaChevronUp, FaChevronDown} from 'react-icons/fa';
 import MessageSnackBar from '../ui/MessageSnackBar';
-import { ModalContext } from '../../contexts/ModalContext';
 
 function Contacts({match}) {
 
@@ -25,6 +26,8 @@ function Contacts({match}) {
     //CONTEXTS
     const {error} = useContext(ContactContext);
 
+    const {socket} = useContext(UserContext);
+
     const {windowWidth} = useContext(WindowContext);
 
     const {messageSnackBar, setMessageSnackBar} = useContext(ModalContext);
@@ -35,6 +38,28 @@ function Contacts({match}) {
 
     //small screen only:
     const [activeTab, setActiveTab] = useState('My Contacts');
+
+    //SOCKET EVENT LISTENER for NEW MESSAGES IN CONTACTS -> SHOW MESSAGE NOTIFICATION!
+    useEffect(() => {
+        //Pass currentConvRef to the handler function for synchronisation (otherwise always undefined)
+        const handler = (message) => setMessageSnackBar({open: true, data: message});
+        socket.on('chat-message', handler);
+        return () => {
+            socket.off('chat-message', handler);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    //SOCKET EVENT LISTENER for New Messages FOR GROUP CONVERSATIONS
+    useEffect(() => {
+        //Pass currentConvRef to the handler function for synchronisation (otherwise always undefined)
+        const handler = (message) => setMessageSnackBar({open: true, data: message});
+        socket.on('group-message', handler);
+        return () => {
+            socket.off('group-message', handler);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <>
