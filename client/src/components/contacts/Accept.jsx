@@ -1,10 +1,10 @@
 import React, {useContext, useLayoutEffect, useRef} from 'react';
 import {Link} from 'react-router-dom';
+import OnlineIcon from '../ui/OnlineIcon';
 import {ContactContext} from '../../contexts/ContactContext';
 import {imgPath} from '../../Constants';
 import profilepic from '../../images/profile-blanc.svg';
 import {BsThreeDots} from 'react-icons/bs';
-import {FaCircle} from 'react-icons/fa';
 
 function Accept({accept, selectedContact, setSelectedContact, showOptions, setShowOptions}) {
 
@@ -45,7 +45,7 @@ function Accept({accept, selectedContact, setSelectedContact, showOptions, setSh
         <div className={classes} key={accept.id}> {/*Id is contact id, not user id */}
             <div className="item-image">
                 <img src={accept.otherUser.photo_url ? `${imgPath}/${accept.otherUser.photo_url}` : profilepic} alt="profile-pic" />
-                {accept.online ? <span className="online-icon"><FaCircle size={14} /></span> : ""}
+                {accept.online ? <OnlineIcon size='16px' right='0px' bottom='0px' /> : ""}
             </div>
             <div className="item-content">
                 <p className="username">{accept.otherUser.username}</p>

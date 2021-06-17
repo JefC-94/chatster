@@ -5,10 +5,11 @@ import {WindowContext} from '../../contexts/WindowContext';
 import {ConvContext} from '../../contexts/ConvContext';
 import {ModalContext} from '../../contexts/ModalContext';
 import Message from './Message';
+import OnlineIcon from '../ui/OnlineIcon';
 import ConvForm from './ConvForm';
 import axios from 'axios';
 import {useSWRInfinite, mutate} from 'swr';
-import { FaChevronLeft, FaCircle } from 'react-icons/fa';
+import { FaChevronLeft } from 'react-icons/fa';
 
 function Conversation({conv, basePath}) {
 
@@ -193,7 +194,7 @@ function Conversation({conv, basePath}) {
                 }
                 <div className="conv-info-image">
                     <img src={conv.imageUrl} alt="profile" />
-                    {conv.online ? <span className="online-icon">{<FaCircle size={12} />}</span> : ""}
+                    {conv.online ? <OnlineIcon size='13px' right='8px' bottom='8px' /> : ""}
                 </div>
                 <div className="conv-names">
                     <h2>{conv.displayName}</h2>

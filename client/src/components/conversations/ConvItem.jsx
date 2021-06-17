@@ -2,8 +2,8 @@ import React, {useContext} from 'react';
 import {Link} from 'react-router-dom';
 import {UserContext} from '../../contexts/UserContext';
 import {timeSinceConvs} from '../helpers/TimeSince';
-import {FaCircle} from 'react-icons/fa';
 import { ConvContext } from '../../contexts/ConvContext';
+import OnlineIcon from '../ui/OnlineIcon';
 
 function ConvItem({conv}) {
 
@@ -37,7 +37,7 @@ function ConvItem({conv}) {
             <div key={conv.id} className={`${classes} ${active} ${unread}`} >
                 <div className="item-image">
                     <img src={conv.imageUrl} alt="profile" />
-                    {conv.online ? <span className="online-icon"><FaCircle size={13} /></span> : ""}
+                    {conv.online ? <OnlineIcon size='15px' right='0px' bottom='0px' /> : ""}
                 </div>
                 <div className="item-content">
                     <p className="username">{conv.displayName}</p>

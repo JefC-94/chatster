@@ -2,10 +2,11 @@ import React, {useState, useEffect, useContext} from 'react';
 import {Link} from 'react-router-dom';
 import {ContactContext} from '../../contexts/ContactContext';
 import Accept from './Accept';
+import OnlineIcon from '../ui/OnlineIcon';
 import {imgPath} from '../../Constants';
 import {timeSinceSignup, timeSinceRel} from '../helpers/TimeSince';
 import profilepic from '../../images/profile-blanc.svg';
-import {FaTimes, FaCircle} from 'react-icons/fa';
+import {FaTimes} from 'react-icons/fa';
 
 function Accepts({id, basePath}) {
    
@@ -57,7 +58,7 @@ function Accepts({id, basePath}) {
                     <button className="circle secondary flex" onClick={() => setSelectedContact(false)}><FaTimes size={15} /></button>
                     <div className="contact-detail-image">
                         <img src={selectedContact.otherUser.photo_url ? `${imgPath}/${selectedContact.otherUser.photo_url}` : profilepic} alt="profile-pic" />
-                        {selectedContact.online ? <span className="online-icon"><FaCircle size={16} /></span> : ""}
+                        {selectedContact.online ? <OnlineIcon size='20px' right='14px' bottom='14px' /> : ""}
                     </div>
                     
                     <h2>{selectedContact.otherUser.username}</h2>

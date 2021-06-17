@@ -233,3 +233,15 @@ form{
         }
     }
 }
+
+// ONLINE ICON
+
+//span is the icon itself, not a container for svg
+span.online-icon{
+    position:absolute;
+    right:0px;
+    bottom:0px;
+    border-radius:50%;
+    background:var(--accentColor);
+    border:2px solid var(--primaryBgColor);
+}
