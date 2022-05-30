@@ -8,7 +8,7 @@ function About() {
                 <h1>Over dit project</h1>
                 <div className="about-block">
                     <p>
-                        Deze chat-applicatie werd ontworpenen en ontwikkeld door Jef Ceuppens, als eindwerk voor de opleiding Front End Developer bij Syntra AB.
+                        Deze chat-applicatie werd ontworpen en ontwikkeld door Jef Ceuppens, als eindwerk voor de opleiding Front-End Developer bij Syntra AB.
                     </p>                    
                 </div>
 
